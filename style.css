@@ -1,0 +1,470 @@
+/* ============================
+   АНИМЕ-СТИЛЬ ДЛЯ MINI APP
+   ============================ */
+
+/* ОСНОВНЫЕ СТИЛИ */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Arial Rounded MT Bold', 'Arial', sans-serif;
+    background: linear-gradient(135deg, #FFE4E9 0%, #FFB6C1 100%);
+    min-height: 100vh;
+    transition: background 0.5s ease;
+    overflow-x: hidden;
+}
+
+body.dark-theme {
+    background: linear-gradient(135deg, #5D1F31 0%, #2A2A2A 100%);
+    color: #FFE4E9;
+}
+
+/* ФОН С ЛЕПЕСТКАМИ САКУРЫ */
+.sakura-background {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: -1;
+}
+
+.sakura-petal {
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="%23FFB6C1" d="M12,2C9.2,2 6.7,3.1 5,5C3.3,6.9 2,9.5 2,12C2,16.4 5.6,20 10,20C12.8,20 15.2,18.6 16.5,16.5C17.8,14.4 18,12 18,10C18,5.6 14.4,2 12,2Z"/></svg>');
+    opacity: 0.3;
+    animation: float 15s linear infinite;
+}
+
+@keyframes float {
+    0% {
+        transform: translateY(-100px) rotate(0deg);
+        opacity: 0;
+    }
+    10% {
+        opacity: 0.3;
+    }
+    90% {
+        opacity: 0.3;
+    }
+    100% {
+        transform: translateY(100vh) rotate(360deg);
+        opacity: 0;
+    }
+}
+
+/* КОНТЕЙНЕР */
+.container {
+    max-width: 500px;
+    margin: 0 auto;
+    padding: 20px;
+    position: relative;
+}
+
+/* ШАПКА */
+.anime-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    padding: 15px;
+    border-radius: 25px;
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.logo-icon {
+    font-size: 32px;
+    animation: float-logo 3s ease-in-out infinite;
+}
+
+@keyframes float-logo {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+}
+
+.logo h1 {
+    color: #D81B60;
+    font-size: 24px;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.dark-theme .logo h1 {
+    color: #FFB6C1;
+}
+
+/* ПЕРЕКЛЮЧАТЕЛЬ ТЕМ */
+.theme-toggle {
+    width: 60px;
+    height: 30px;
+    border-radius: 15px;
+    border: none;
+    background: linear-gradient(145deg, #FFB6C1, #FF8FA3);
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.theme-toggle:hover {
+    transform: scale(1.1);
+}
+
+.theme-toggle .sun,
+.theme-toggle .moon {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    transition: all 0.3s ease;
+    font-size: 16px;
+}
+
+.theme-toggle .sun {
+    left: 8px;
+    opacity: 1;
+}
+
+.theme-toggle .moon {
+    right: 8px;
+    opacity: 0;
+}
+
+.dark-theme .theme-toggle .sun {
+    opacity: 0;
+    left: -20px;
+}
+
+.dark-theme .theme-toggle .moon {
+    opacity: 1;
+    right: 8px;
+}
+
+/* АНИМЕ-КАРТОЧКИ */
+.anime-card {
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 25px;
+    padding: 25px;
+    margin-bottom: 20px;
+    box-shadow: 
+        10px 10px 20px rgba(255, 182, 193, 0.2),
+        -10px -10px 20px rgba(255, 255, 255, 0.8),
+        inset 0 0 0 1px rgba(255, 255, 255, 0.5);
+    border: 2px solid rgba(255, 182, 193, 0.1);
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.dark-theme .anime-card {
+    background: rgba(45, 45, 45, 0.9);
+    box-shadow: 
+        10px 10px 20px rgba(0, 0, 0, 0.3),
+        -10px -10px 20px rgba(139, 71, 93, 0.2);
+    border-color: rgba(139, 71, 93, 0.3);
+}
+
+.anime-card::before {
+    content: '🌸';
+    position: absolute;
+    top: -15px;
+    right: -15px;
+    font-size: 60px;
+    opacity: 0.1;
+    transform: rotate(15deg);
+}
+
+.anime-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 
+        15px 15px 30px rgba(255, 182, 193, 0.3),
+        -15px -15px 30px rgba(255, 255, 255, 0.9);
+}
+
+/* ПРИВЕТСТВИЕ */
+.welcome-card {
+    text-align: center;
+    position: relative;
+}
+
+.welcome-card h2 {
+    color: #D81B60;
+    font-size: 28px;
+    margin-bottom: 10px;
+}
+
+.dark-theme .welcome-card h2 {
+    color: #FFB6C1;
+}
+
+.subtitle {
+    color: #8B475D;
+    font-size: 16px;
+    opacity: 0.8;
+}
+
+.dark-theme .subtitle {
+    color: #FFB6C1;
+}
+
+.user-avatar {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: linear-gradient(145deg, #FFB6C1, #FF8FA3);
+    margin: 20px auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 32px;
+    color: white;
+    box-shadow: 
+        5px 5px 15px rgba(216, 27, 96, 0.3),
+        -5px -5px 15px rgba(255, 255, 255, 0.5);
+}
+
+/* БЫСТРЫЕ КНОПКИ */
+.action-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+}
+
+.action-btn {
+    aspect-ratio: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    cursor: pointer;
+    padding: 20px;
+}
+
+.action-icon {
+    font-size: 32px;
+    margin-bottom: 10px;
+    transition: transform 0.3s ease;
+}
+
+.action-btn:hover .action-icon {
+    transform: scale(1.2) rotate(10deg);
+}
+
+.action-text {
+    font-size: 14px;
+    font-weight: bold;
+    color: #5D1F31;
+}
+
+.dark-theme .action-text {
+    color: #FFE4E9;
+}
+
+/* УСЛУГИ */
+.service-item {
+    display: flex;
+    align-items: center;
+    padding: 15px;
+    margin: 10px 0;
+    background: rgba(255, 255, 255, 0.7);
+    border-radius: 20px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border-left: 5px solid #FFB6C1;
+}
+
+.dark-theme .service-item {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.service-item:hover {
+    transform: translateX(10px);
+    background: rgba(255, 182, 193, 0.2);
+}
+
+.service-icon {
+    font-size: 24px;
+    margin-right: 15px;
+}
+
+.service-info {
+    flex: 1;
+}
+
+.service-info h3 {
+    color: #5D1F31;
+    font-size: 16px;
+    margin-bottom: 5px;
+}
+
+.dark-theme .service-info h3 {
+    color: #FFE4E9;
+}
+
+.service-info p {
+    color: #8B475D;
+    font-size: 14px;
+    opacity: 0.8;
+}
+
+.service-price {
+    text-align: right;
+}
+
+.price {
+    display: block;
+    color: #D81B60;
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.time {
+    display: block;
+    color: #8B475D;
+    font-size: 14px;
+}
+
+/* КНОПКИ */
+.anime-btn {
+    border: none;
+    border-radius: 25px;
+    padding: 15px 30px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin: 10px 0;
+    width: 100%;
+}
+
+.primary-btn {
+    background: linear-gradient(145deg, #FFB6C1, #FF8FA3);
+    color: white;
+    box-shadow: 
+        5px 5px 15px rgba(216, 27, 96, 0.3),
+        -5px -5px 15px rgba(255, 255, 255, 0.5);
+}
+
+.primary-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 
+        8px 8px 20px rgba(216, 27, 96, 0.4),
+        -8px -8px 20px rgba(255, 255, 255, 0.6);
+}
+
+.primary-btn:active {
+    transform: translateY(0);
+    box-shadow: 
+        inset 5px 5px 15px rgba(216, 27, 96, 0.3),
+        inset -5px -5px 15px rgba(255, 255, 255, 0.5);
+}
+
+/* ШАГИ ЗАПИСИ */
+.booking-steps {
+    display: flex;
+    justify-content: space-between;
+    margin: 20px 0;
+}
+
+.step {
+    flex: 1;
+    text-align: center;
+    padding: 10px;
+    color: #8B475D;
+    position: relative;
+    font-size: 14px;
+}
+
+.step.active {
+    color: #D81B60;
+    font-weight: bold;
+}
+
+.step.active::after {
+    content: '';
+    position: absolute;
+    bottom: -5px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 30px;
+    height: 3px;
+    background: #D81B60;
+    border-radius: 2px;
+}
+
+/* ФУТЕР */
+.footer {
+    text-align: center;
+    margin-top: 30px;
+    padding: 20px;
+    color: #8B475D;
+    font-size: 14px;
+}
+
+.dark-theme .footer {
+    color: #FFB6C1;
+}
+
+/* АДАПТИВНОСТЬ */
+@media (max-width: 480px) {
+    .container {
+        padding: 10px;
+    }
+    
+    .logo h1 {
+        font-size: 20px;
+    }
+    
+    .action-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .anime-card {
+        padding: 20px;
+    }
+}
+
+/* АНИМАЦИИ */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.fade-in {
+    animation: fadeIn 0.5s ease forwards;
+}
+
+/* СКРОЛЛБАР */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: rgba(255, 182, 193, 0.1);
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #FFB6C1;
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #FF8FA3;
+}
