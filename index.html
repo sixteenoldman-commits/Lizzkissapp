@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🌸 Lizkiss Nails</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- Telegram Web App SDK -->
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+</head>
+<body>
+    <!-- ФОН С ЛЕПЕСТКАМИ САКУРЫ -->
+    <div class="sakura-background" id="sakuraBackground"></div>
+    
+    <!-- ОСНОВНОЙ КОНТЕЙНЕР -->
+    <div class="container">
+        <!-- ШАПКА -->
+        <header class="anime-header">
+            <div class="logo">
+                <span class="logo-icon">🌸</span>
+                <h1>Nail Sakura</h1>
+            </div>
+            <button class="theme-toggle" id="themeToggle">
+                <span class="sun">☀️</span>
+                <span class="moon">🌙</span>
+            </button>
+        </header>
+
+        <!-- ПРИВЕТСТВИЕ -->
+        <section class="welcome-card anime-card">
+            <h2 id="userName">Добро пожаловать!</h2>
+            <p class="subtitle">Аниме-студия маникюра премиум класса</p>
+            <div class="user-avatar" id="userAvatar">👑</div>
+        </section>
+
+        <!-- БЫСТРЫЕ КНОПКИ -->
+        <section class="quick-actions">
+            <div class="action-grid">
+                <button class="action-btn anime-card" onclick="openBooking()">
+                    <span class="action-icon">💅</span>
+                    <span class="action-text">Записаться</span>
+                </button>
+                
+                <button class="action-btn anime-card" onclick="openServices()">
+                    <span class="action-icon">✨</span>
+                    <span class="action-text">Услуги</span>
+                </button>
+                
+                <button class="action-btn anime-card" onclick="openMyBookings()">
+                    <span class="action-icon">📅</span>
+                    <span class="action-text">Мои записи</span>
+                </button>
+                
+                <button class="action-btn anime-card" onclick="openProfile()">
+                    <span class="action-icon">👑</span>
+                    <span class="action-text">Профиль</span>
+                </button>
+            </div>
+        </section>
+
+        <!-- ЭКРАН УСЛУГ (скрыт по умолчанию) -->
+        <section class="services-screen anime-card" id="servicesScreen" style="display: none;">
+            <div class="screen-header">
+                <button class="back-btn" onclick="goBack()">← Назад</button>
+                <h2>💅 Наши услуги</h2>
+            </div>
+            
+            <div class="services-list">
+                <div class="service-item" onclick="selectService(1)">
+                    <div class="service-icon">💅</div>
+                    <div class="service-info">
+                        <h3>Классический маникюр</h3>
+                        <p>Обработка + покрытие</p>
+                    </div>
+                    <div class="service-price">
+                        <span class="price">1500₽</span>
+                        <span class="time">90 мин</span>
+                    </div>
+                </div>
+                
+                <div class="service-item" onclick="selectService(2)">
+                    <div class="service-icon">✨</div>
+                    <div class="service-info">
+                        <h3>Покрытие гель-лаком</h3>
+                        <p>Долговременное покрытие</p>
+                    </div>
+                    <div class="service-price">
+                        <span class="price">2000₽</span>
+                        <span class="time">120 мин</span>
+                    </div>
+                </div>
+                
+                <div class="service-item" onclick="selectService(3)">
+                    <div class="service-icon">🎨</div>
+                    <div class="service-info">
+                        <h3>Дизайн ногтей</h3>
+                        <p>Рисунки, стразы, градиент</p>
+                    </div>
+                    <div class="service-price">
+                        <span class="price">1000₽</span>
+                        <span class="time">60 мин</span>
+                    </div>
+                </div>
+                
+                <div class="service-item" onclick="selectService(4)">
+                    <div class="service-icon">💎</div>
+                    <div class="service-info">
+                        <h3>SPA-уход</h3>
+                        <p>Увлажнение и питание</p>
+                    </div>
+                    <div class="service-price">
+                        <span class="price">1800₽</span>
+                        <span class="time">75 мин</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ЭКРАН ЗАПИСИ (скрыт) -->
+        <section class="booking-screen anime-card" id="bookingScreen" style="display: none;">
+            <div class="screen-header">
+                <button class="back-btn" onclick="goBack()">← Назад</button>
+                <h2>📝 Запись</h2>
+            </div>
+            
+            <div class="booking-steps">
+                <div class="step active" data-step="1">1. Услуга</div>
+                <div class="step" data-step="2">2. Дата</div>
+                <div class="step" data-step="3">3. Подтверждение</div>
+            </div>
+            
+            <div class="step-content" id="step1">
+                <h3>Выберите услугу:</h3>
+                <div class="service-cards" id="serviceCards">
+                    <!-- Динамически заполнится JavaScript -->
+                </div>
+            </div>
+            
+            <button class="anime-btn primary-btn" onclick="nextStep()" id="nextBtn">
+                Далее →
+            </button>
+        </section>
+
+        <!-- ПОДВАЛ -->
+        <footer class="footer">
+            <p>🌸 Lizzkiss Nails © 2026</p>
+            <p>Телефон: +7 (999) 123-45-67</p>
+        </footer>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
