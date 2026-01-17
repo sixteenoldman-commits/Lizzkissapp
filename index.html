@@ -2,276 +2,798 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>🌸 Nail Sakura</title>
-    <link rel="stylesheet" href="style.css">
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>🌸 Nail Sakura Studio</title>
+    <style>
+        /* БАЗОВЫЕ СТИЛИ */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        body {
+            font-family: 'Arial Rounded MT Bold', 'Arial', sans-serif;
+            background: linear-gradient(135deg, #FFE4E9 0%, #FFB6C1 100%);
+            min-height: 100vh;
+            color: #5D1F31;
+            overflow-x: hidden;
+            padding: 20px;
+            padding-bottom: 100px; /* Для нижнего меню */
+        }
+        
+        /* КОНТЕЙНЕР */
+        .container {
+            max-width: 500px;
+            margin: 0 auto;
+        }
+        
+        /* ШАПКА */
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .logo {
+            font-size: 32px;
+            color: #D81B60;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        .logo::before {
+            content: '🌸';
+            animation: float 3s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        /* ПРИВЕТСТВИЕ */
+        .welcome {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 25px;
+            padding: 25px;
+            margin-bottom: 20px;
+            text-align: center;
+            box-shadow: 
+                8px 8px 16px rgba(255, 182, 193, 0.2),
+                -8px -8px 16px rgba(255, 255, 255, 0.8);
+            border: 2px solid rgba(255, 182, 193, 0.1);
+        }
+        
+        .welcome h1 {
+            font-size: 24px;
+            margin-bottom: 10px;
+            color: #D81B60;
+        }
+        
+        .user-avatar {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(145deg, #FFB6C1, #FF8FA3);
+            border-radius: 50%;
+            margin: 0 auto 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            color: white;
+            box-shadow: 0 5px 15px rgba(216, 27, 96, 0.3);
+        }
+        
+        /* КНОПКИ-ШАРИКИ */
+        .action-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        
+        .action-btn {
+            background: rgba(255, 255, 255, 0.9);
+            border: none;
+            border-radius: 25px;
+            padding: 30px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 
+                8px 8px 16px rgba(255, 182, 193, 0.2),
+                -8px -8px 16px rgba(255, 255, 255, 0.8);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .action-btn:active {
+            transform: scale(0.95);
+            box-shadow: 
+                inset 4px 4px 8px rgba(255, 182, 193, 0.2),
+                inset -4px -4px 8px rgba(255, 255, 255, 0.8);
+        }
+        
+        .action-icon {
+            font-size: 32px;
+            margin-bottom: 10px;
+            transition: transform 0.3s ease;
+        }
+        
+        .action-btn:active .action-icon {
+            transform: scale(1.1);
+        }
+        
+        .action-text {
+            font-size: 16px;
+            font-weight: bold;
+            color: #5D1F31;
+        }
+        
+        /* ЭКРАНЫ */
+        .screen {
+            display: none;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 25px;
+            padding: 25px;
+            margin-top: 20px;
+            box-shadow: 
+                8px 8px 16px rgba(255, 182, 193, 0.2),
+                -8px -8px 16px rgba(255, 255, 255, 0.8);
+            animation: slideUp 0.3s ease;
+        }
+        
+        .screen.active {
+            display: block;
+        }
+        
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .screen-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #FFE4E9;
+        }
+        
+        .back-btn {
+            background: none;
+            border: none;
+            font-size: 24px;
+            color: #D81B60;
+            cursor: pointer;
+            padding: 5px 10px;
+        }
+        
+        /* УСЛУГИ */
+        .service-item {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            margin: 10px 0;
+            background: #f8f9fa;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-left: 4px solid #FFB6C1;
+        }
+        
+        .service-item:active {
+            background: #FFE4E9;
+            transform: translateX(5px);
+        }
+        
+        .service-icon {
+            font-size: 24px;
+            margin-right: 15px;
+            width: 50px;
+            height: 50px;
+            background: #FFB6C1;
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+        }
+        
+        .service-info {
+            flex: 1;
+        }
+        
+        .service-info h3 {
+            margin-bottom: 5px;
+        }
+        
+        .service-price {
+            font-size: 18px;
+            font-weight: bold;
+            color: #D81B60;
+        }
+        
+        /* ФОРМА ЗАПИСИ */
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #5D1F31;
+        }
+        
+        .form-group select,
+        .form-group input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #FFE4E9;
+            border-radius: 15px;
+            font-size: 16px;
+            background: white;
+            -webkit-appearance: none;
+            appearance: none;
+        }
+        
+        /* ОСНОВНАЯ КНОПКА */
+        .primary-btn {
+            background: linear-gradient(145deg, #FFB6C1, #FF8FA3);
+            color: white;
+            border: none;
+            border-radius: 25px;
+            padding: 18px 30px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 20px;
+            box-shadow: 0 5px 15px rgba(216, 27, 96, 0.3);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        .primary-btn:active {
+            transform: scale(0.98);
+            box-shadow: 0 2px 10px rgba(216, 27, 96, 0.3);
+        }
+        
+        /* НИЖНЯЯ НАВИГАЦИЯ */
+        .bottom-nav {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 90%;
+            max-width: 500px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 25px;
+            display: flex;
+            justify-content: space-around;
+            padding: 15px;
+            box-shadow: 
+                0 -5px 20px rgba(255, 182, 193, 0.2),
+                0 5px 20px rgba(255, 182, 193, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            z-index: 1000;
+        }
+        
+        .nav-btn {
+            background: none;
+            border: none;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
+            padding: 10px;
+            border-radius: 15px;
+            transition: all 0.3s ease;
+            min-width: 60px;
+        }
+        
+        .nav-btn.active {
+            background: rgba(255, 182, 193, 0.1);
+        }
+        
+        .nav-btn:active {
+            transform: scale(0.95);
+        }
+        
+        .nav-icon {
+            font-size: 22px;
+            margin-bottom: 5px;
+            color: #5D1F31;
+        }
+        
+        .nav-btn.active .nav-icon {
+            color: #D81B60;
+        }
+        
+        .nav-label {
+            font-size: 12px;
+            font-weight: bold;
+            color: #8B475D;
+        }
+        
+        .nav-btn.active .nav-label {
+            color: #D81B60;
+        }
+        
+        /* ТЕМНАЯ ТЕМА */
+        body.dark {
+            background: linear-gradient(135deg, #5D1F31 0%, #2A2A2A 100%);
+            color: #FFE4E9;
+        }
+        
+        body.dark .welcome,
+        body.dark .action-btn,
+        body.dark .screen,
+        body.dark .bottom-nav {
+            background: rgba(45, 45, 45, 0.9);
+            box-shadow: 
+                8px 8px 16px rgba(0, 0, 0, 0.3),
+                -8px -8px 16px rgba(139, 71, 93, 0.2);
+        }
+        
+        body.dark .action-text,
+        body.dark .service-info h3 {
+            color: #FFE4E9;
+        }
+        
+        /* ЛЕПЕСТКИ САКУРЫ */
+        .sakura-petal {
+            position: fixed;
+            width: 20px;
+            height: 20px;
+            pointer-events: none;
+            z-index: -1;
+            font-size: 20px;
+            opacity: 0.3;
+            animation: fall linear infinite;
+        }
+        
+        @keyframes fall {
+            to { transform: translateY(100vh) rotate(360deg); }
+        }
+        
+        /* АДАПТИВНОСТЬ */
+        @media (max-width: 480px) {
+            body {
+                padding: 15px;
+                padding-bottom: 90px;
+            }
+            
+            .action-grid {
+                grid-template-columns: 1fr;
+                gap: 10px;
+            }
+            
+            .action-btn {
+                padding: 25px 15px;
+            }
+            
+            .bottom-nav {
+                width: 95%;
+                padding: 12px;
+            }
+        }
+    </style>
 </head>
 <body>
-    <div class="app" id="app">
-        <!-- ШАПКА С ДИНАМИЧЕСКИМ ЗАГОЛОВКОМ -->
-        <header class="header">
-            <div class="header-content">
-                <div class="logo" onclick="goHome()">
-                    <i class="fas fa-spa logo-icon"></i>
-                    <h1 id="pageTitle">Nail Sakura</h1>
-                </div>
-                <div class="header-actions">
-                    <button class="header-btn" id="themeToggle">
-                        <i class="fas fa-sun"></i>
-                    </button>
-                    <button class="header-btn" onclick="openCart()">
-                        <i class="fas fa-shopping-cart">
-                            <span class="cart-badge" id="cartCount">0</span>
-                        </i>
-                    </button>
-                </div>
+    <!-- ЛЕПЕСТКИ САКУРЫ -->
+    <div id="petals"></div>
+    
+    <div class="container">
+        <!-- ШАПКА -->
+        <div class="header">
+            <div class="logo">Nail Sakura Studio</div>
+            <button class="theme-toggle" style="position: absolute; top: 20px; right: 20px; background: #FFB6C1; border: none; border-radius: 50%; width: 40px; height: 40px; color: white; font-size: 20px; cursor: pointer;">🌙</button>
+        </div>
+        
+        <!-- ЭКРАН 1: ГЛАВНАЯ -->
+        <div id="mainScreen" class="screen active">
+            <div class="welcome">
+                <div class="user-avatar">👑</div>
+                <h1 id="userName">Привет, Аня!</h1>
+                <p>Добро пожаловать в мир аниме-маникюра</p>
             </div>
-            <!-- ИНДИКАТОР СВАЙПА -->
-            <div class="swipe-indicator">
-                <div class="swipe-dots">
-                    <div class="swipe-dot active" data-tab="main"></div>
-                    <div class="swipe-dot" data-tab="booking"></div>
-                    <div class="swipe-dot" data-tab="services"></div>
-                    <div class="swipe-dot" data-tab="profile"></div>
-                </div>
-            </div>
-        </header>
-
-        <!-- ОСНОВНОЙ КОНТЕНТ С ВОЗМОЖНОСТЬЮ СВАЙПА -->
-        <main class="main-content" id="mainContent">
-            <!-- ЭКРАН 1: ГЛАВНАЯ -->
-            <div class="screen active" id="screen-main">
-                <div class="welcome-card">
-                    <div class="user-avatar">
-                        <i class="fas fa-crown"></i>
-                    </div>
-                    <h2 id="userName">Привет, Аня!</h2>
-                    <p>Добро пожаловать в мир аниме-маникюра</p>
-                    
-                    <div class="quick-stats">
-                        <div class="stat">
-                            <i class="fas fa-calendar-check"></i>
-                            <span>3 записи</span>
-                        </div>
-                        <div class="stat">
-                            <i class="fas fa-star"></i>
-                            <span>4.9 ★</span>
-                        </div>
-                        <div class="stat">
-                            <i class="fas fa-gem"></i>
-                            <span>Gold</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="features-grid">
-                    <div class="feature" onclick="openSection('booking')">
-                        <div class="feature-icon" style="background: linear-gradient(135deg, #FFB6C1, #FF8FA3);">
-                            <i class="fas fa-calendar-plus"></i>
-                        </div>
-                        <h3>Запись</h3>
-                        <p>Выберите время</p>
-                    </div>
-                    
-                    <div class="feature" onclick="openSection('services')">
-                        <div class="feature-icon" style="background: linear-gradient(135deg, #D81B60, #FF8FA3);">
-                            <i class="fas fa-spa"></i>
-                        </div>
-                        <h3>Услуги</h3>
-                        <p>Каталог</p>
-                    </div>
-                    
-                    <div class="feature" onclick="openSection('gallery')">
-                        <div class="feature-icon" style="background: linear-gradient(135deg, #8B475D, #D81B60);">
-                            <i class="fas fa-images"></i>
-                        </div>
-                        <h3>Галерея</h3>
-                        <p>Работы</p>
-                    </div>
-                    
-                    <div class="feature" onclick="openSection('promo')">
-                        <div class="feature-icon" style="background: linear-gradient(135deg, #5D1F31, #8B475D);">
-                            <i class="fas fa-gift"></i>
-                        </div>
-                        <h3>Акции</h3>
-                        <p>Скидки</p>
-                    </div>
-                </div>
-
-                <div class="recent-bookings">
-                    <h3><i class="fas fa-clock"></i> Ближайшие записи</h3>
-                    <div class="booking-card">
-                        <div class="booking-icon">
-                            <i class="fas fa-hand-sparkles"></i>
-                        </div>
-                        <div class="booking-info">
-                            <h4>Маникюр + дизайн</h4>
-                            <p>Завтра, 15:00</p>
-                        </div>
-                        <div class="booking-status confirmed">
-                            <i class="fas fa-check"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- ЭКРАН 2: ЗАПИСЬ -->
-            <div class="screen" id="screen-booking">
-                <div class="screen-header">
-                    <h2><i class="fas fa-calendar-alt"></i> Новая запись</h2>
-                    <p>Выберите услугу и время</p>
-                </div>
-
-                <div class="booking-steps">
-                    <div class="step active">1. Услуга</div>
-                    <div class="step">2. Дата</div>
-                    <div class="step">3. Время</div>
-                </div>
-
-                <div class="step-content">
-                    <!-- Контент будет заполняться JavaScript -->
-                </div>
-
-                <button class="liquid-btn" onclick="nextStep()">
-                    <span class="btn-text">Далее</span>
-                    <i class="fas fa-arrow-right"></i>
-                </button>
-            </div>
-
-            <!-- ЭКРАН 3: УСЛУГИ -->
-            <div class="screen" id="screen-services">
-                <div class="screen-header">
-                    <h2><i class="fas fa-spa"></i> Наши услуги</h2>
-                    <p>Выберите то, что вам подходит</p>
-                </div>
-
-                <div class="services-container">
-                    <!-- Услуги будут заполняться JavaScript -->
-                </div>
-            </div>
-
-            <!-- ЭКРАН 4: ПРОФИЛЬ -->
-            <div class="screen" id="screen-profile">
-                <div class="profile-header">
-                    <div class="profile-avatar-large">
-                        <i class="fas fa-user-crown"></i>
-                    </div>
-                    <h2>Аня Иванова</h2>
-                    <p>Клиент Gold уровня</p>
-                </div>
-
-                <div class="profile-stats">
-                    <div class="stat-card">
-                        <i class="fas fa-calendar"></i>
-                        <h3>12</h3>
-                        <p>Всего записей</p>
-                    </div>
-                    <div class="stat-card">
-                        <i class="fas fa-star"></i>
-                        <h3>4.9</h3>
-                        <p>Рейтинг</p>
-                    </div>
-                    <div class="stat-card">
-                        <i class="fas fa-gem"></i>
-                        <h3>1500</h3>
-                        <p>Бонусы</p>
-                    </div>
-                </div>
-
-                <div class="profile-menu">
-                    <div class="menu-item" onclick="openSection('history')">
-                        <i class="fas fa-history"></i>
-                        <span>История записей</span>
-                        <i class="fas fa-chevron-right"></i>
-                    </div>
-                    <div class="menu-item" onclick="openSection('favorites')">
-                        <i class="fas fa-heart"></i>
-                        <span>Избранное</span>
-                        <i class="fas fa-chevron-right"></i>
-                    </div>
-                    <div class="menu-item" onclick="openSection('notifications')">
-                        <i class="fas fa-bell"></i>
-                        <span>Уведомления</span>
-                        <i class="fas fa-chevron-right"></i>
-                    </div>
-                    <div class="menu-item" onclick="openSection('settings')">
-                        <i class="fas fa-cog"></i>
-                        <span>Настройки</span>
-                        <i class="fas fa-chevron-right"></i>
-                    </div>
-                </div>
-            </div>
-        </main>
-
-        <!-- НИЖНЯЯ ПАНЕЛЬ В СТИЛЕ iOS LIQUID -->
-        <nav class="liquid-nav" id="liquidNav">
-            <!-- ФОН С ЭФФЕКТОМ СТЕКЛА -->
-            <div class="nav-background"></div>
             
-            <!-- КНОПКИ НАВИГАЦИИ -->
-            <div class="nav-buttons">
-                <button class="nav-btn active" data-tab="main" onclick="switchTab('main')">
-                    <div class="nav-icon">
-                        <i class="fas fa-home"></i>
-                    </div>
-                    <span class="nav-label">Главная</span>
+            <div class="action-grid">
+                <button class="action-btn" onclick="showScreen('booking')">
+                    <div class="action-icon">💅</div>
+                    <div class="action-text">Записаться</div>
                 </button>
                 
-                <button class="nav-btn" data-tab="booking" onclick="switchTab('booking')">
-                    <div class="nav-icon">
-                        <i class="fas fa-calendar-plus"></i>
-                    </div>
-                    <span class="nav-label">Запись</span>
+                <button class="action-btn" onclick="showScreen('services')">
+                    <div class="action-icon">✨</div>
+                    <div class="action-text">Услуги</div>
                 </button>
                 
-                <button class="nav-btn" data-tab="services" onclick="switchTab('services')">
-                    <div class="nav-icon">
-                        <i class="fas fa-spa"></i>
-                    </div>
-                    <span class="nav-label">Услуги</span>
+                <button class="action-btn" onclick="showScreen('myBookings')">
+                    <div class="action-icon">📅</div>
+                    <div class="action-text">Мои записи</div>
                 </button>
                 
-                <button class="nav-btn" data-tab="profile" onclick="switchTab('profile')">
-                    <div class="nav-icon">
-                        <i class="fas fa-user"></i>
-                    </div>
-                    <span class="nav-label">Профиль</span>
+                <button class="action-btn" onclick="showScreen('profile')">
+                    <div class="action-icon">👑</div>
+                    <div class="action-text">Профиль</div>
                 </button>
             </div>
             
-            <!-- ЦЕНТРАЛЬНАЯ КНОПКА (ОПЦИОНАЛЬНО) -->
-            <button class="nav-center-btn" onclick="openQuickBooking()">
-                <div class="center-icon">
-                    <i class="fas fa-plus"></i>
-                </div>
+            <button class="primary-btn" onclick="showScreen('booking')">
+                🎨 Начать запись
             </button>
-        </nav>
-
-        <!-- ИНДИКАТОР СВАЙПА (для мобильных) -->
-        <div class="swipe-guide">
-            <div class="swipe-line"></div>
-            <p>Свайпайте влево/вправо для навигации</p>
         </div>
-    </div>
-
-    <!-- МОДАЛЬНОЕ ОКНО ДЛЯ БЫСТРОЙ ЗАПИСИ -->
-    <div class="modal-overlay" id="modalOverlay">
-        <div class="modal">
-            <div class="modal-header">
-                <h3>Быстрая запись</h3>
-                <button class="modal-close" onclick="closeModal()">
-                    <i class="fas fa-times"></i>
+        
+        <!-- ЭКРАН 2: ЗАПИСЬ -->
+        <div id="bookingScreen" class="screen">
+            <div class="screen-header">
+                <button class="back-btn" onclick="showScreen('main')">←</button>
+                <h2>📝 Запись</h2>
+                <div style="width: 40px;"></div>
+            </div>
+            
+            <div class="form-group">
+                <label>Выберите услугу:</label>
+                <select id="serviceSelect">
+                    <option value="manicure">💅 Классический маникюр - 1500₽</option>
+                    <option value="gel">✨ Покрытие гель-лаком - 2000₽</option>
+                    <option value="design">🎨 Дизайн ногтей - 1000₽</option>
+                    <option value="spa">💎 SPA-уход - 1800₽</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label>Дата:</label>
+                <input type="date" id="bookingDate">
+            </div>
+            
+            <div class="form-group">
+                <label>Время:</label>
+                <select id="bookingTime">
+                    <option>10:00</option>
+                    <option>11:00</option>
+                    <option>12:00</option>
+                    <option>13:00</option>
+                    <option>14:00</option>
+                    <option>15:00</option>
+                    <option>16:00</option>
+                    <option>17:00</option>
+                    <option>18:00</option>
+                </select>
+            </div>
+            
+            <button class="primary-btn" onclick="submitBooking()">
+                ✅ Записаться
+            </button>
+        </div>
+        
+        <!-- ЭКРАН 3: УСЛУГИ -->
+        <div id="servicesScreen" class="screen">
+            <div class="screen-header">
+                <button class="back-btn" onclick="showScreen('main')">←</button>
+                <h2>💅 Услуги</h2>
+                <div style="width: 40px;"></div>
+            </div>
+            
+            <div class="service-item" onclick="selectService('manicure')">
+                <div class="service-icon">💅</div>
+                <div class="service-info">
+                    <h3>Классический маникюр</h3>
+                    <p>Обработка + покрытие</p>
+                </div>
+                <div class="service-price">1500₽</div>
+            </div>
+            
+            <div class="service-item" onclick="selectService('gel')">
+                <div class="service-icon">✨</div>
+                <div class="service-info">
+                    <h3>Покрытие гель-лаком</h3>
+                    <p>Долговременное покрытие</p>
+                </div>
+                <div class="service-price">2000₽</div>
+            </div>
+            
+            <div class="service-item" onclick="selectService('design')">
+                <div class="service-icon">🎨</div>
+                <div class="service-info">
+                    <h3>Дизайн ногтей</h3>
+                    <p>Рисунки, стразы, градиент</p>
+                </div>
+                <div class="service-price">1000₽</div>
+            </div>
+            
+            <div class="service-item" onclick="selectService('spa')">
+                <div class="service-icon">💎</div>
+                <div class="service-info">
+                    <h3>SPA-уход</h3>
+                    <p>Увлажнение и питание</p>
+                </div>
+                <div class="service-price">1800₽</div>
+            </div>
+        </div>
+        
+        <!-- ЭКРАН 4: МОИ ЗАПИСИ -->
+        <div id="myBookingsScreen" class="screen">
+            <div class="screen-header">
+                <button class="back-btn" onclick="showScreen('main')">←</button>
+                <h2>📅 Мои записи</h2>
+                <div style="width: 40px;"></div>
+            </div>
+            
+            <div style="text-align: center; padding: 40px 20px;">
+                <div style="font-size: 48px; margin-bottom: 20px;">📝</div>
+                <h3>У вас пока нет записей</h3>
+                <p>Запишитесь на первую процедуру!</p>
+                <button class="primary-btn" onclick="showScreen('booking')" style="margin-top: 30px;">
+                    🎨 Записаться
                 </button>
             </div>
-            <div class="modal-content">
-                <!-- Контент модального окна -->
+        </div>
+        
+        <!-- ЭКРАН 5: ПРОФИЛЬ -->
+        <div id="profileScreen" class="screen">
+            <div class="screen-header">
+                <button class="back-btn" onclick="showScreen('main')">←</button>
+                <h2>👑 Профиль</h2>
+                <div style="width: 40px;"></div>
+            </div>
+            
+            <div style="text-align: center; margin-bottom: 30px;">
+                <div class="user-avatar" style="width: 100px; height: 100px; font-size: 48px;">👑</div>
+                <h2 style="margin-top: 15px;">Аня Иванова</h2>
+                <p style="color: #FFB6C1;">Gold клиент</p>
+            </div>
+            
+            <div class="service-item" style="cursor: default; background: #FFE4E9;">
+                <div class="service-icon">📞</div>
+                <div class="service-info">
+                    <h3>Телефон</h3>
+                    <p>+7 (999) 123-45-67</p>
+                </div>
+            </div>
+            
+            <div class="service-item" style="cursor: default; background: #FFE4E9;">
+                <div class="service-icon">✉️</div>
+                <div class="service-info">
+                    <h3>Email</h3>
+                    <p>anna@example.com</p>
+                </div>
             </div>
         </div>
     </div>
-
-    <script src="app.js"></script>
+    
+    <!-- НИЖНЯЯ НАВИГАЦИЯ -->
+    <nav class="bottom-nav">
+        <button class="nav-btn active" data-tab="main" onclick="showScreen('main')">
+            <div class="nav-icon">🏠</div>
+            <div class="nav-label">Главная</div>
+        </button>
+        
+        <button class="nav-btn" data-tab="booking" onclick="showScreen('booking')">
+            <div class="nav-icon">💅</div>
+            <div class="nav-label">Запись</div>
+        </button>
+        
+        <button class="nav-btn" data-tab="services" onclick="showScreen('services')">
+            <div class="nav-icon">✨</div>
+            <div class="nav-label">Услуги</div>
+        </button>
+        
+        <button class="nav-btn" data-tab="profile" onclick="showScreen('profile')">
+            <div class="nav-icon">👤</div>
+            <div class="nav-label">Профиль</div>
+        </button>
+    </nav>
+    
+    <script>
+        // ======================
+        // ОСНОВНЫЕ ФУНКЦИИ
+        // ======================
+        
+        let currentScreen = 'main';
+        
+        // ПОКАЗАТЬ ЭКРАН
+        function showScreen(screenName) {
+            console.log('Показываем экран:', screenName);
+            
+            // Скрываем все экраны
+            document.querySelectorAll('.screen').forEach(screen => {
+                screen.classList.remove('active');
+            });
+            
+            // Показываем нужный экран
+            document.getElementById(screenName + 'Screen').classList.add('active');
+            currentScreen = screenName;
+            
+            // Обновляем нижнее меню
+            updateBottomNav(screenName);
+            
+            // Создаем лепестки сакуры
+            createPetals(3);
+        }
+        
+        // ОБНОВИТЬ НИЖНЮЮ НАВИГАЦИЮ
+        function updateBottomNav(activeTab) {
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.dataset.tab === activeTab) {
+                    btn.classList.add('active');
+                }
+            });
+        }
+        
+        // ВЫБРАТЬ УСЛУГУ
+        function selectService(service) {
+            const services = {
+                'manicure': '💅 Классический маникюр - 1500₽',
+                'gel': '✨ Покрытие гель-лаком - 2000₽',
+                'design': '🎨 Дизайн ногтей - 1000₽',
+                'spa': '💎 SPA-уход - 1800₽'
+            };
+            
+            document.getElementById('serviceSelect').value = service;
+            showScreen('booking');
+            
+            // Показать уведомление
+            showNotification(`Вы выбрали: ${services[service]}`);
+        }
+        
+        // ОТПРАВИТЬ ЗАПИСЬ
+        function submitBooking() {
+            const service = document.getElementById('serviceSelect').value;
+            const date = document.getElementById('bookingDate').value;
+            const time = document.getElementById('bookingTime').value;
+            
+            if (!date) {
+                showNotification('Выберите дату!', 'error');
+                return;
+            }
+            
+            const services = {
+                'manicure': 'Классический маникюр',
+                'gel': 'Покрытие гель-лаком',
+                'design': 'Дизайн ногтей',
+                'spa': 'SPA-уход'
+            };
+            
+            showNotification(`🎉 Запись успешно создана!\n${services[service]} на ${date} в ${time}`);
+            
+            // Через 2 секунды вернуться на главную
+            setTimeout(() => {
+                showScreen('main');
+            }, 2000);
+        }
+        
+        // ЛЕПЕСТКИ САКУРЫ
+        function createPetals(count) {
+            const container = document.getElementById('petals');
+            const emojis = ['🌸', '💮', '🏵️'];
+            
+            for (let i = 0; i < count; i++) {
+                const petal = document.createElement('div');
+                petal.className = 'sakura-petal';
+                petal.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+                petal.style.left = Math.random() * 100 + 'vw';
+                petal.style.top = '-50px';
+                petal.style.animationDuration = (Math.random() * 5 + 3) + 's';
+                petal.style.animationDelay = Math.random() * 2 + 's';
+                
+                container.appendChild(petal);
+                
+                // Удалить после анимации
+                setTimeout(() => {
+                    if (petal.parentNode) {
+                        petal.remove();
+                    }
+                }, 8000);
+            }
+        }
+        
+        // УВЕДОМЛЕНИЯ
+        function showNotification(message, type = 'success') {
+            // Создать уведомление
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                left: 50%;
+                transform: translateX(-50%);
+                background: ${type === 'error' ? '#E57373' : '#81C784'};
+                color: white;
+                padding: 15px 25px;
+                border-radius: 15px;
+                z-index: 10000;
+                box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+                animation: slideDown 0.3s ease;
+                max-width: 90%;
+                text-align: center;
+                font-weight: bold;
+            `;
+            
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            
+            // Удалить через 3 секунды
+            setTimeout(() => {
+                notification.style.animation = 'slideUp 0.3s ease';
+                setTimeout(() => {
+                    if (notification.parentNode) {
+                        notification.remove();
+                    }
+                }, 300);
+            }, 3000);
+        }
+        
+        // ТЕМНАЯ ТЕМА
+        document.querySelector('.theme-toggle').addEventListener('click', function() {
+            document.body.classList.toggle('dark');
+            this.textContent = document.body.classList.contains('dark') ? '☀️' : '🌙';
+            
+            // Сохранить в localStorage
+            localStorage.setItem('theme', document.body.classList.contains('dark') ? 'dark' : 'light');
+            
+            createPetals(5);
+        });
+        
+        // ЗАГРУЗКА
+        document.addEventListener('DOMContentLoaded', function() {
+            // Проверить сохраненную тему
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme === 'dark') {
+                document.body.classList.add('dark');
+                document.querySelector('.theme-toggle').textContent = '☀️';
+            }
+            
+            // Установить сегодняшнюю дату по умолчанию
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('bookingDate').value = today;
+            document.getElementById('bookingDate').min = today;
+            
+            // Создать несколько лепестков при загрузке
+            setTimeout(() => createPetals(5), 500);
+            
+            // Telegram WebApp
+            if (window.Telegram?.WebApp) {
+                const tg = Telegram.WebApp;
+                tg.expand();
+                
+                // Получить данные пользователя
+                const user = tg.initDataUnsafe?.user;
+                if (user) {
+                    document.getElementById('userName').textContent = `Привет, ${user.first_name || 'друг'}!`;
+                }
+            }
+        });
+        
+        // Добавить CSS для анимаций уведомлений
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideDown {
+                from { transform: translateX(-50%) translateY(-100px); opacity: 0; }
+                to { transform: translateX(-50%) translateY(0); opacity: 1; }
+            }
+            
+            @keyframes slideUp {
+                from { transform: translateX(-50%) translateY(0); opacity: 1; }
+                to { transform: translateX(-50%) translateY(-100px); opacity: 0; }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
 </body>
 </html>
