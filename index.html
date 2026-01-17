@@ -216,7 +216,7 @@ function showScreen(screenName) {
 
 // ================= GOOGLE SHEETS ИНТЕГРАЦИЯ =================
 async function saveToGoogleSheets(bookingData) {
-    if (!GOOGLE_SCRIPT_URL.includes('YOUR_SCRIPT_ID')) {
+    if (!GOOGLE_SCRIPT_URL.includes('https://script.google.com/macros/s/AKfycbzA7ukePYKIEy0xAK4E41Vw_FHPQky9Ks0jfnlQhUw94Vsk-fTsiu1ZIiFVnaDX3anS/exec')) {
         try {
             const response = await fetch(GOOGLE_SCRIPT_URL, {
                 method: 'POST',
@@ -414,3 +414,4 @@ document.addEventListener('DOMContentLoaded', function() {
 </script>
 </body>
 </html>
+
