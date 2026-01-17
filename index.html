@@ -5,221 +5,271 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>🌸 Nail Sakura</title>
     <link rel="stylesheet" href="style.css">
-    <!-- Telegram Web App SDK -->
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <!-- Иконки -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
-    <div class="app">
-        <!-- ШАПКА -->
+    <div class="app" id="app">
+        <!-- ШАПКА С ДИНАМИЧЕСКИМ ЗАГОЛОВКОМ -->
         <header class="header">
             <div class="header-content">
-                <div class="logo">
-                    <i class="fas fa-spa"></i>
-                    <h1>Nail Sakura</h1>
+                <div class="logo" onclick="goHome()">
+                    <i class="fas fa-spa logo-icon"></i>
+                    <h1 id="pageTitle">Nail Sakura</h1>
                 </div>
-                <button class="theme-toggle" id="themeToggle">
-                    <i class="fas fa-sun"></i>
-                    <i class="fas fa-moon"></i>
-                </button>
+                <div class="header-actions">
+                    <button class="header-btn" id="themeToggle">
+                        <i class="fas fa-sun"></i>
+                    </button>
+                    <button class="header-btn" onclick="openCart()">
+                        <i class="fas fa-shopping-cart">
+                            <span class="cart-badge" id="cartCount">0</span>
+                        </i>
+                    </button>
+                </div>
+            </div>
+            <!-- ИНДИКАТОР СВАЙПА -->
+            <div class="swipe-indicator">
+                <div class="swipe-dots">
+                    <div class="swipe-dot active" data-tab="main"></div>
+                    <div class="swipe-dot" data-tab="booking"></div>
+                    <div class="swipe-dot" data-tab="services"></div>
+                    <div class="swipe-dot" data-tab="profile"></div>
+                </div>
             </div>
         </header>
 
-        <!-- ОСНОВНОЙ ЭКРАН -->
-        <main class="main">
-            <!-- ПРИВЕТСТВИЕ -->
-            <section class="welcome">
-                <div class="user-avatar">
-                    <i class="fas fa-crown"></i>
+        <!-- ОСНОВНОЙ КОНТЕНТ С ВОЗМОЖНОСТЬЮ СВАЙПА -->
+        <main class="main-content" id="mainContent">
+            <!-- ЭКРАН 1: ГЛАВНАЯ -->
+            <div class="screen active" id="screen-main">
+                <div class="welcome-card">
+                    <div class="user-avatar">
+                        <i class="fas fa-crown"></i>
+                    </div>
+                    <h2 id="userName">Привет, Аня!</h2>
+                    <p>Добро пожаловать в мир аниме-маникюра</p>
+                    
+                    <div class="quick-stats">
+                        <div class="stat">
+                            <i class="fas fa-calendar-check"></i>
+                            <span>3 записи</span>
+                        </div>
+                        <div class="stat">
+                            <i class="fas fa-star"></i>
+                            <span>4.9 ★</span>
+                        </div>
+                        <div class="stat">
+                            <i class="fas fa-gem"></i>
+                            <span>Gold</span>
+                        </div>
+                    </div>
                 </div>
-                <h2 id="userName">Добро пожаловать!</h2>
-                <p>Аниме-студия маникюра</p>
-            </section>
 
-            <!-- БЫСТРЫЕ ДЕЙСТВИЯ -->
-            <section class="actions">
-                <div class="action-grid">
-                    <button class="action-btn" onclick="openSection('booking')">
-                        <i class="fas fa-calendar-plus"></i>
-                        <span>Записаться</span>
-                    </button>
+                <div class="features-grid">
+                    <div class="feature" onclick="openSection('booking')">
+                        <div class="feature-icon" style="background: linear-gradient(135deg, #FFB6C1, #FF8FA3);">
+                            <i class="fas fa-calendar-plus"></i>
+                        </div>
+                        <h3>Запись</h3>
+                        <p>Выберите время</p>
+                    </div>
                     
-                    <button class="action-btn" onclick="openSection('services')">
-                        <i class="fas fa-spa"></i>
-                        <span>Услуги</span>
-                    </button>
+                    <div class="feature" onclick="openSection('services')">
+                        <div class="feature-icon" style="background: linear-gradient(135deg, #D81B60, #FF8FA3);">
+                            <i class="fas fa-spa"></i>
+                        </div>
+                        <h3>Услуги</h3>
+                        <p>Каталог</p>
+                    </div>
                     
-                    <button class="action-btn" onclick="openSection('mybookings')">
-                        <i class="fas fa-history"></i>
-                        <span>Мои записи</span>
-                    </button>
+                    <div class="feature" onclick="openSection('gallery')">
+                        <div class="feature-icon" style="background: linear-gradient(135deg, #8B475D, #D81B60);">
+                            <i class="fas fa-images"></i>
+                        </div>
+                        <h3>Галерея</h3>
+                        <p>Работы</p>
+                    </div>
                     
-                    <button class="action-btn" onclick="openSection('contacts')">
-                        <i class="fas fa-phone-alt"></i>
-                        <span>Контакты</span>
-                    </button>
+                    <div class="feature" onclick="openSection('promo')">
+                        <div class="feature-icon" style="background: linear-gradient(135deg, #5D1F31, #8B475D);">
+                            <i class="fas fa-gift"></i>
+                        </div>
+                        <h3>Акции</h3>
+                        <p>Скидки</p>
+                    </div>
                 </div>
-            </section>
 
-            <!-- УСЛУГИ -->
-            <section class="services-section" id="servicesSection">
-                <h3><i class="fas fa-spa"></i> Наши услуги</h3>
-                <div class="services-list">
-                    <div class="service-item" onclick="selectService('manicure')">
-                        <div class="service-icon" style="background: #FFB6C1;">
+                <div class="recent-bookings">
+                    <h3><i class="fas fa-clock"></i> Ближайшие записи</h3>
+                    <div class="booking-card">
+                        <div class="booking-icon">
                             <i class="fas fa-hand-sparkles"></i>
                         </div>
-                        <div class="service-info">
-                            <h4>Классический маникюр</h4>
-                            <p>Обработка + покрытие</p>
+                        <div class="booking-info">
+                            <h4>Маникюр + дизайн</h4>
+                            <p>Завтра, 15:00</p>
                         </div>
-                        <div class="service-price">1500₽</div>
-                    </div>
-                    
-                    <div class="service-item" onclick="selectService('gel')">
-                        <div class="service-icon" style="background: #FF8FA3;">
-                            <i class="fas fa-gem"></i>
+                        <div class="booking-status confirmed">
+                            <i class="fas fa-check"></i>
                         </div>
-                        <div class="service-info">
-                            <h4>Покрытие гель-лаком</h4>
-                            <p>Долговременное покрытие</p>
-                        </div>
-                        <div class="service-price">2000₽</div>
-                    </div>
-                    
-                    <div class="service-item" onclick="selectService('design')">
-                        <div class="service-icon" style="background: #D81B60;">
-                            <i class="fas fa-palette"></i>
-                        </div>
-                        <div class="service-info">
-                            <h4>Дизайн ногтей</h4>
-                            <p>Рисунки, стразы</p>
-                        </div>
-                        <div class="service-price">1000₽</div>
-                    </div>
-                    
-                    <div class="service-item" onclick="selectService('spa')">
-                        <div class="service-icon" style="background: #8B475D;">
-                            <i class="fas fa-heart"></i>
-                        </div>
-                        <div class="service-info">
-                            <h4>SPA-уход</h4>
-                            <p>Увлажнение и питание</p>
-                        </div>
-                        <div class="service-price">1800₽</div>
                     </div>
                 </div>
-            </section>
+            </div>
 
-            <!-- ЗАПИСЬ -->
-            <section class="booking-section" id="bookingSection">
-                <h3><i class="fas fa-calendar-alt"></i> Новая запись</h3>
-                <div class="booking-form">
-                    <div class="form-group">
-                        <label>Выберите услугу:</label>
-                        <select id="serviceSelect">
-                            <option value="manicure">Классический маникюр - 1500₽</option>
-                            <option value="gel">Покрытие гель-лаком - 2000₽</option>
-                            <option value="design">Дизайн ногтей - 1000₽</option>
-                            <option value="spa">SPA-уход - 1800₽</option>
-                        </select>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label>Дата:</label>
-                        <input type="date" id="bookingDate">
-                    </div>
-                    
-                    <div class="form-group">
-                        <label>Время:</label>
-                        <select id="bookingTime">
-                            <option>10:00</option>
-                            <option>11:00</option>
-                            <option>12:00</option>
-                            <option>13:00</option>
-                            <option>14:00</option>
-                            <option>15:00</option>
-                            <option>16:00</option>
-                            <option>17:00</option>
-                            <option>18:00</option>
-                        </select>
-                    </div>
-                    
-                    <button class="btn-primary" onclick="submitBooking()">
-                        <i class="fas fa-check"></i> Записаться
-                    </button>
+            <!-- ЭКРАН 2: ЗАПИСЬ -->
+            <div class="screen" id="screen-booking">
+                <div class="screen-header">
+                    <h2><i class="fas fa-calendar-alt"></i> Новая запись</h2>
+                    <p>Выберите услугу и время</p>
                 </div>
-            </section>
 
-            <!-- КОНТАКТЫ -->
-            <section class="contacts-section" id="contactsSection">
-                <h3><i class="fas fa-address-book"></i> Контакты</h3>
-                <div class="contacts-list">
-                    <div class="contact-item">
-                        <i class="fas fa-map-marker-alt"></i>
-                        <div>
-                            <strong>Адрес:</strong>
-                            <p>ул. Цветущая Сакура, 28</p>
-                        </div>
-                    </div>
-                    
-                    <div class="contact-item">
-                        <i class="fas fa-phone"></i>
-                        <div>
-                            <strong>Телефон:</strong>
-                            <p>+7 (999) 123-45-67</p>
-                        </div>
-                    </div>
-                    
-                    <div class="contact-item">
-                        <i class="fas fa-clock"></i>
-                        <div>
-                            <strong>Часы работы:</strong>
-                            <p>Пн-Пт: 10:00-20:00</p>
-                            <p>Сб-Вс: 11:00-18:00</p>
-                        </div>
-                    </div>
+                <div class="booking-steps">
+                    <div class="step active">1. Услуга</div>
+                    <div class="step">2. Дата</div>
+                    <div class="step">3. Время</div>
                 </div>
-            </section>
 
-            <!-- МОИ ЗАПИСИ -->
-            <section class="bookings-section" id="bookingsSection">
-                <h3><i class="fas fa-history"></i> Мои записи</h3>
-                <div class="bookings-list">
-                    <div class="no-bookings">
-                        <i class="fas fa-calendar-plus"></i>
-                        <p>У вас пока нет записей</p>
-                        <button class="btn-secondary" onclick="openSection('booking')">
-                            Записаться сейчас
-                        </button>
+                <div class="step-content">
+                    <!-- Контент будет заполняться JavaScript -->
+                </div>
+
+                <button class="liquid-btn" onclick="nextStep()">
+                    <span class="btn-text">Далее</span>
+                    <i class="fas fa-arrow-right"></i>
+                </button>
+            </div>
+
+            <!-- ЭКРАН 3: УСЛУГИ -->
+            <div class="screen" id="screen-services">
+                <div class="screen-header">
+                    <h2><i class="fas fa-spa"></i> Наши услуги</h2>
+                    <p>Выберите то, что вам подходит</p>
+                </div>
+
+                <div class="services-container">
+                    <!-- Услуги будут заполняться JavaScript -->
+                </div>
+            </div>
+
+            <!-- ЭКРАН 4: ПРОФИЛЬ -->
+            <div class="screen" id="screen-profile">
+                <div class="profile-header">
+                    <div class="profile-avatar-large">
+                        <i class="fas fa-user-crown"></i>
+                    </div>
+                    <h2>Аня Иванова</h2>
+                    <p>Клиент Gold уровня</p>
+                </div>
+
+                <div class="profile-stats">
+                    <div class="stat-card">
+                        <i class="fas fa-calendar"></i>
+                        <h3>12</h3>
+                        <p>Всего записей</p>
+                    </div>
+                    <div class="stat-card">
+                        <i class="fas fa-star"></i>
+                        <h3>4.9</h3>
+                        <p>Рейтинг</p>
+                    </div>
+                    <div class="stat-card">
+                        <i class="fas fa-gem"></i>
+                        <h3>1500</h3>
+                        <p>Бонусы</p>
                     </div>
                 </div>
-            </section>
+
+                <div class="profile-menu">
+                    <div class="menu-item" onclick="openSection('history')">
+                        <i class="fas fa-history"></i>
+                        <span>История записей</span>
+                        <i class="fas fa-chevron-right"></i>
+                    </div>
+                    <div class="menu-item" onclick="openSection('favorites')">
+                        <i class="fas fa-heart"></i>
+                        <span>Избранное</span>
+                        <i class="fas fa-chevron-right"></i>
+                    </div>
+                    <div class="menu-item" onclick="openSection('notifications')">
+                        <i class="fas fa-bell"></i>
+                        <span>Уведомления</span>
+                        <i class="fas fa-chevron-right"></i>
+                    </div>
+                    <div class="menu-item" onclick="openSection('settings')">
+                        <i class="fas fa-cog"></i>
+                        <span>Настройки</span>
+                        <i class="fas fa-chevron-right"></i>
+                    </div>
+                </div>
+            </div>
         </main>
 
-        <!-- НИЖНЕЕ МЕНЮ -->
-        <nav class="bottom-nav">
-            <button class="nav-btn active" onclick="openSection('main')">
-                <i class="fas fa-home"></i>
-                <span>Главная</span>
-            </button>
+        <!-- НИЖНЯЯ ПАНЕЛЬ В СТИЛЕ iOS LIQUID -->
+        <nav class="liquid-nav" id="liquidNav">
+            <!-- ФОН С ЭФФЕКТОМ СТЕКЛА -->
+            <div class="nav-background"></div>
             
-            <button class="nav-btn" onclick="openSection('booking')">
-                <i class="fas fa-calendar-plus"></i>
-                <span>Запись</span>
-            </button>
+            <!-- КНОПКИ НАВИГАЦИИ -->
+            <div class="nav-buttons">
+                <button class="nav-btn active" data-tab="main" onclick="switchTab('main')">
+                    <div class="nav-icon">
+                        <i class="fas fa-home"></i>
+                    </div>
+                    <span class="nav-label">Главная</span>
+                </button>
+                
+                <button class="nav-btn" data-tab="booking" onclick="switchTab('booking')">
+                    <div class="nav-icon">
+                        <i class="fas fa-calendar-plus"></i>
+                    </div>
+                    <span class="nav-label">Запись</span>
+                </button>
+                
+                <button class="nav-btn" data-tab="services" onclick="switchTab('services')">
+                    <div class="nav-icon">
+                        <i class="fas fa-spa"></i>
+                    </div>
+                    <span class="nav-label">Услуги</span>
+                </button>
+                
+                <button class="nav-btn" data-tab="profile" onclick="switchTab('profile')">
+                    <div class="nav-icon">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <span class="nav-label">Профиль</span>
+                </button>
+            </div>
             
-            <button class="nav-btn" onclick="openSection('services')">
-                <i class="fas fa-spa"></i>
-                <span>Услуги</span>
-            </button>
-            
-            <button class="nav-btn" onclick="openSection('contacts')">
-                <i class="fas fa-user"></i>
-                <span>Контакты</span>
+            <!-- ЦЕНТРАЛЬНАЯ КНОПКА (ОПЦИОНАЛЬНО) -->
+            <button class="nav-center-btn" onclick="openQuickBooking()">
+                <div class="center-icon">
+                    <i class="fas fa-plus"></i>
+                </div>
             </button>
         </nav>
+
+        <!-- ИНДИКАТОР СВАЙПА (для мобильных) -->
+        <div class="swipe-guide">
+            <div class="swipe-line"></div>
+            <p>Свайпайте влево/вправо для навигации</p>
+        </div>
+    </div>
+
+    <!-- МОДАЛЬНОЕ ОКНО ДЛЯ БЫСТРОЙ ЗАПИСИ -->
+    <div class="modal-overlay" id="modalOverlay">
+        <div class="modal">
+            <div class="modal-header">
+                <h3>Быстрая запись</h3>
+                <button class="modal-close" onclick="closeModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-content">
+                <!-- Контент модального окна -->
+            </div>
+        </div>
     </div>
 
     <script src="app.js"></script>
