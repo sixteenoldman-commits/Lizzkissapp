@@ -3,81 +3,88 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🌸 Nail Sakura</title>
+    <title>🌸 Nail Sakura Studio</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: Arial; background: #FFE4E9; padding: 20px; padding-bottom: 80px; }
         .screen { display: none; }
         .screen.active { display: block; animation: fadeIn 0.3s; }
-        .btn { display: block; width: 100%; padding: 16px; margin: 10px 0; background: #FFB6C1; color: white; border: none; border-radius: 12px; font-size: 16px; cursor: pointer; }
-        .btn:active { transform: scale(0.98); }
-        .btn-master { background: #8B475D; }
-        input, select { width: 100%; padding: 14px; margin: 8px 0; border: 2px solid #FFB6C1; border-radius: 10px; }
-        .booking-card { background: white; padding: 15px; margin: 10px 0; border-radius: 10px; border-left: 5px solid #FFB6C1; }
+        .btn { display: block; width: 100%; padding: 16px; margin: 10px 0; background: #FFB6C1; color: white; border: none; border-radius: 10px; cursor: pointer; }
+        input, select { width: 100%; padding: 12px; margin: 8px 0; border: 2px solid #FFB6C1; border-radius: 8px; }
+        .booking-card { background: white; padding: 12px; margin: 8px 0; border-radius: 8px; border-left: 4px solid #FFB6C1; }
         .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: white; display: flex; padding: 10px; border-top: 2px solid #FFB6C1; }
-        .nav-btn { flex: 1; padding: 10px; border: none; background: none; font-size: 20px; color: #888; }
-        .nav-btn.active { color: #FFB6C1; }
-        .status { padding: 3px 8px; border-radius: 5px; font-size: 12px; margin-left: 10px; }
-        .status-pending { background: #FFF3CD; color: #856404; }
-        .status-confirmed { background: #D4EDDA; color: #155724; }
+        .nav-btn { flex: 1; padding: 8px; border: none; background: none; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        .debug { font-size: 12px; color: #666; padding: 5px; background: #f0f0f0; border-radius: 3px; margin: 5px 0; }
     </style>
 </head>
 <body>
-    <div class="debug" id="debug">Загрузка...</div>
-
-    <!-- ЭКРАН 1: ГЛАВНАЯ -->
+    <!-- ГЛАВНАЯ -->
     <div id="mainScreen" class="screen active">
         <div style="text-align:center; margin:20px 0;">
-            <div id="userAvatar" style="width:80px;height:80px;background:#FFB6C1;border-radius:50%;margin:0 auto;font-size:36px;line-height:80px;">👤</div>
-            <h2 id="userName">Загрузка...</h2>
-            <p id="userInfo" style="color:#8B475D;">Nail Sakura Studio</p>
+            <div id="userAvatar" style="width:80px;height:80px;background:#FFB6C1;border-radius:50%;margin:0 auto;font-size:32px;line-height:80px;">👤</div>
+            <h2 id="userName">Добро пожаловать!</h2>
+            <p style="color:#8B475D;" id="userStatus">Загрузка...</p>
         </div>
+        
         <button class="btn" onclick="showScreen('booking')">💅 Записаться</button>
         <button class="btn" onclick="showScreen('services')">✨ Услуги</button>
         <button class="btn" onclick="showScreen('myBookings')">📅 Мои записи</button>
-        <button class="btn btn-master" onclick="showScreen('masterLogin')">⚙️ Вход для мастера</button>
+        <button class="btn" onclick="showScreen('masterLogin')" style="background:#8B475D;">⚙️ Для мастера</button>
     </div>
 
-    <!-- ЭКРАН 2: ЗАПИСЬ -->
+    <!-- ЗАПИСЬ -->
     <div id="bookingScreen" class="screen">
         <button onclick="showScreen('main')" style="background:none;border:none;font-size:24px;cursor:pointer;">←</button>
-        <h2>📝 Новая запись</h2>
+        <h2>📝 Запись</h2>
+        
         <div id="servicesList">
-            <!-- Услуги загрузятся автоматически -->
+            <label style="display:block;padding:10px;background:#FFE4E9;margin:5px 0;border-radius:8px;">
+                <input type="radio" name="service" value="manicure" checked> 💅 Маникюр - 1500₽
+            </label>
+            <label style="display:block;padding:10px;background:#FFE4E9;margin:5px 0;border-radius:8px;">
+                <input type="radio" name="service" value="gel"> ✨ Гель-лак - 2000₽
+            </label>
+            <label style="display:block;padding:10px;background:#FFE4E9;margin:5px 0;border-radius:8px;">
+                <input type="radio" name="service" value="design"> 🎨 Дизайн - 1000₽
+            </label>
         </div>
+        
         <input type="date" id="bookingDate">
         <select id="bookingTime">
             <option>10:00</option><option>11:00</option><option>12:00</option><option>13:00</option>
-            <option>14:00</option><option>15:00</option><option>16:00</option><option>17:00</option><option>18:00</option>
+            <option>14:00</option><option>15:00</option><option>16:00</option><option>17:00</option>
         </select>
+        
         <input type="tel" id="clientPhone" placeholder="Телефон (необязательно)">
-        <button class="btn" onclick="submitBooking()">✅ Подтвердить запись</button>
+        
+        <button class="btn" onclick="submitBooking()">✅ Записаться</button>
     </div>
 
-    <!-- ЭКРАН 3: УСЛУГИ -->
+    <!-- УСЛУГИ -->
     <div id="servicesScreen" class="screen">
         <button onclick="showScreen('main')" style="background:none;border:none;font-size:24px;cursor:pointer;">←</button>
         <h2>💅 Услуги</h2>
-        <div id="servicesContainer"></div>
+        <div class="booking-card"><h3>💅 Маникюр</h3><p>Обработка + покрытие</p><strong>1500₽ • 90 мин</strong></div>
+        <div class="booking-card"><h3>✨ Гель-лак</h3><p>Долговременное покрытие</p><strong>2000₽ • 120 мин</strong></div>
+        <div class="booking-card"><h3>🎨 Дизайн</h3><p>Рисунки, стразы, градиент</p><strong>1000₽ • 60 мин</strong></div>
     </div>
 
-    <!-- ЭКРАН 4: МОИ ЗАПИСИ -->
+    <!-- МОИ ЗАПИСИ -->
     <div id="myBookingsScreen" class="screen">
         <button onclick="showScreen('main')" style="background:none;border:none;font-size:24px;cursor:pointer;">←</button>
         <h2>📅 Мои записи</h2>
         <div id="bookingsList">
             <p style="text-align:center;padding:40px;">Загрузка...</p>
         </div>
+        <button class="btn" onclick="loadBookings()">🔄 Обновить</button>
     </div>
 
-    <!-- ЭКРАН 5: ВХОД МАСТЕРА -->
+    <!-- ВХОД МАСТЕРА -->
     <div id="masterLoginScreen" class="screen">
         <button onclick="showScreen('main')" style="background:none;border:none;font-size:24px;cursor:pointer;">←</button>
         <div style="text-align:center; margin:40px 0;">
-            <div style="font-size:50px;">🔐</div>
+            <div style="font-size:48px;">🔐</div>
             <h2>Вход для мастера</h2>
             <p>Пароль: sakura2024</p>
         </div>
@@ -85,21 +92,24 @@
         <button class="btn" onclick="loginMaster()">Войти</button>
     </div>
 
-    <!-- ЭКРАН 6: ПАНЕЛЬ МАСТЕРА -->
+    <!-- ПАНЕЛЬ МАСТЕРА -->
     <div id="masterPanelScreen" class="screen">
         <button onclick="logoutMaster()" style="background:none;border:none;font-size:24px;cursor:pointer;">← Выйти</button>
         <h2>⚙️ Панель мастера</h2>
+        
         <div style="background:#FFE4E9;padding:15px;border-radius:10px;margin:10px 0;">
             <h3>📊 Статистика</h3>
             <p>Всего записей: <span id="totalBookings">0</span></p>
             <p>На сегодня: <span id="todayBookings">0</span></p>
-            <p>Выручка: <span id="totalRevenue">0</span>₽</p>
+            <button class="btn" onclick="refreshMasterPanel()" style="padding:8px;font-size:14px;">🔄 Обновить</button>
         </div>
+        
         <div id="allBookingsList" style="max-height:400px;overflow-y:auto;">
             <!-- Все записи будут здесь -->
         </div>
-        <button class="btn" onclick="refreshMasterPanel()">🔄 Обновить</button>
-        <button class="btn" onclick="exportData()">📥 Экспорт данных</button>
+        
+        <button class="btn" onclick="downloadData()">📥 Скачать данные</button>
+        <button class="btn" onclick="clearAllData()" style="background:#f44336;">🗑️ Очистить все</button>
     </div>
 
     <!-- НИЖНЯЯ НАВИГАЦИЯ -->
@@ -111,168 +121,228 @@
     </nav>
 
 <script>
-// ================= КОНФИГУРАЦИЯ =================
-const API_URL = "http://localhost:3000/api";
+// ================= НАСТРОЙКИ =================
 const MASTER_PASSWORD = "sakura2024";
+const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzA7ukePYKIEy0xAK4E41Vw_FHPQky9Ks0jfnlQhUw94Vsk-fTsiu1ZIiFVnaDX3anS/exec"; // ⚠️ ЗАМЕНИТЕ!
 
 // ================= ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ =================
 let currentUser = null;
-let currentScreen = 'main';
 let isMasterMode = false;
-let allServices = [];
+let allBookings = [];
 
-// ================= TELEGRAM + БАЗА =================
-async function initApp() {
-    debug("Загрузка...");
+// ================= ИНИЦИАЛИЗАЦИЯ =================
+function initApp() {
+    console.log("🌐 Инициализация приложения...");
     
-    // Получаем услуги из базы
-    try {
-        const response = await fetch(`${API_URL}/services`);
-        const data = await response.json();
-        allServices = data.services;
-        loadServices();
-    } catch (error) {
-        debug("Ошибка загрузки услуг");
-        allServices = [
-            {id: 1, name: "Классический маникюр", price: 1500},
-            {id: 2, name: "Покрытие гель-лаком", price: 2000}
-        ];
-    }
+    // Загружаем сохранённые данные
+    loadLocalData();
     
     // Telegram данные
-    if (window.Telegram?.WebApp) {
+    if (window.Telegram && Telegram.WebApp) {
         const tg = Telegram.WebApp;
         tg.expand();
-        const user = tg.initDataUnsafe?.user;
+        tg.ready();
         
+        const user = tg.initDataUnsafe?.user;
         if (user) {
-            // Сохраняем/получаем пользователя
-            await saveUserToDB({
-                telegramId: user.id,
-                firstName: user.first_name,
-                lastName: user.last_name || '',
-                username: user.username
-            });
-            
             currentUser = {
                 id: user.id,
-                name: user.first_name + (user.last_name ? ' ' + user.last_name : ''),
-                photo: user.photo_url
+                firstName: user.first_name,
+                lastName: user.last_name || '',
+                username: user.username,
+                photoUrl: user.photo_url
             };
+            updateUI();
+            console.log("👤 Данные Telegram:", currentUser);
         } else {
-            currentUser = {id: 'guest', name: 'Гость'};
+            currentUser = { id: 'guest', firstName: 'Гость' };
         }
     } else {
-        currentUser = {id: 'guest', name: 'Гость'};
+        currentUser = { id: 'guest', firstName: 'Гость' };
+        console.log("💻 Режим браузера");
     }
     
-    updateUI();
-    debug("Готово!");
+    // Устанавливаем сегодняшнюю дату
+    const today = new Date().toISOString().split('T')[0];
+    document.getElementById('bookingDate').value = today;
+    document.getElementById('bookingDate').min = today;
+    
+    // Показываем главный экран
+    showScreen('main');
+    console.log("✅ Приложение готово");
 }
 
-// ================= РАБОТА С БАЗОЙ =================
-async function saveUserToDB(userData) {
+// ================= LOCALSTORAGE (работает на GitHub Pages) =================
+function loadLocalData() {
     try {
-        await fetch(`${API_URL}/user`, {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify(userData)
-        });
-    } catch (error) {
-        console.log("Ошибка сохранения пользователя:", error);
+        const data = localStorage.getItem('nailBookings');
+        if (data) {
+            allBookings = JSON.parse(data);
+            console.log(`📂 Загружено ${allBookings.length} записей из localStorage`);
+        }
+    } catch (e) {
+        console.log("Ошибка загрузки localStorage:", e);
     }
 }
 
-async function submitBooking() {
-    const serviceId = document.querySelector('input[name="service"]:checked')?.value;
+function saveLocalData() {
+    try {
+        localStorage.setItem('nailBookings', JSON.stringify(allBookings));
+        console.log("💾 Данные сохранены в localStorage");
+    } catch (e) {
+        console.log("Ошибка сохранения:", e);
+    }
+}
+
+// ================= НАВИГАЦИЯ =================
+function showScreen(screenName) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById(screenName + 'Screen').classList.add('active');
+    
+    // Обновляем нижнее меню
+    document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+    if (screenName === 'main') document.querySelector('.nav-btn:nth-child(1)').classList.add('active');
+    if (screenName === 'booking') document.querySelector('.nav-btn:nth-child(2)').classList.add('active');
+    if (screenName === 'services') document.querySelector('.nav-btn:nth-child(3)').classList.add('active');
+    if (screenName === 'myBookings') document.querySelector('.nav-btn:nth-child(4)').classList.add('active');
+    
+    // Загружаем данные при необходимости
+    if (screenName === 'myBookings') setTimeout(() => loadBookings(), 100);
+    if (screenName === 'masterPanel') setTimeout(() => refreshMasterPanel(), 100);
+}
+
+// ================= ОБНОВЛЕНИЕ ИНТЕРФЕЙСА =================
+function updateUI() {
+    if (!currentUser) return;
+    
+    document.getElementById('userName').textContent = `Привет, ${currentUser.firstName}!`;
+    
+    const status = document.getElementById('userStatus');
+    if (currentUser.id !== 'guest') {
+        status.textContent = `ID: ${currentUser.id}`;
+    } else {
+        status.textContent = "Запущено в браузере";
+    }
+    
+    const avatar = document.getElementById('userAvatar');
+    if (currentUser.photoUrl) {
+        avatar.innerHTML = `<img src="${currentUser.photoUrl}" style="width:100%;height:100%;border-radius:50%;">`;
+    } else if (currentUser.firstName) {
+        avatar.textContent = currentUser.firstName[0].toUpperCase();
+        avatar.style.fontSize = '32px';
+        avatar.style.lineHeight = '80px';
+    }
+}
+
+// ================= СОЗДАНИЕ ЗАПИСИ =================
+function submitBooking() {
+    const serviceElement = document.querySelector('input[name="service"]:checked');
     const date = document.getElementById('bookingDate').value;
     const time = document.getElementById('bookingTime').value;
     const phone = document.getElementById('clientPhone').value;
     
-    if (!serviceId || !date) {
-        alert("Выберите услугу и дату!");
+    if (!date || !serviceElement) {
+        alert("Заполните все поля!");
         return;
     }
     
-    const service = allServices.find(s => s.id == serviceId);
+    const serviceMap = {
+        'manicure': { name: 'Маникюр', price: 1500 },
+        'gel': { name: 'Гель-лак', price: 2000 },
+        'design': { name: 'Дизайн', price: 1000 }
+    };
     
-    const bookingData = {
+    const service = serviceMap[serviceElement.value];
+    
+    const booking = {
+        id: Date.now(),
         userId: currentUser.id,
-        userName: currentUser.name,
-        serviceId: serviceId,
-        serviceName: service.name,
+        userName: `${currentUser.firstName} ${currentUser.lastName || ''}`.trim(),
+        service: service.name,
         price: service.price,
         date: date,
         time: time,
-        phone: phone || 'не указан'
+        phone: phone || 'не указан',
+        status: 'ожидание',
+        created: new Date().toLocaleString('ru-RU'),
+        source: 'Telegram Mini App'
     };
     
+    // 1. Сохраняем локально
+    allBookings.push(booking);
+    saveLocalData();
+    
+    // 2. Пытаемся отправить в Google Sheets (если настроен)
+    if (GOOGLE_SCRIPT_URL && !GOOGLE_SCRIPT_URL.includes('YOUR_SCRIPT_ID')) {
+        sendToGoogleSheets(booking);
+    }
+    
+    // 3. Показываем подтверждение
+    alert(`🎉 Запись создана!\n\n${service.name}\n${date} в ${time}\nЦена: ${service.price}₽\n\nМы свяжемся с вами!`);
+    
+    // 4. Очищаем форму
+    document.getElementById('clientPhone').value = '';
+    
+    // 5. Возвращаем на главную
+    showScreen('main');
+}
+
+// ================= GOOGLE SHEETS ОТПРАВКА =================
+async function sendToGoogleSheets(booking) {
     try {
-        const response = await fetch(`${API_URL}/booking`, {
+        const response = await fetch(GOOGLE_SCRIPT_URL, {
             method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify(bookingData)
+            mode: 'no-cors', // Важно для Google Apps Script
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(booking)
         });
-        
-        const result = await response.json();
-        
-        if (result.success) {
-            alert(`🎉 Запись создана!\n${service.name}\n${date} в ${time}`);
-            showScreen('main');
-        } else {
-            alert("Ошибка: " + result.error);
-        }
+        console.log("✅ Данные отправлены в Google Sheets");
     } catch (error) {
-        alert("Ошибка соединения с сервером");
-        console.error(error);
+        console.log("⚠️ Не удалось отправить в Google Sheets:", error);
     }
 }
 
-async function loadUserBookings() {
-    try {
-        const response = await fetch(`${API_URL}/bookings`);
-        const data = await response.json();
-        
-        if (data.success) {
-            const userBookings = data.bookings.filter(b => b.userId == currentUser.id);
-            displayBookings(userBookings, 'bookingsList');
-        }
-    } catch (error) {
-        document.getElementById('bookingsList').innerHTML = '<p>Ошибка загрузки</p>';
+// ================= ЗАГРУЗКА ЗАПИСЕЙ =================
+function loadBookings() {
+    const userBookings = allBookings.filter(b => b.userId === currentUser.id);
+    const container = document.getElementById('bookingsList');
+    
+    if (userBookings.length === 0) {
+        container.innerHTML = '<p style="text-align:center;padding:40px;">У вас пока нет записей</p>';
+        return;
     }
+    
+    // Сортируем по дате (новые сверху)
+    const sorted = userBookings.sort((a, b) => new Date(b.date) - new Date(a.date));
+    
+    container.innerHTML = sorted.map(b => `
+        <div class="booking-card" style="border-left-color: ${getStatusColor(b.status)};">
+            <strong>${b.service}</strong> - ${b.price}₽<br>
+            📅 ${b.date} 🕐 ${b.time}<br>
+            📞 ${b.phone}<br>
+            <small style="color:${getStatusColor(b.status)};">Статус: ${b.status}</small>
+        </div>
+    `).join('');
 }
 
-async function loadAllBookings() {
-    try {
-        const response = await fetch(`${API_URL}/bookings`);
-        const data = await response.json();
-        
-        if (data.success) {
-            displayAllBookings(data.bookings);
-            
-            // Статистика
-            const today = new Date().toISOString().split('T')[0];
-            const todayBookings = data.bookings.filter(b => b.date === today);
-            const revenue = data.bookings.reduce((sum, b) => sum + (b.price || 0), 0);
-            
-            document.getElementById('totalBookings').textContent = data.bookings.length;
-            document.getElementById('todayBookings').textContent = todayBookings.length;
-            document.getElementById('totalRevenue').textContent = revenue;
-        }
-    } catch (error) {
-        console.error("Ошибка загрузки записей:", error);
-    }
+function getStatusColor(status) {
+    const colors = {
+        'ожидание': '#FF9800',
+        'подтверждено': '#4CAF50',
+        'выполнено': '#2196F3',
+        'отменено': '#f44336'
+    };
+    return colors[status] || '#FFB6C1';
 }
 
 // ================= МАСТЕР-ПАНЕЛЬ =================
-async function loginMaster() {
+function loginMaster() {
     const password = document.getElementById('masterPassword').value;
     
     if (password === MASTER_PASSWORD) {
         isMasterMode = true;
         document.getElementById('masterPassword').value = '';
         showScreen('masterPanel');
-        loadAllBookings();
     } else {
         alert("Неверный пароль!");
     }
@@ -283,166 +353,70 @@ function logoutMaster() {
     showScreen('main');
 }
 
-async function updateBookingStatus(bookingId, status) {
-    try {
-        await fetch(`${API_URL}/booking/${bookingId}`, {
-            method: 'PUT',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({status})
-        });
-        loadAllBookings();
-    } catch (error) {
-        console.error("Ошибка обновления:", error);
-    }
-}
-
-// ================= ОТОБРАЖЕНИЕ ДАННЫХ =================
-function loadServices() {
-    // Для экрана записи
-    const servicesList = document.getElementById('servicesList');
-    if (servicesList) {
-        servicesList.innerHTML = allServices.map(service => `
-            <div style="margin:10px 0;padding:10px;background:white;border-radius:10px;">
-                <label style="display:flex;align-items:center;cursor:pointer;">
-                    <input type="radio" name="service" value="${service.id}" style="margin-right:10px;">
-                    <div>
-                        <strong>${service.name}</strong><br>
-                        <small>${service.price}₽ • ${service.duration || 60} мин</small>
-                    </div>
-                </label>
-            </div>
-        `).join('');
-    }
+function refreshMasterPanel() {
+    // Статистика
+    const today = new Date().toISOString().split('T')[0];
+    const todayBookings = allBookings.filter(b => b.date === today);
+    const totalRevenue = allBookings.reduce((sum, b) => sum + b.price, 0);
     
-    // Для экрана услуг
-    const servicesContainer = document.getElementById('servicesContainer');
-    if (servicesContainer) {
-        servicesContainer.innerHTML = allServices.map(service => `
-            <div class="booking-card">
-                <h3>${service.name}</h3>
-                <p>${service.description || ''}</p>
-                <strong>${service.price}₽</strong>
-                <small style="color:#666;"> • ${service.duration || 60} мин</small>
-            </div>
-        `).join('');
-    }
-}
-
-function displayBookings(bookings, containerId) {
-    const container = document.getElementById(containerId);
-    if (!container) return;
+    document.getElementById('totalBookings').textContent = allBookings.length;
+    document.getElementById('todayBookings').textContent = todayBookings.length;
     
-    if (bookings.length === 0) {
-        container.innerHTML = '<p style="text-align:center;padding:40px;">У вас пока нет записей</p>';
-        return;
-    }
-    
-    container.innerHTML = bookings.map(booking => `
-        <div class="booking-card">
-            <strong>${booking.serviceName || booking.service}</strong><br>
-            <small>📅 ${booking.date} 🕐 ${booking.time}</small><br>
-            <span class="status status-${booking.status || 'pending'}">
-                ${booking.status === 'confirmed' ? '✅ Подтверждено' : '⏳ Ожидание'}
-            </span>
-            ${booking.price ? `<br><small>${booking.price}₽</small>` : ''}
-        </div>
-    `).join('');
-}
-
-function displayAllBookings(bookings) {
+    // Все записи
     const container = document.getElementById('allBookingsList');
-    if (!container) return;
-    
-    if (bookings.length === 0) {
+    if (allBookings.length === 0) {
         container.innerHTML = '<p>Нет записей</p>';
         return;
     }
     
-    container.innerHTML = bookings.reverse().map(booking => `
-        <div class="booking-card" style="margin:8px 0;font-size:14px;">
+    // Сортируем по дате (новые сверху)
+    const sorted = [...allBookings].sort((a, b) => new Date(b.date) - new Date(a.date));
+    
+    container.innerHTML = sorted.map(b => `
+        <div class="booking-card" style="font-size:14px;margin:5px 0;">
             <div style="display:flex;justify-content:space-between;">
-                <strong>${booking.serviceName || booking.service}</strong>
-                <span class="status status-${booking.status || 'pending'}">
-                    ${booking.status || 'pending'}
+                <strong>${b.service}</strong>
+                <span style="background:${getStatusColor(b.status)};color:white;padding:2px 8px;border-radius:4px;">
+                    ${b.status}
                 </span>
             </div>
-            <small>📅 ${booking.date} 🕐 ${booking.time}</small><br>
-            <small>👤 ${booking.userName || 'Клиент'} (${booking.phone || 'без телефона'})</small><br>
-            <small>💵 ${booking.price || 0}₽</small>
-            <div style="margin-top:8px;">
-                <button onclick="updateBookingStatus(${booking.id}, 'pending')" style="padding:3px 8px;margin-right:5px;">⏳</button>
-                <button onclick="updateBookingStatus(${booking.id}, 'confirmed')" style="padding:3px 8px;margin-right:5px;">✅</button>
-                <button onclick="updateBookingStatus(${booking.id}, 'completed')" style="padding:3px 8px;">🏁</button>
-            </div>
+            👤 ${b.userName}<br>
+            📅 ${b.date} 🕐 ${b.time}<br>
+            📞 ${b.phone}<br>
+            <small>ID: ${b.userId} | ${b.created}</small>
+            <button onclick="changeStatus(${b.id}, 'подтверждено')" style="padding:3px 8px;margin:2px;background:#4CAF50;color:white;border:none;border-radius:3px;">✅</button>
+            <button onclick="changeStatus(${b.id}, 'выполнено')" style="padding:3px 8px;margin:2px;background:#2196F3;color:white;border:none;border-radius:3px;">🏁</button>
         </div>
     `).join('');
 }
 
-// ================= УТИЛИТЫ =================
-function showScreen(screenName) {
-    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-    document.getElementById(screenName + 'Screen').classList.add('active');
-    currentScreen = screenName;
-    
-    // Обновляем нижнее меню
-    document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
-    if (screenName === 'main') document.querySelector('.nav-btn:nth-child(1)').classList.add('active');
-    if (screenName === 'booking') document.querySelector('.nav-btn:nth-child(2)').classList.add('active');
-    if (screenName === 'services') document.querySelector('.nav-btn:nth-child(3)').classList.add('active');
-    if (screenName === 'myBookings') document.querySelector('.nav-btn:nth-child(4)').classList.add('active');
-    
-    // Загружаем данные при необходимости
-    if (screenName === 'myBookings') setTimeout(() => loadUserBookings(), 100);
-    if (screenName === 'masterPanel') setTimeout(() => loadAllBookings(), 100);
-    
-    // Устанавливаем сегодняшнюю дату
-    if (screenName === 'booking') {
-        const today = new Date().toISOString().split('T')[0];
-        const dateInput = document.getElementById('bookingDate');
-        if (dateInput) {
-            dateInput.value = today;
-            dateInput.min = today;
-        }
+function changeStatus(bookingId, newStatus) {
+    const booking = allBookings.find(b => b.id === bookingId);
+    if (booking) {
+        booking.status = newStatus;
+        saveLocalData();
+        refreshMasterPanel();
     }
 }
 
-function updateUI() {
-    if (!currentUser) return;
-    
-    document.getElementById('userName').textContent = `Привет, ${currentUser.name}!`;
-    
-    const avatar = document.getElementById('userAvatar');
-    if (currentUser.photo) {
-        avatar.innerHTML = `<img src="${currentUser.photo}" style="width:100%;height:100%;border-radius:50%;">`;
-    } else if (currentUser.name) {
-        avatar.textContent = currentUser.name[0].toUpperCase();
+function downloadData() {
+    const data = JSON.stringify(allBookings, null, 2);
+    const blob = new Blob([data], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `bookings_${new Date().toISOString().split('T')[0]}.json`;
+    a.click();
+    alert("📥 Данные скачаны в JSON файл!");
+}
+
+function clearAllData() {
+    if (confirm("⚠️ УДАЛИТЬ ВСЕ ДАННЫЕ?\n\nЭто действие нельзя отменить!")) {
+        allBookings = [];
+        localStorage.removeItem('nailBookings');
+        refreshMasterPanel();
+        alert("🗑️ Все данные очищены");
     }
-}
-
-function debug(message) {
-    console.log(message);
-    document.getElementById('debug').textContent = message;
-}
-
-function refreshMasterPanel() {
-    loadAllBookings();
-}
-
-function exportData() {
-    fetch(`${API_URL}/bookings`)
-        .then(res => res.json())
-        .then(data => {
-            if (data.success) {
-                const json = JSON.stringify(data.bookings, null, 2);
-                const blob = new Blob([json], {type: 'application/json'});
-                const url = URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = `bookings_${new Date().toISOString().split('T')[0]}.json`;
-                a.click();
-                alert("Данные экспортированы в JSON!");
-            }
-        });
 }
 
 // ================= ЗАПУСК =================
