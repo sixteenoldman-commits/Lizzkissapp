@@ -1,470 +1,471 @@
-/* ============================
-   АНИМЕ-СТИЛЬ ДЛЯ MINI APP
-   ============================ */
-
-/* ОСНОВНЫЕ СТИЛИ */
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
-
-body {
-    font-family: 'Arial Rounded MT Bold', 'Arial', sans-serif;
-    background: linear-gradient(135deg, #FFE4E9 0%, #FFB6C1 100%);
-    min-height: 100vh;
-    transition: background 0.5s ease;
-    overflow-x: hidden;
-}
-
-body.dark-theme {
-    background: linear-gradient(135deg, #5D1F31 0%, #2A2A2A 100%);
-    color: #FFE4E9;
-}
-
-/* ФОН С ЛЕПЕСТКАМИ САКУРЫ */
-.sakura-background {
+/* LIQUID NAVIGATION BAR */
+.liquid-nav {
     position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 90%;
+    max-width: 400px;
+    height: 70px;
+    background: rgba(255, 255, 255, 0.75);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-radius: 25px;
+    box-shadow: 
+        0 8px 32px rgba(255, 182, 193, 0.25),
+        inset 0 1px 0 rgba(255, 255, 255, 0.6),
+        0 0 0 1px rgba(255, 255, 255, 0.1);
+    z-index: 1000;
+    overflow: hidden;
+    padding: 0 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* ФОН С ЖИДКИМ ЭФФЕКТОМ */
+.liquid-nav::before {
+    content: '';
+    position: absolute;
     top: 0;
     left: 0;
-    width: 100%;
-    height: 100%;
-    pointer-events: none;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(
+        135deg,
+        rgba(255, 255, 255, 0.95) 0%,
+        rgba(255, 255, 255, 0.85) 100%
+    );
+    border-radius: 25px;
     z-index: -1;
 }
 
-.sakura-petal {
+.liquid-nav::after {
+    content: '';
     position: absolute;
-    width: 20px;
-    height: 20px;
-    background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="%23FFB6C1" d="M12,2C9.2,2 6.7,3.1 5,5C3.3,6.9 2,9.5 2,12C2,16.4 5.6,20 10,20C12.8,20 15.2,18.6 16.5,16.5C17.8,14.4 18,12 18,10C18,5.6 14.4,2 12,2Z"/></svg>');
-    opacity: 0.3;
-    animation: float 15s linear infinite;
+    top: -2px;
+    left: -2px;
+    right: -2px;
+    bottom: -2px;
+    background: linear-gradient(
+        45deg,
+        rgba(255, 182, 193, 0.2),
+        rgba(255, 142, 163, 0.1),
+        rgba(216, 27, 96, 0.05)
+    );
+    border-radius: 27px;
+    z-index: -2;
+    animation: liquidGlow 3s ease-in-out infinite alternate;
 }
 
-@keyframes float {
-    0% {
-        transform: translateY(-100px) rotate(0deg);
-        opacity: 0;
-    }
-    10% {
-        opacity: 0.3;
-    }
-    90% {
-        opacity: 0.3;
-    }
-    100% {
-        transform: translateY(100vh) rotate(360deg);
-        opacity: 0;
-    }
+@keyframes liquidGlow {
+    0% { opacity: 0.5; }
+    100% { opacity: 0.8; }
 }
 
-/* КОНТЕЙНЕР */
-.container {
-    max-width: 500px;
-    margin: 0 auto;
-    padding: 20px;
+/* КНОПКИ НАВИГАЦИИ */
+.nav-buttons {
+    display: flex;
+    justify-content: space-around;
+    width: 100%;
     position: relative;
+    z-index: 2;
 }
 
-/* ШАПКА */
-.anime-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 30px;
-    padding: 15px;
-    border-radius: 25px;
-    background: rgba(255, 255, 255, 0.2);
-    backdrop-filter: blur(10px);
-}
-
-.logo {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-.logo-icon {
-    font-size: 32px;
-    animation: float-logo 3s ease-in-out infinite;
-}
-
-@keyframes float-logo {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-10px); }
-}
-
-.logo h1 {
-    color: #D81B60;
-    font-size: 24px;
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.dark-theme .logo h1 {
-    color: #FFB6C1;
-}
-
-/* ПЕРЕКЛЮЧАТЕЛЬ ТЕМ */
-.theme-toggle {
-    width: 60px;
-    height: 30px;
-    border-radius: 15px;
+.nav-btn {
+    background: none;
     border: none;
-    background: linear-gradient(145deg, #FFB6C1, #FF8FA3);
-    cursor: pointer;
-    position: relative;
-    overflow: hidden;
-    transition: all 0.3s ease;
-}
-
-.theme-toggle:hover {
-    transform: scale(1.1);
-}
-
-.theme-toggle .sun,
-.theme-toggle .moon {
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    transition: all 0.3s ease;
-    font-size: 16px;
-}
-
-.theme-toggle .sun {
-    left: 8px;
-    opacity: 1;
-}
-
-.theme-toggle .moon {
-    right: 8px;
-    opacity: 0;
-}
-
-.dark-theme .theme-toggle .sun {
-    opacity: 0;
-    left: -20px;
-}
-
-.dark-theme .theme-toggle .moon {
-    opacity: 1;
-    right: 8px;
-}
-
-/* АНИМЕ-КАРТОЧКИ */
-.anime-card {
-    background: rgba(255, 255, 255, 0.9);
-    border-radius: 25px;
-    padding: 25px;
-    margin-bottom: 20px;
-    box-shadow: 
-        10px 10px 20px rgba(255, 182, 193, 0.2),
-        -10px -10px 20px rgba(255, 255, 255, 0.8),
-        inset 0 0 0 1px rgba(255, 255, 255, 0.5);
-    border: 2px solid rgba(255, 182, 193, 0.1);
-    transition: all 0.3s ease;
-    position: relative;
-    overflow: hidden;
-}
-
-.dark-theme .anime-card {
-    background: rgba(45, 45, 45, 0.9);
-    box-shadow: 
-        10px 10px 20px rgba(0, 0, 0, 0.3),
-        -10px -10px 20px rgba(139, 71, 93, 0.2);
-    border-color: rgba(139, 71, 93, 0.3);
-}
-
-.anime-card::before {
-    content: '🌸';
-    position: absolute;
-    top: -15px;
-    right: -15px;
-    font-size: 60px;
-    opacity: 0.1;
-    transform: rotate(15deg);
-}
-
-.anime-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 
-        15px 15px 30px rgba(255, 182, 193, 0.3),
-        -15px -15px 30px rgba(255, 255, 255, 0.9);
-}
-
-/* ПРИВЕТСТВИЕ */
-.welcome-card {
-    text-align: center;
-    position: relative;
-}
-
-.welcome-card h2 {
-    color: #D81B60;
-    font-size: 28px;
-    margin-bottom: 10px;
-}
-
-.dark-theme .welcome-card h2 {
-    color: #FFB6C1;
-}
-
-.subtitle {
-    color: #8B475D;
-    font-size: 16px;
-    opacity: 0.8;
-}
-
-.dark-theme .subtitle {
-    color: #FFB6C1;
-}
-
-.user-avatar {
-    width: 80px;
-    height: 80px;
-    border-radius: 50%;
-    background: linear-gradient(145deg, #FFB6C1, #FF8FA3);
-    margin: 20px auto;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 32px;
-    color: white;
-    box-shadow: 
-        5px 5px 15px rgba(216, 27, 96, 0.3),
-        -5px -5px 15px rgba(255, 255, 255, 0.5);
-}
-
-/* БЫСТРЫЕ КНОПКИ */
-.action-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 15px;
-}
-
-.action-btn {
-    aspect-ratio: 1;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    border: none;
+    padding: 10px 5px;
+    min-width: 60px;
     cursor: pointer;
-    padding: 20px;
+    position: relative;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    border-radius: 15px;
 }
 
-.action-icon {
-    font-size: 32px;
-    margin-bottom: 10px;
-    transition: transform 0.3s ease;
-}
-
-.action-btn:hover .action-icon {
-    transform: scale(1.2) rotate(10deg);
-}
-
-.action-text {
-    font-size: 14px;
-    font-weight: bold;
-    color: #5D1F31;
-}
-
-.dark-theme .action-text {
-    color: #FFE4E9;
-}
-
-/* УСЛУГИ */
-.service-item {
-    display: flex;
-    align-items: center;
-    padding: 15px;
-    margin: 10px 0;
-    background: rgba(255, 255, 255, 0.7);
-    border-radius: 20px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    border-left: 5px solid #FFB6C1;
-}
-
-.dark-theme .service-item {
-    background: rgba(255, 255, 255, 0.1);
-}
-
-.service-item:hover {
-    transform: translateX(10px);
-    background: rgba(255, 182, 193, 0.2);
-}
-
-.service-icon {
-    font-size: 24px;
-    margin-right: 15px;
-}
-
-.service-info {
-    flex: 1;
-}
-
-.service-info h3 {
-    color: #5D1F31;
-    font-size: 16px;
-    margin-bottom: 5px;
-}
-
-.dark-theme .service-info h3 {
-    color: #FFE4E9;
-}
-
-.service-info p {
-    color: #8B475D;
-    font-size: 14px;
-    opacity: 0.8;
-}
-
-.service-price {
-    text-align: right;
-}
-
-.price {
-    display: block;
-    color: #D81B60;
-    font-size: 18px;
-    font-weight: bold;
-}
-
-.time {
-    display: block;
-    color: #8B475D;
-    font-size: 14px;
-}
-
-/* КНОПКИ */
-.anime-btn {
-    border: none;
-    border-radius: 25px;
-    padding: 15px 30px;
-    font-size: 16px;
-    font-weight: bold;
-    cursor: pointer;
-    transition: all 0.3s ease;
+.nav-icon {
+    width: 44px;
+    height: 44px;
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 14px;
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 10px;
-    margin: 10px 0;
-    width: 100%;
+    margin-bottom: 4px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 
+        0 4px 12px rgba(0, 0, 0, 0.05),
+        inset 0 1px 0 rgba(255, 255, 255, 0.8);
+    border: 1px solid rgba(255, 255, 255, 0.3);
 }
 
-.primary-btn {
-    background: linear-gradient(145deg, #FFB6C1, #FF8FA3);
+.nav-btn.active .nav-icon {
+    background: linear-gradient(135deg, #FFB6C1, #FF8FA3);
+    transform: translateY(-5px);
+    box-shadow: 
+        0 8px 20px rgba(255, 142, 163, 0.4),
+        0 4px 8px rgba(255, 182, 193, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.6);
+}
+
+.nav-icon i {
+    font-size: 18px;
+    color: #5D1F31;
+    transition: all 0.3s ease;
+}
+
+.nav-btn.active .nav-icon i {
     color: white;
-    box-shadow: 
-        5px 5px 15px rgba(216, 27, 96, 0.3),
-        -5px -5px 15px rgba(255, 255, 255, 0.5);
 }
 
-.primary-btn:hover {
-    transform: translateY(-3px);
-    box-shadow: 
-        8px 8px 20px rgba(216, 27, 96, 0.4),
-        -8px -8px 20px rgba(255, 255, 255, 0.6);
-}
-
-.primary-btn:active {
-    transform: translateY(0);
-    box-shadow: 
-        inset 5px 5px 15px rgba(216, 27, 96, 0.3),
-        inset -5px -5px 15px rgba(255, 255, 255, 0.5);
-}
-
-/* ШАГИ ЗАПИСИ */
-.booking-steps {
-    display: flex;
-    justify-content: space-between;
-    margin: 20px 0;
-}
-
-.step {
-    flex: 1;
-    text-align: center;
-    padding: 10px;
+.nav-label {
+    font-size: 11px;
+    font-weight: 600;
     color: #8B475D;
-    position: relative;
-    font-size: 14px;
+    margin-top: 2px;
+    transition: all 0.3s ease;
+    letter-spacing: 0.3px;
 }
 
-.step.active {
+.nav-btn.active .nav-label {
     color: #D81B60;
-    font-weight: bold;
+    font-weight: 700;
+    transform: scale(1.05);
 }
 
-.step.active::after {
+/* АКТИВНЫЙ ИНДИКАТОР (ЖИДКАЯ КАПЛЯ) */
+.nav-btn.active::after {
     content: '';
     position: absolute;
     bottom: -5px;
     left: 50%;
     transform: translateX(-50%);
-    width: 30px;
+    width: 24px;
     height: 3px;
-    background: #D81B60;
+    background: linear-gradient(90deg, #FFB6C1, #FF8FA3);
     border-radius: 2px;
+    box-shadow: 0 2px 8px rgba(255, 142, 163, 0.5);
+    animation: liquidDrop 1.5s ease-in-out infinite;
 }
 
-/* ФУТЕР */
-.footer {
-    text-align: center;
-    margin-top: 30px;
-    padding: 20px;
-    color: #8B475D;
+@keyframes liquidDrop {
+    0%, 100% { 
+        transform: translateX(-50%) scale(1);
+        opacity: 1;
+    }
+    50% { 
+        transform: translateX(-50%) scale(1.2);
+        opacity: 0.8;
+    }
+}
+
+/* ЦЕНТРАЛЬНАЯ КНОПКА */
+.nav-center-btn {
+    position: absolute;
+    top: -25px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60px;
+    height: 60px;
+    background: linear-gradient(135deg, #FFB6C1, #FF8FA3);
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    z-index: 3;
+    box-shadow: 
+        0 10px 30px rgba(255, 142, 163, 0.4),
+        0 6px 15px rgba(255, 182, 193, 0.3),
+        inset 0 2px 0 rgba(255, 255, 255, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.nav-center-btn:active {
+    transform: translateX(-50%) scale(0.95);
+    box-shadow: 
+        0 5px 20px rgba(255, 142, 163, 0.4),
+        inset 0 2px 0 rgba(255, 255, 255, 0.3);
+}
+
+.center-icon {
+    width: 28px;
+    height: 28px;
+    background: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.center-icon i {
     font-size: 14px;
+    color: #D81B60;
 }
 
-.dark-theme .footer {
-    color: #FFB6C1;
+/* ЭФФЕКТ ПУЛЬСАЦИИ ДЛЯ ЦЕНТРАЛЬНОЙ КНОПКИ */
+.nav-center-btn::before {
+    content: '';
+    position: absolute;
+    top: -10px;
+    left: -10px;
+    right: -10px;
+    bottom: -10px;
+    background: linear-gradient(135deg, #FFB6C1, #FF8FA3);
+    border-radius: 50%;
+    opacity: 0.2;
+    z-index: -1;
+    animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { transform: scale(1); opacity: 0.2; }
+    50% { transform: scale(1.1); opacity: 0.1; }
+}
+
+/* СВАЙП ИНДИКАТОР */
+.swipe-indicator {
+    padding: 10px 0 5px;
+    display: flex;
+    justify-content: center;
+}
+
+.swipe-dots {
+    display: flex;
+    gap: 8px;
+}
+
+.swipe-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: rgba(255, 182, 193, 0.3);
+    transition: all 0.3s ease;
+}
+
+.swipe-dot.active {
+    width: 20px;
+    border-radius: 3px;
+    background: linear-gradient(90deg, #FFB6C1, #FF8FA3);
+    box-shadow: 0 0 10px rgba(255, 142, 163, 0.5);
+}
+
+/* ЭКРАНЫ ДЛЯ СВАЙПА */
+.screen {
+    display: none;
+    min-height: calc(100vh - 180px);
+    animation: fadeIn 0.3s ease;
+}
+
+.screen.active {
+    display: block;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* СВАЙП-ГАЙД */
+.swipe-guide {
+    position: fixed;
+    bottom: 100px;
+    left: 0;
+    right: 0;
+    text-align: center;
+    color: rgba(139, 71, 93, 0.6);
+    font-size: 12px;
+    padding: 10px;
+    animation: fadeInOut 3s ease-in-out infinite;
+}
+
+@keyframes fadeInOut {
+    0%, 100% { opacity: 0.3; }
+    50% { opacity: 0.8; }
+}
+
+.swipe-line {
+    width: 60px;
+    height: 3px;
+    background: linear-gradient(90deg, transparent, #FFB6C1, transparent);
+    margin: 0 auto 5px;
+    border-radius: 2px;
+    animation: swipeLine 2s ease-in-out infinite;
+}
+
+@keyframes swipeLine {
+    0%, 100% { 
+        transform: translateX(-20px);
+        opacity: 0.3;
+    }
+    50% { 
+        transform: translateX(20px);
+        opacity: 0.8;
+    }
+}
+
+/* ЖИДКИЕ КНОПКИ */
+.liquid-btn {
+    background: linear-gradient(135deg, #FFB6C1, #FF8FA3);
+    color: white;
+    border: none;
+    border-radius: 18px;
+    padding: 16px 28px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin: 20px auto;
+    width: 90%;
+    max-width: 300px;
+    box-shadow: 
+        0 6px 20px rgba(255, 142, 163, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.4);
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.liquid-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(
+        90deg,
+        transparent 30%,
+        rgba(255, 255, 255, 0.2) 50%,
+        transparent 70%
+    );
+    transform: translateX(-100%);
+    animation: liquidShine 3s ease-in-out infinite;
+}
+
+@keyframes liquidShine {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+}
+
+.liquid-btn:active {
+    transform: scale(0.98);
+    box-shadow: 
+        0 3px 10px rgba(255, 142, 163, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.3);
+}
+
+/* МОДАЛЬНОЕ ОКНО */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 2000;
+    animation: fadeIn 0.3s ease;
+}
+
+.modal {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-radius: 25px;
+    width: 90%;
+    max-width: 400px;
+    padding: 25px;
+    box-shadow: 
+        0 20px 60px rgba(0, 0, 0, 0.2),
+        inset 0 1px 0 rgba(255, 255, 255, 0.8);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    animation: modalSlideIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes modalSlideIn {
+    from { 
+        opacity: 0; 
+        transform: translateY(50px) scale(0.9);
+    }
+    to { 
+        opacity: 1; 
+        transform: translateY(0) scale(1);
+    }
 }
 
 /* АДАПТИВНОСТЬ */
 @media (max-width: 480px) {
-    .container {
-        padding: 10px;
+    .liquid-nav {
+        width: 95%;
+        height: 65px;
+        bottom: 10px;
     }
     
-    .logo h1 {
-        font-size: 20px;
+    .nav-icon {
+        width: 40px;
+        height: 40px;
     }
     
-    .action-grid {
-        grid-template-columns: 1fr;
+    .nav-center-btn {
+        width: 55px;
+        height: 55px;
+        top: -20px;
     }
     
-    .anime-card {
-        padding: 20px;
+    .swipe-guide {
+        bottom: 85px;
+        font-size: 11px;
     }
 }
 
-/* АНИМАЦИИ */
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(20px); }
-    to { opacity: 1; transform: translateY(0); }
+/* ТЕМНАЯ ТЕМА */
+body.dark-theme .liquid-nav {
+    background: rgba(45, 45, 45, 0.85);
+    box-shadow: 
+        0 8px 32px rgba(0, 0, 0, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1),
+        0 0 0 1px rgba(255, 255, 255, 0.05);
+    border-color: rgba(139, 71, 93, 0.3);
 }
 
-.fade-in {
-    animation: fadeIn 0.5s ease forwards;
+body.dark-theme .nav-icon {
+    background: rgba(60, 60, 60, 0.9);
+    box-shadow: 
+        0 4px 12px rgba(0, 0, 0, 0.2),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.1);
 }
 
-/* СКРОЛЛБАР */
-::-webkit-scrollbar {
-    width: 8px;
+body.dark-theme .nav-icon i {
+    color: #FFE4E9;
 }
 
-::-webkit-scrollbar-track {
-    background: rgba(255, 182, 193, 0.1);
-    border-radius: 10px;
+body.dark-theme .nav-label {
+    color: #FFB6C1;
 }
 
-::-webkit-scrollbar-thumb {
-    background: #FFB6C1;
-    border-radius: 10px;
+body.dark-theme .nav-btn.active .nav-label {
+    color: #FF8FA3;
 }
 
-::-webkit-scrollbar-thumb:hover {
-    background: #FF8FA3;
+/* ПРЕДОТВРАЩЕНИЕ ВЫДЕЛЕНИЯ ПРИ СВАЙПЕ */
+.main-content {
+    -webkit-user-select: none;
+    user-select: none;
+    touch-action: pan-y;
 }
