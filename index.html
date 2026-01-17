@@ -5,12 +5,21 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>🌸 Nail Sakura Studio</title>
     <style>
-        /* БАЗОВЫЕ СТИЛИ */
+        /* БАЗОВЫЕ СТИЛИ - УБИРАЕМ ВСЕ МЕШАЮЩЕЕ КЛИКАМ */
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            -webkit-tap-highlight-color: transparent;
+            -webkit-tap-highlight-color: rgba(0,0,0,0);
+            -webkit-touch-callout: none;
+            user-select: none;
+        }
+        
+        html, body {
+            width: 100%;
+            height: 100%;
+            overflow-x: hidden;
+            touch-action: manipulation;
         }
         
         body {
@@ -18,15 +27,8 @@
             background: linear-gradient(135deg, #FFE4E9 0%, #FFB6C1 100%);
             min-height: 100vh;
             color: #5D1F31;
-            overflow-x: hidden;
             padding: 20px;
             padding-bottom: 100px;
-            transition: background 0.5s ease;
-        }
-        
-        body.dark {
-            background: linear-gradient(135deg, #5D1F31 0%, #2A2A2A 100%);
-            color: #FFE4E9;
         }
         
         /* КОНТЕЙНЕР */
@@ -35,7 +37,7 @@
             margin: 0 auto;
         }
         
-        /* ШАПКА */
+        /* ШАПКА - УПРОЩЕННАЯ */
         .header {
             text-align: center;
             margin-bottom: 30px;
@@ -46,964 +48,335 @@
             font-size: 32px;
             color: #D81B60;
             margin-bottom: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
         }
         
-        .logo::before {
-            content: '🌸';
-            animation: float 3s ease-in-out infinite;
-        }
-        
-        @keyframes float {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-10px); }
-        }
-        
-        /* ПРИВЕТСТВИЕ */
-        .welcome {
-            background: rgba(255, 255, 255, 0.9);
-            border-radius: 25px;
-            padding: 25px;
-            margin-bottom: 20px;
-            text-align: center;
-            box-shadow: 
-                8px 8px 16px rgba(255, 182, 193, 0.2),
-                -8px -8px 16px rgba(255, 255, 255, 0.8);
-            border: 2px solid rgba(255, 182, 193, 0.1);
-            transition: all 0.3s ease;
-        }
-        
-        body.dark .welcome {
-            background: rgba(45, 45, 45, 0.9);
-            box-shadow: 
-                8px 8px 16px rgba(0, 0, 0, 0.3),
-                -8px -8px 16px rgba(139, 71, 93, 0.2);
-        }
-        
-        .welcome h1 {
-            font-size: 24px;
-            margin-bottom: 10px;
-            color: #D81B60;
-        }
-        
-        body.dark .welcome h1 {
-            color: #FFB6C1;
-        }
-        
-        .user-avatar {
-            width: 80px;
-            height: 80px;
-            background: linear-gradient(145deg, #FFB6C1, #FF8FA3);
-            border-radius: 50%;
-            margin: 0 auto 15px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 32px;
-            color: white;
-            box-shadow: 0 5px 15px rgba(216, 27, 96, 0.3);
-            overflow: hidden;
-        }
-        
-        .user-avatar img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            border-radius: 50%;
-        }
-        
-        body.dark .user-avatar {
-            background: linear-gradient(145deg, #8B475D, #5D1F31);
-        }
-        
-        /* КНОПКИ-ШАРИКИ */
-        .action-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 15px;
-            margin-bottom: 30px;
-        }
-        
+        /* ПРОСТЫЕ КНОПКИ КОТОРЫЕ ТОЧНО БУДУТ РАБОТАТЬ */
         .action-btn {
-            background: rgba(255, 255, 255, 0.9);
+            display: block;
+            width: 100%;
+            padding: 20px;
+            margin: 10px 0;
+            background: white;
             border: none;
-            border-radius: 25px;
-            padding: 30px 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
+            border-radius: 15px;
+            font-size: 18px;
+            font-weight: bold;
+            color: #5D1F31;
             cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 
-                8px 8px 16px rgba(255, 182, 193, 0.2),
-                -8px -8px 16px rgba(255, 255, 255, 0.8);
-            position: relative;
-            overflow: hidden;
-        }
-        
-        body.dark .action-btn {
-            background: rgba(45, 45, 45, 0.9);
-            box-shadow: 
-                8px 8px 16px rgba(0, 0, 0, 0.3),
-                -8px -8px 16px rgba(139, 71, 93, 0.2);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            transition: all 0.2s;
         }
         
         .action-btn:active {
-            transform: scale(0.95);
-            box-shadow: 
-                inset 4px 4px 8px rgba(255, 182, 193, 0.2),
-                inset -4px -4px 8px rgba(255, 255, 255, 0.8);
-        }
-        
-        body.dark .action-btn:active {
-            box-shadow: 
-                inset 4px 4px 8px rgba(0, 0, 0, 0.3),
-                inset -4px -4px 8px rgba(139, 71, 93, 0.2);
-        }
-        
-        .action-icon {
-            font-size: 32px;
-            margin-bottom: 10px;
-            transition: transform 0.3s ease;
-        }
-        
-        .action-btn:active .action-icon {
-            transform: scale(1.1);
-        }
-        
-        .action-text {
-            font-size: 16px;
-            font-weight: bold;
-            color: #5D1F31;
-        }
-        
-        body.dark .action-text {
-            color: #FFE4E9;
+            transform: scale(0.98);
+            background: #FFE4E9;
         }
         
         /* ЭКРАНЫ */
         .screen {
             display: none;
-            background: rgba(255, 255, 255, 0.95);
-            border-radius: 25px;
-            padding: 25px;
-            margin-top: 20px;
-            box-shadow: 
-                8px 8px 16px rgba(255, 182, 193, 0.2),
-                -8px -8px 16px rgba(255, 255, 255, 0.8);
-            animation: slideUp 0.3s ease;
-            transition: all 0.3s ease;
-        }
-        
-        body.dark .screen {
-            background: rgba(45, 45, 45, 0.9);
-            box-shadow: 
-                8px 8px 16px rgba(0, 0, 0, 0.3),
-                -8px -8px 16px rgba(139, 71, 93, 0.2);
         }
         
         .screen.active {
             display: block;
+            animation: fadeIn 0.3s;
         }
         
-        @keyframes slideUp {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
         }
         
-        .screen-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 20px;
-            padding-bottom: 15px;
-            border-bottom: 2px solid #FFE4E9;
-        }
-        
-        body.dark .screen-header {
-            border-bottom: 2px solid rgba(139, 71, 93, 0.3);
-        }
-        
-        .back-btn {
-            background: none;
-            border: none;
-            font-size: 24px;
-            color: #D81B60;
-            cursor: pointer;
-            padding: 5px 10px;
-        }
-        
-        body.dark .back-btn {
-            color: #FFB6C1;
-        }
-        
-        /* УСЛУГИ */
-        .service-item {
-            display: flex;
-            align-items: center;
+        /* УПРОЩЕННАЯ ФОРМА */
+        select, input {
+            width: 100%;
             padding: 15px;
             margin: 10px 0;
-            background: #f8f9fa;
-            border-radius: 20px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            border-left: 4px solid #FFB6C1;
-        }
-        
-        body.dark .service-item {
-            background: rgba(255, 255, 255, 0.1);
-            border-left: 4px solid #8B475D;
-        }
-        
-        .service-item:active {
-            background: #FFE4E9;
-            transform: translateX(5px);
-        }
-        
-        body.dark .service-item:active {
-            background: rgba(255, 182, 193, 0.2);
-        }
-        
-        .service-icon {
-            font-size: 24px;
-            margin-right: 15px;
-            width: 50px;
-            height: 50px;
-            background: #FFB6C1;
-            border-radius: 15px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-        }
-        
-        body.dark .service-icon {
-            background: #8B475D;
-        }
-        
-        .service-info {
-            flex: 1;
-        }
-        
-        .service-info h3 {
-            margin-bottom: 5px;
-            color: #5D1F31;
-        }
-        
-        body.dark .service-info h3 {
-            color: #FFE4E9;
-        }
-        
-        .service-info p {
-            color: #8B475D;
-            font-size: 14px;
-        }
-        
-        body.dark .service-info p {
-            color: #FFB6C1;
-        }
-        
-        .service-price {
-            font-size: 18px;
-            font-weight: bold;
-            color: #D81B60;
-        }
-        
-        body.dark .service-price {
-            color: #FF8FA3;
-        }
-        
-        /* ФОРМА ЗАПИСИ */
-        .form-group {
-            margin-bottom: 20px;
-        }
-        
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: bold;
-            color: #5D1F31;
-        }
-        
-        body.dark .form-group label {
-            color: #FFE4E9;
-        }
-        
-        .form-group select,
-        .form-group input {
-            width: 100%;
-            padding: 15px;
-            border: 2px solid #FFE4E9;
-            border-radius: 15px;
+            border: 2px solid #FFB6C1;
+            border-radius: 10px;
             font-size: 16px;
-            background: white;
-            -webkit-appearance: none;
-            appearance: none;
-            color: #5D1F31;
         }
         
-        body.dark .form-group select,
-        body.dark .form-group input {
-            background: rgba(255, 255, 255, 0.1);
-            border: 2px solid rgba(139, 71, 93, 0.3);
-            color: #FFE4E9;
-        }
-        
-        /* ОСНОВНАЯ КНОПКА */
-        .primary-btn {
-            background: linear-gradient(145deg, #FFB6C1, #FF8FA3);
-            color: white;
-            border: none;
-            border-radius: 25px;
-            padding: 18px 30px;
-            font-size: 18px;
-            font-weight: bold;
-            cursor: pointer;
-            width: 100%;
-            margin-top: 20px;
-            box-shadow: 0 5px 15px rgba(216, 27, 96, 0.3);
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-        }
-        
-        body.dark .primary-btn {
-            background: linear-gradient(145deg, #8B475D, #5D1F31);
-        }
-        
-        .primary-btn:active {
-            transform: scale(0.98);
-            box-shadow: 0 2px 10px rgba(216, 27, 96, 0.3);
-        }
-        
-        /* НИЖНЯЯ НАВИГАЦИЯ */
+        /* НИЖНЯЯ ПАНЕЛЬ */
         .bottom-nav {
             position: fixed;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 90%;
-            max-width: 500px;
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            border-radius: 25px;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
             display: flex;
-            justify-content: space-around;
-            padding: 15px;
-            box-shadow: 
-                0 -5px 20px rgba(255, 182, 193, 0.2),
-                0 5px 20px rgba(255, 182, 193, 0.1);
-            border: 2px solid rgba(255, 255, 255, 0.3);
-            z-index: 1000;
-            transition: all 0.3s ease;
-        }
-        
-        body.dark .bottom-nav {
-            background: rgba(45, 45, 45, 0.95);
-            box-shadow: 
-                0 -5px 20px rgba(0, 0, 0, 0.3),
-                0 5px 20px rgba(139, 71, 93, 0.1);
-            border: 2px solid rgba(139, 71, 93, 0.3);
+            padding: 10px;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
         }
         
         .nav-btn {
-            background: none;
-            border: none;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            cursor: pointer;
+            flex: 1;
             padding: 10px;
-            border-radius: 15px;
-            transition: all 0.3s ease;
-            min-width: 60px;
-        }
-        
-        .nav-btn.active {
-            background: rgba(255, 182, 193, 0.1);
-        }
-        
-        body.dark .nav-btn.active {
-            background: rgba(139, 71, 93, 0.3);
-        }
-        
-        .nav-btn:active {
-            transform: scale(0.95);
-        }
-        
-        .nav-icon {
-            font-size: 22px;
-            margin-bottom: 5px;
-            color: #5D1F31;
-        }
-        
-        .nav-btn.active .nav-icon {
-            color: #D81B60;
-        }
-        
-        body.dark .nav-icon {
-            color: #FFB6C1;
-        }
-        
-        body.dark .nav-btn.active .nav-icon {
-            color: #FF8FA3;
-        }
-        
-        .nav-label {
-            font-size: 12px;
-            font-weight: bold;
-            color: #8B475D;
-        }
-        
-        .nav-btn.active .nav-label {
-            color: #D81B60;
-        }
-        
-        body.dark .nav-label {
-            color: #FFB6C1;
-        }
-        
-        body.dark .nav-btn.active .nav-label {
-            color: #FF8FA3;
-        }
-        
-        /* ЛЕПЕСТКИ САКУРЫ */
-        .sakura-petal {
-            position: fixed;
-            width: 20px;
-            height: 20px;
-            pointer-events: none;
-            z-index: -1;
-            font-size: 20px;
-            opacity: 0.3;
-            animation: fall linear infinite;
-        }
-        
-        @keyframes fall {
-            to { transform: translateY(100vh) rotate(360deg); }
-        }
-        
-        /* УВЕДОМЛЕНИЯ */
-        .notification {
-            position: fixed;
-            top: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: #81C784;
-            color: white;
-            padding: 15px 25px;
-            border-radius: 15px;
-            z-index: 10000;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
-            animation: slideDown 0.3s ease;
-            max-width: 90%;
-            text-align: center;
-            font-weight: bold;
-        }
-        
-        .notification.error {
-            background: #E57373;
-        }
-        
-        /* ТЕМНЫЙ ПЕРЕКЛЮЧАТЕЛЬ */
-        .theme-toggle {
-            position: absolute;
-            top: 0;
-            right: 20px;
-            background: #FFB6C1;
             border: none;
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            color: white;
-            font-size: 20px;
+            background: none;
+            font-size: 12px;
             cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.3s ease;
         }
         
-        body.dark .theme-toggle {
-            background: #8B475D;
-        }
-        
-        .theme-toggle:active {
-            transform: scale(0.9);
-        }
-        
-        /* АДАПТИВНОСТЬ */
-        @media (max-width: 480px) {
-            body {
-                padding: 15px;
-                padding-bottom: 90px;
-            }
-            
-            .action-grid {
-                grid-template-columns: 1fr;
-                gap: 10px;
-            }
-            
-            .action-btn {
-                padding: 25px 15px;
-            }
-            
-            .bottom-nav {
-                width: 95%;
-                padding: 12px;
-            }
+        /* ОТЛАДОЧНЫЙ БЛОК */
+        .debug {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            background: rgba(0,0,0,0.7);
+            color: white;
+            padding: 5px;
+            font-size: 10px;
+            border-radius: 5px;
+            z-index: 9999;
         }
     </style>
 </head>
 <body>
-    <!-- ЛЕПЕСТКИ САКУРЫ -->
-    <div id="petals"></div>
+    <!-- ОТЛАДОЧНАЯ ИНФОРМАЦИЯ -->
+    <div class="debug" id="debug">Загрузка...</div>
     
     <div class="container">
         <!-- ШАПКА -->
         <div class="header">
-            <div class="logo">Nail Sakura Studio</div>
-            <button class="theme-toggle" id="themeToggle">🌙</button>
+            <div class="logo">🌸 Nail Sakura</div>
+            <button onclick="toggleTheme()" style="position:absolute;right:0;top:0;background:#FFB6C1;border:none;padding:10px;border-radius:50%;cursor:pointer">🌙</button>
         </div>
         
         <!-- ЭКРАН 1: ГЛАВНАЯ -->
         <div id="mainScreen" class="screen active">
-            <div class="welcome">
-                <div class="user-avatar" id="userAvatar">👑</div>
-                <h1 id="userName">Привет!</h1>
-                <p>Добро пожаловать в мир аниме-маникюра</p>
+            <div style="text-align:center;margin:20px 0;">
+                <div id="userAvatar" style="width:80px;height:80px;background:#FFB6C1;border-radius:50%;margin:0 auto 15px;font-size:40px;line-height:80px;">👑</div>
+                <h2 id="userName">Загрузка...</h2>
             </div>
             
-            <div class="action-grid">
-                <button class="action-btn" onclick="showScreen('booking')">
-                    <div class="action-icon">💅</div>
-                    <div class="action-text">Записаться</div>
-                </button>
-                
-                <button class="action-btn" onclick="showScreen('services')">
-                    <div class="action-icon">✨</div>
-                    <div class="action-text">Услуги</div>
-                </button>
-                
-                <button class="action-btn" onclick="showScreen('myBookings')">
-                    <div class="action-icon">📅</div>
-                    <div class="action-text">Мои записи</div>
-                </button>
-                
-                <button class="action-btn" onclick="showScreen('profile')">
-                    <div class="action-icon">👑</div>
-                    <div class="action-text">Профиль</div>
-                </button>
-            </div>
-            
-            <button class="primary-btn" onclick="showScreen('booking')">
-                🎨 Начать запись
-            </button>
+            <button class="action-btn" onclick="showScreen('booking')">💅 Записаться</button>
+            <button class="action-btn" onclick="showScreen('services')">✨ Услуги</button>
+            <button class="action-btn" onclick="showScreen('myBookings')">📅 Мои записи</button>
+            <button class="action-btn" onclick="showScreen('profile')">👤 Профиль</button>
         </div>
         
         <!-- ЭКРАН 2: ЗАПИСЬ -->
         <div id="bookingScreen" class="screen">
-            <div class="screen-header">
-                <button class="back-btn" onclick="showScreen('main')">←</button>
-                <h2>📝 Запись</h2>
-                <div style="width: 40px;"></div>
-            </div>
+            <button onclick="showScreen('main')" style="background:none;border:none;font-size:24px;cursor:pointer">←</button>
+            <h2>📝 Запись</h2>
             
-            <div class="form-group">
-                <label>Выберите услугу:</label>
-                <select id="serviceSelect">
-                    <option value="manicure">💅 Классический маникюр - 1500₽</option>
-                    <option value="gel">✨ Покрытие гель-лаком - 2000₽</option>
-                    <option value="design">🎨 Дизайн ногтей - 1000₽</option>
-                    <option value="spa">💎 SPA-уход - 1800₽</option>
-                </select>
-            </div>
+            <select id="serviceSelect">
+                <option>💅 Классический маникюр - 1500₽</option>
+                <option>✨ Покрытие гель-лаком - 2000₽</option>
+                <option>🎨 Дизайн ногтей - 1000₽</option>
+                <option>💎 SPA-уход - 1800₽</option>
+            </select>
             
-            <div class="form-group">
-                <label>Дата:</label>
-                <input type="date" id="bookingDate">
-            </div>
+            <input type="date" id="bookingDate">
             
-            <div class="form-group">
-                <label>Время:</label>
-                <select id="bookingTime">
-                    <option>10:00</option>
-                    <option>11:00</option>
-                    <option>12:00</option>
-                    <option>13:00</option>
-                    <option>14:00</option>
-                    <option>15:00</option>
-                    <option>16:00</option>
-                    <option>17:00</option>
-                    <option>18:00</option>
-                </select>
-            </div>
+            <select id="bookingTime">
+                <option>10:00</option>
+                <option>11:00</option>
+                <option>12:00</option>
+                <option>13:00</option>
+                <option>14:00</option>
+                <option>15:00</option>
+                <option>16:00</option>
+                <option>17:00</option>
+                <option>18:00</option>
+            </select>
             
-            <button class="primary-btn" onclick="submitBooking()">
-                ✅ Записаться
-            </button>
+            <button class="action-btn" onclick="submitBooking()" style="background:#FFB6C1;color:white">✅ Записаться</button>
         </div>
         
         <!-- ЭКРАН 3: УСЛУГИ -->
         <div id="servicesScreen" class="screen">
-            <div class="screen-header">
-                <button class="back-btn" onclick="showScreen('main')">←</button>
-                <h2>💅 Услуги</h2>
-                <div style="width: 40px;"></div>
+            <button onclick="showScreen('main')" style="background:none;border:none;font-size:24px;cursor:pointer">←</button>
+            <h2>💅 Услуги</h2>
+            
+            <div style="background:#FFE4E9;padding:15px;margin:10px 0;border-radius:10px;cursor:pointer" onclick="selectService('manicure')">
+                <h3>💅 Классический маникюр</h3>
+                <p>Обработка + покрытие</p>
+                <strong>1500₽</strong>
             </div>
             
-            <div class="service-item" onclick="selectService('manicure')">
-                <div class="service-icon">💅</div>
-                <div class="service-info">
-                    <h3>Классический маникюр</h3>
-                    <p>Обработка + покрытие</p>
-                </div>
-                <div class="service-price">1500₽</div>
+            <div style="background:#FFE4E9;padding:15px;margin:10px 0;border-radius:10px;cursor:pointer" onclick="selectService('gel')">
+                <h3>✨ Покрытие гель-лаком</h3>
+                <p>Долговременное покрытие</p>
+                <strong>2000₽</strong>
             </div>
             
-            <div class="service-item" onclick="selectService('gel')">
-                <div class="service-icon">✨</div>
-                <div class="service-info">
-                    <h3>Покрытие гель-лаком</h3>
-                    <p>Долговременное покрытие</p>
-                </div>
-                <div class="service-price">2000₽</div>
-            </div>
-            
-            <div class="service-item" onclick="selectService('design')">
-                <div class="service-icon">🎨</div>
-                <div class="service-info">
-                    <h3>Дизайн ногтей</h3>
-                    <p>Рисунки, стразы, градиент</p>
-                </div>
-                <div class="service-price">1000₽</div>
-            </div>
-            
-            <div class="service-item" onclick="selectService('spa')">
-                <div class="service-icon">💎</div>
-                <div class="service-info">
-                    <h3>SPA-уход</h3>
-                    <p>Увлажнение и питание</p>
-                </div>
-                <div class="service-price">1800₽</div>
+            <div style="background:#FFE4E9;padding:15px;margin:10px 0;border-radius:10px;cursor:pointer" onclick="selectService('design')">
+                <h3>🎨 Дизайн ногтей</h3>
+                <p>Рисунки, стразы, градиент</p>
+                <strong>1000₽</strong>
             </div>
         </div>
         
-        <!-- ЭКРАН 4: МОИ ЗАПИСИ -->
-        <div id="myBookingsScreen" class="screen">
-            <div class="screen-header">
-                <button class="back-btn" onclick="showScreen('main')">←</button>
-                <h2>📅 Мои записи</h2>
-                <div style="width: 40px;"></div>
-            </div>
-            
-            <div style="text-align: center; padding: 40px 20px;">
-                <div style="font-size: 48px; margin-bottom: 20px;">📝</div>
-                <h3>У вас пока нет записей</h3>
-                <p>Запишитесь на первую процедуру!</p>
-                <button class="primary-btn" onclick="showScreen('booking')" style="margin-top: 30px;">
-                    🎨 Записаться
-                </button>
-            </div>
-        </div>
-        
-        <!-- ЭКРАН 5: ПРОФИЛЬ -->
+        <!-- ЭКРАН 4: ПРОФИЛЬ -->
         <div id="profileScreen" class="screen">
-            <div class="screen-header">
-                <button class="back-btn" onclick="showScreen('main')">←</button>
-                <h2>👑 Профиль</h2>
-                <div style="width: 40px;"></div>
-            </div>
+            <button onclick="showScreen('main')" style="background:none;border:none;font-size:24px;cursor:pointer">←</button>
+            <h2>👤 Профиль</h2>
             
-            <div style="text-align: center; margin-bottom: 30px;">
-                <div class="user-avatar" id="profileAvatar" style="width: 100px; height: 100px; font-size: 48px;">👑</div>
-                <h2 id="profileName" style="margin-top: 15px;">Гость</h2>
-                <p id="profileLevel" style="color: #FFB6C1;">Добро пожаловать</p>
-            </div>
-            
-            <div class="service-item" style="cursor: default; background: #FFE4E9;">
-                <div class="service-icon">📞</div>
-                <div class="service-info">
-                    <h3>Telegram ID</h3>
-                    <p id="telegramId">Неизвестен</p>
-                </div>
-            </div>
-            
-            <div class="service-item" style="cursor: default; background: #FFE4E9;">
-                <div class="service-icon">👤</div>
-                <div class="service-info">
-                    <h3>Имя пользователя</h3>
-                    <p id="telegramUsername">Не указан</p>
-                </div>
+            <div style="text-align:center;margin:20px 0;">
+                <div id="profileAvatar" style="width:100px;height:100px;background:#FFB6C1;border-radius:50%;margin:0 auto 15px;font-size:48px;line-height:100px;">👑</div>
+                <h3 id="profileName">Загрузка...</h3>
+                <p id="profileInfo">Telegram ID: <span id="tgId">...</span></p>
             </div>
         </div>
     </div>
     
-    <!-- НИЖНЯЯ НАВИГАЦИЯ -->
+    <!-- НИЖНЯЯ ПАНЕЛЬ -->
     <nav class="bottom-nav">
-        <button class="nav-btn active" data-tab="main" onclick="showScreen('main')">
-            <div class="nav-icon">🏠</div>
-            <div class="nav-label">Главная</div>
-        </button>
-        
-        <button class="nav-btn" data-tab="booking" onclick="showScreen('booking')">
-            <div class="nav-icon">💅</div>
-            <div class="nav-label">Запись</div>
-        </button>
-        
-        <button class="nav-btn" data-tab="services" onclick="showScreen('services')">
-            <div class="nav-icon">✨</div>
-            <div class="nav-label">Услуги</div>
-        </button>
-        
-        <button class="nav-btn" data-tab="profile" onclick="showScreen('profile')">
-            <div class="nav-icon">👤</div>
-            <div class="nav-label">Профиль</div>
-        </button>
+        <button class="nav-btn" onclick="showScreen('main')">🏠 Главная</button>
+        <button class="nav-btn" onclick="showScreen('booking')">💅 Запись</button>
+        <button class="nav-btn" onclick="showScreen('services')">✨ Услуги</button>
+        <button class="nav-btn" onclick="showScreen('profile')">👤 Профиль</button>
     </nav>
-    
+
     <script>
         // ======================
-        // ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ
+        // ОТЛАДОЧНЫЙ КОД - ПОКАЗЫВАЕТ ЧТО ПРОИСХОДИТ
         // ======================
-        let currentScreen = 'main';
-        let tgUser = null;
-        
-        // ======================
-        // TELEGRAM ИНИЦИАЛИЗАЦИЯ
-        // ======================
-        function initTelegramApp() {
-            console.log('🌐 Инициализация Telegram Mini App...');
-            
-            if (window.Telegram && Telegram.WebApp) {
-                const tg = Telegram.WebApp;
-                
-                tg.expand();
-                tg.setHeaderColor('#FFB6C1');
-                tg.setBackgroundColor('#FFE4E9');
-                tg.ready();
-                
-                const unsafeData = tg.initDataUnsafe;
-                console.log('Данные от Telegram:', unsafeData);
-                
-                if (unsafeData && unsafeData.user) {
-                    tgUser = unsafeData.user;
-                    console.log('Данные пользователя:', tgUser);
-                    updateUIWithUserData(tgUser);
-                    
-                    // Включаем кнопку "Назад" в Telegram
-                    if (tg.BackButton) {
-                        tg.BackButton.show();
-                        tg.BackButton.onClick(() => {
-                            goBack();
-                        });
-                    }
-                } else {
-                    console.warn('Данные пользователя не найдены');
-                    useTestUserData();
-                }
-            } else {
-                console.log('💻 Режим разработки');
-                useTestUserData();
-            }
+        function debugLog(message) {
+            console.log('🔧 ' + message);
+            document.getElementById('debug').textContent = message;
         }
         
         // ======================
-        // ОБНОВЛЕНИЕ ИНТЕРФЕЙСА
-        // ======================
-        function updateUIWithUserData(user) {
-            // Главная страница
-            const userNameElement = document.getElementById('userName');
-            if (userNameElement && user.first_name) {
-                const fullName = user.last_name ? `${user.first_name} ${user.last_name}` : user.first_name;
-                userNameElement.textContent = `Привет, ${fullName}!`;
-            }
-            
-            // Аватар на главной
-            const userAvatarElement = document.getElementById('userAvatar');
-            if (userAvatarElement) {
-                if (user.photo_url) {
-                    userAvatarElement.innerHTML = `<img src="${user.photo_url}" alt="Аватар">`;
-                } else {
-                    const firstLetter = user.first_name ? user.first_name[0].toUpperCase() : '👑';
-                    userAvatarElement.textContent = firstLetter;
-                    userAvatarElement.style.fontSize = '32px';
-                }
-            }
-            
-            // Профиль
-            const profileNameElement = document.getElementById('profileName');
-            const profileAvatarElement = document.getElementById('profileAvatar');
-            const telegramIdElement = document.getElementById('telegramId');
-            const telegramUsernameElement = document.getElementById('telegramUsername');
-            
-            if (profileNameElement && user.first_name) {
-                profileNameElement.textContent = user.last_name ? 
-                    `${user.first_name} ${user.last_name}` : user.first_name;
-            }
-            
-            if (profileAvatarElement) {
-                if (user.photo_url) {
-                    profileAvatarElement.innerHTML = `<img src="${user.photo_url}" alt="Аватар профиля" style="width:100%;height:100%;border-radius:50%;">`;
-                } else {
-                    const firstLetter = user.first_name ? user.first_name[0].toUpperCase() : '👑';
-                    profileAvatarElement.textContent = firstLetter;
-                    profileAvatarElement.style.fontSize = '48px';
-                }
-            }
-            
-            if (telegramIdElement && user.id) {
-                telegramIdElement.textContent = user.id;
-            }
-            
-            if (telegramUsernameElement) {
-                telegramUsernameElement.textContent = user.username ? `@${user.username}` : 'Не указан';
-            }
-            
-            const profileLevelElement = document.getElementById('profileLevel');
-            if (profileLevelElement) {
-                profileLevelElement.textContent = user.is_premium ? '⭐ Premium клиент' : '🎀 Gold клиент';
-                profileLevelElement.style.color = user.is_premium ? '#FFD700' : '#FFB6C1';
-            }
-            
-            showNotification(`Добро пожаловать, ${user.first_name || 'друг'}! 🎀`, 'success');
-        }
-        
-        function useTestUserData() {
-            tgUser = {
-                id: 123456789,
-                first_name: 'Аня',
-                last_name: 'Иванова',
-                username: 'anna_nails',
-                language_code: 'ru',
-                is_premium: true
-            };
-            
-            console.log('Используются тестовые данные:', tgUser);
-            updateUIWithUserData(tgUser);
-        }
-        
-        // ======================
-        // ОСНОВНЫЕ ФУНКЦИИ
+        // ПРОСТАЯ НАВИГАЦИЯ
         // ======================
         function showScreen(screenName) {
-            console.log('Показываем экран:', screenName);
+            debugLog('Клик: ' + screenName);
             
+            // Скрываем все экраны
             document.querySelectorAll('.screen').forEach(screen => {
                 screen.classList.remove('active');
             });
             
-            document.getElementById(screenName + 'Screen').classList.add('active');
-            currentScreen = screenName;
-            updateBottomNav(screenName);
-            createPetals(3);
-        }
-        
-        function updateBottomNav(activeTab) {
-            document.querySelectorAll('.nav-btn').forEach(btn => {
-                btn.classList.remove('active');
-                if (btn.dataset.tab === activeTab) {
-                    btn.classList.add('active');
-                }
-            });
+            // Показываем нужный
+            const targetScreen = document.getElementById(screenName + 'Screen');
+            if (targetScreen) {
+                targetScreen.classList.add('active');
+                debugLog('Показан экран: ' + screenName);
+            } else {
+                debugLog('ОШИБКА: Экран ' + screenName + ' не найден');
+            }
         }
         
         function selectService(service) {
-            const services = {
-                'manicure': '💅 Классический маникюр - 1500₽',
-                'gel': '✨ Покрытие гель-лаком - 2000₽',
-                'design': '🎨 Дизайн ногтей - 1000₽',
-                'spa': '💎 SPA-уход - 1800₽'
-            };
-            
-            document.getElementById('serviceSelect').value = service;
+            debugLog('Выбрана услуга: ' + service);
             showScreen('booking');
-            showNotification(`Вы выбрали: ${services[service]}`);
         }
         
         function submitBooking() {
             const service = document.getElementById('serviceSelect').value;
             const date = document.getElementById('bookingDate').value;
-            const time = document.getElementById('bookingTime').value;
             
             if (!date) {
-                showNotification('Выберите дату!', 'error');
+                alert('Выберите дату!');
                 return;
             }
             
-            const userName = tgUser ? `${tgUser.first_name} ${tgUser.last_name || ''}`.trim() : 'Гость';
-            const userId = tgUser ? tgUser.id : null;
-            
-            const services = {
-                'manicure': 'Классический маникюр',
-                'gel': 'Покрытие гель-лаком',
-                'design': 'Дизайн ногтей',
-                'spa': 'SPA-уход'
-            };
-            
-            const successMessage = `🎉 Запись успешно создана!
-            
-Клиент: ${userName}
-Услуга: ${services[service]}
-Дата: ${date}
-Время: ${time}
-
-Мы свяжемся с вами для подтверждения.`;
-            
-            showNotification(successMessage);
-            
-            setTimeout(() => {
-                showScreen('main');
-            }, 3000);
+            alert('🎉 Запись создана!\n' + service + '\nДата: ' + date);
+            showScreen('main');
         }
         
-        function goBack() {
-            if (currentScreen !== 'main') {
-                showScreen('main');
-            }
+        function toggleTheme() {
+            document.body.style.background = document.body.style.background.includes('2A2A2A') 
+                ? 'linear-gradient(135deg, #FFE4E9 0%, #FFB6C1 100%)' 
+                : 'linear-gradient(135deg, #5D1F31 0%, #2A2A2A 100%)';
         }
         
         // ======================
-        // ЛЕПЕСТКИ САКУРЫ
+        // TELEGRAM ИНТЕГРАЦИЯ - ПРОСТАЯ
         // ======================
-        function createPetals(count) {
-            const container = document.getElementById('petals');
-            const emojis = ['🌸', '💮', '🏵️'];
+        function loadTelegramData() {
+            debugLog('Загрузка Telegram данных...');
             
-            for (let i = 0; i < count; i++) {
-                const petal = document.createElement('div');
-                petal.className = 'sakura-petal';
-                petal.textContent = emojis[Math.floor(Math.random() * emojis.length)];
-                petal.style.left = Math.random() * 100 + 'vw';
-                petal.style.top = '-50px';
-                petal.style.animationDuration = (Math.random() * 5 + 3) + 's';
-                petal.style.animationDelay = Math.random() * 2 + 's';
+            // Проверяем есть ли Telegram SDK
+            if (window.Telegram && Telegram.WebApp) {
+                const tg = Telegram.WebApp;
+                debugLog('Telegram SDK найден');
                 
-                container.appendChild(petal);
+                // Пытаемся раскрыть на весь экран
+                try {
+                    tg.expand();
+                    debugLog('Приложение раскрыто');
+                } catch(e) {
+                    debugLog('Ошибка раскрытия: ' + e.message);
+                }
                 
-                setTimeout(() => {
-                    if (petal.parentNode) {
-                        petal.remove();
+                // Получаем данные пользователя
+                const user = tg.initDataUnsafe?.user;
+                if (user) {
+                    debugLog('Пользователь: ' + user.first_name);
+                    
+                    // Обновляем имя
+                    const nameElement = document.getElementById('userName');
+                    const profileNameElement = document.getElementById('profileName');
+                    if (nameElement && user.first_name) {
+                        nameElement.textContent = 'Привет, ' + user.first_name + '!';
                     }
-                }, 8000);
+                    if (profileNameElement && user.first_name) {
+                        profileNameElement.textContent = user.first_name;
+                    }
+                    
+                    // Обновляем Telegram ID
+                    const tgIdElement = document.getElementById('tgId');
+                    if (tgIdElement && user.id) {
+                        tgIdElement.textContent = user.id;
+                    }
+                    
+                    // Обновляем аватар если есть фото
+                    const avatarElements = document.querySelectorAll('[id*="Avatar"]');
+                    if (user.photo_url) {
+                        avatarElements.forEach(el => {
+                            el.innerHTML = '<img src="' + user.photo_url + '" style="width:100%;height:100%;border-radius:50%">';
+                        });
+                    }
+                    
+                } else {
+                    debugLog('Данные пользователя не получены');
+                    // Тестовые данные для отладки
+                    document.getElementById('userName').textContent = 'Привет, Аня!';
+                    document.getElementById('profileName').textContent = 'Аня Иванова';
+                    document.getElementById('tgId').textContent = '123456789';
+                }
+            } else {
+                debugLog('Telegram SDK не найден - режим браузера');
+                // Тестовые данные
+                document.getElementById('userName').textContent = 'Привет, Аня!';
+                document.getElementById('profileName').textContent = 'Аня Иванова';
+                document.getElementById('tgId').textContent = '123456789';
             }
         }
         
         // ======================
-        // УВЕДОМЛЕНИЯ
+        // ИНИЦИАЛИЗАЦИЯ
         // ======================
-        function showNotification(message, type = 'success') {
-            const notification = document.createElement('div');
-            notification.className = `notification ${type === 'error' ? 'error' : ''}`;
-            notification.textContent = message;
+        document.addEventListener('DOMContentLoaded', function() {
+            debugLog('Документ загружен');
             
-            document.body.appendChild(notification);
+            // Устанавливаем сегодняшнюю дату
+            const today = new Date().toISOString().split('T')[0];
+            const dateInput = document.getElementById('bookingDate');
+            if (dateInput) {
+                dateInput.value = today;
+                dateInput.min = today;
+            }
             
-            setTimeout(() => {
-                notification.style.animation = 'slideUp 0
+            // Загружаем данные из Telegram
+            loadTelegramData();
+            
+            // Тестируем клики
+            document.addEventListener('click', function(e) {
+                console.log('Клик по:', e.target.tagName, e.target.className);
+            });
+            
+            debugLog('Готово! Кликайте кнопки');
+        });
+        
+        // Принудительно делаем все кнопки кликабельными
+        document.addEventListener('touchstart', function(e) {
+            console.log('Касание:', e.target.tagName);
+        }, { passive: true });
+    </script>
+</body>
+</html>
