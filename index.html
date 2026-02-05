@@ -1722,11 +1722,22 @@
 
 <script>
 // ================= КОНФИГУРАЦИЯ =================
-const CONFIG = {
-    GOOGLE_SHEETS_URL: "https://script.google.com/macros/s/AKfycbwHLNUtu07o--MVTdjwzOoxi0dkXwyQ72vOPbukrSXMtqni7_uBlSnmryQQB5CD3gUW/exec",
-    MASTER_PASSWORD: "sakura2024",
-    APP_NAME: "Nail Sakura Studio",
-    VERSION: "2.0.0"
+const SUPABASE_CONFIG = {
+    url: 'https://https://dcppaqderczliumtxesd.supabase.co', // Замените на ваш URL
+    anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRjcHBhcWRlcmN6bGl1bXR4ZXNkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzAzMjY3NTYsImV4cCI6MjA4NTkwMjc1Nn0.U6YFxlc4RW0awCuhwjxwg1mpNaMlv8-5-srqB4TPrC0'       // Замените на ваш ключ
+};
+
+// ================= ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ =================
+let currentUser = null;
+let currentScreen = 'main';
+let currentTheme = 'light';
+let currentStep = 1;
+let selectedService = null;
+let allBookings = [];
+let notifications = [];
+let chatMessages = [];
+let servicesData = [];
+let dbService = null; // Добавьте эту переменную
 };
 
 // ================= ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ =================
@@ -1766,13 +1777,223 @@ document.addEventListener('DOMContentLoaded', async function() {
     
     // Показываем welcome уведомление
     setTimeout(() => {
-        showNotification('Добро пожаловать в Nail Sakura Studio! 🌸', 'info');
+        showNotification('Добро пожаловать в Lizzkiss app! 🌸', 'info');
         updateNotificationBadge();
     }, 1000);
 });
 
+// ================= КЛАСС ДЛЯ РАБОТЫ С БАЗОЙ ДАННЫХ =================
+class DatabaseService {
+    constructor() {
+        this.supabase = window.supabase.createClient(SUPABASE_CONFIG.url, SUPABASE_CONFIG.anonKey);
+    }
+
+    // ===== ПОЛЬЗОВАТЕЛИ =====
+    async saveUser(userData) {
+        const { data, error } = await this.supabase
+            .from('users')
+            .upsert({
+                telegram_id: userData.id.toString(),
+                first_name: userData.firstName,
+                last_name: userData.lastName || '',
+                username: userData.username || '',
+                photo_url: userData.photoUrl || '',
+                is_premium: userData.isPremium || false,
+                last_seen: new Date().toISOString()
+            }, { onConflict: 'telegram_id' });
+        
+        return { data, error };
+    }
+
+    // ===== ЗАПИСИ =====
+    async createBooking(booking) {
+        const { data, error } = await this.supabase
+            .from('bookings')
+            .insert([{
+                user_id: booking.userId.toString(),
+                user_name: booking.userName,
+                user_info: booking.userInfo,
+                service_id: booking.serviceId,
+                service_name: booking.service,
+                price: booking.price,
+                date: booking.date,
+                time: booking.time + ':00',
+                master: booking.master || '',
+                notes: booking.notes || '',
+                phone: booking.phone,
+                status: 'pending'
+            }])
+            .select();
+        
+        return { data, error };
+    }
+
+    async getUserBookings(userId) {
+        const { data, error } = await this.supabase
+            .from('bookings')
+            .select('*')
+            .eq('user_id', userId.toString())
+            .order('date', { ascending: true });
+        
+        return { data, error };
+    }
+
+    async updateBookingStatus(bookingId, status) {
+        const { data, error } = await this.supabase
+            .from('bookings')
+            .update({ status, updated_at: new Date().toISOString() })
+            .eq('id', bookingId)
+            .select();
+        
+        return { data, error };
+    }
+
+    // ===== УСЛУГИ =====
+    async getServices() {
+        const { data, error } = await this.supabase
+            .from('services')
+            .select('*')
+            .order('price', { ascending: true });
+        
+        return { data, error };
+    }
+
+    // ===== УВЕДОМЛЕНИЯ =====
+    async createNotification(notification) {
+        const { data, error } = await this.supabase
+            .from('notifications')
+            .insert([{
+                user_id: notification.userId.toString(),
+                title: notification.title,
+                message: notification.message,
+                type: notification.type
+            }]);
+        
+        return { data, error };
+    }
+
+    async getUserNotifications(userId) {
+        const { data, error } = await this.supabase
+            .from('notifications')
+            .select('*')
+            .eq('user_id', userId.toString())
+            .order('created_at', { ascending: false })
+            .limit(50);
+        
+        return { data, error };
+    }
+
+    async markNotificationAsRead(notificationId) {
+        const { data, error } = await this.supabase
+            .from('notifications')
+            .update({ read: true })
+            .eq('id', notificationId);
+        
+        return { data, error };
+    }
+
+    // ===== ГАЛЕРЕЯ =====
+    async getGallery() {
+        const { data, error } = await this.supabase
+            .from('gallery')
+            .select('*')
+            .order('created_at', { ascending: false });
+        
+        return { data, error };
+    }
+
+    // ===== МАСТЕР-ПАНЕЛЬ =====
+    async getAllBookings() {
+        const { data, error } = await this.supabase
+            .from('bookings')
+            .select('*')
+            .order('date', { ascending: true });
+        
+        return { data, error };
+    }
+
+    async getTodayBookings() {
+        const today = new Date().toISOString().split('T')[0];
+        const { data, error } = await this.supabase
+            .from('bookings')
+            .select('*')
+            .eq('date', today)
+            .order('time', { ascending: true });
+        
+        return { data, error };
+    }
+
+    async deleteBooking(bookingId) {
+        const { data, error } = await this.supabase
+            .from('bookings')
+            .delete()
+            .eq('id', bookingId);
+        
+        return { data, error };
+    }
+}
+
+// Инициализация базы данных
+async function initDatabase() {
+    try {
+        dbService = new DatabaseService();
+        
+        // Сохраняем/обновляем пользователя в БД
+        if (currentUser) {
+            await dbService.saveUser(currentUser);
+        }
+        
+        // Загружаем услуги из БД (если есть)
+        const { data: dbServices, error } = await dbService.getServices();
+        if (!error && dbServices && dbServices.length > 0) {
+            servicesData = dbServices.map(s => ({
+                id: s.id,
+                name: s.name,
+                description: s.description || '',
+                price: s.price,
+                duration: s.duration || 60,
+                category: s.category || 'other',
+                icon: s.icon || '💅',
+                popular: s.popular || false
+            }));
+            renderServices();
+        }
+        
+        // Загружаем записи пользователя из БД
+        if (currentUser) {
+            const { data: dbBookings } = await dbService.getUserBookings(currentUser.id);
+            if (dbBookings) {
+                allBookings = dbBookings.map(b => ({
+                    id: b.id,
+                    userId: b.user_id,
+                    userName: b.user_name,
+                    userInfo: b.user_info,
+                    service: b.service_name,
+                    serviceId: b.service_id,
+                    price: b.price,
+                    date: b.date,
+                    time: b.time ? b.time.substring(0, 5) : '10:00',
+                    master: b.master,
+                    notes: b.notes,
+                    phone: b.phone,
+                    status: b.status,
+                    createdAt: b.created_at
+                }));
+                updateUpcomingBookings();
+            }
+        }
+        
+        console.log('✅ База данных Supabase инициализирована');
+        return true;
+    } catch (error) {
+        console.error('❌ Ошибка инициализации базы данных:', error);
+        showNotification('Используется локальное хранилище', 'warning');
+        return false;
+    }
+}
+
 // Инициализация Telegram
-function initTelegram() {
+async function initTelegram() {
     const tg = Telegram.WebApp;
     tg.expand();
     tg.setHeaderColor('#FFB6C1');
@@ -1798,6 +2019,9 @@ function initTelegram() {
             document.getElementById('userAvatar').innerHTML = `<img src="${currentUser.photoUrl}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">`;
             document.getElementById('profileAvatar').innerHTML = `<img src="${currentUser.photoUrl}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">`;
         }
+        
+        // ИНИЦИАЛИЗИРУЕМ БАЗУ ДАННЫХ ПОСЛЕ ПОЛЬЗОВАТЕЛЯ
+        setTimeout(() => initDatabase(), 500);
     }
 }
 
@@ -2119,7 +2343,7 @@ async function submitBooking() {
         }
         
         const booking = {
-            id: Date.now(),
+            id: Date.now(), // временный ID
             userId: currentUser.id,
             userName: `${currentUser.firstName} ${currentUser.lastName || ''}`.trim(),
             userInfo: currentUser.username ? `@${currentUser.username}` : `ID: ${currentUser.id}`,
@@ -2136,6 +2360,21 @@ async function submitBooking() {
             createdAt: new Date().toISOString()
         };
         
+        let dbSuccess = false;
+        let dbBookingId = null;
+        
+        // Сохраняем в Supabase
+        if (dbService) {
+            const { data, error } = await dbService.createBooking(booking);
+            if (!error && data) {
+                dbSuccess = true;
+                dbBookingId = data[0].id;
+                booking.id = dbBookingId;
+            } else {
+                console.error('Supabase error:', error);
+            }
+        }
+        
         // Сохраняем локально
         allBookings.push(booking);
         saveLocalData();
@@ -2146,22 +2385,35 @@ async function submitBooking() {
             sheetsSuccess = await saveToGoogleSheets(booking);
         }
         
-        // Добавляем уведомление
+        // Добавляем уведомление в БД
+        if (dbService && dbSuccess) {
+            await dbService.createNotification({
+                userId: currentUser.id,
+                title: 'Запись создана',
+                message: `Вы записаны на ${formatDate(date)} в ${time}`,
+                type: 'success'
+            });
+        }
+        
+        // Добавляем локальное уведомление
         addNotification('Запись создана', `Вы записаны на ${formatDate(date)} в ${time}`, 'success');
         updateNotificationBadge();
         
         // Показываем подтверждение
         setTimeout(() => {
             hideLoader();
-            showNotification(
-                sheetsSuccess 
-                    ? `🎉 Запись создана и синхронизирована!\n${selectedService.name}\n${formatDate(date)} в ${time}`
-                    : `🎉 Запись создана!\n${selectedService.name}\n${formatDate(date)} в ${time}`,
-                'success'
-            );
+            let message = `🎉 Запись создана!\n${selectedService.name}\n${formatDate(date)} в ${time}`;
+            
+            if (dbSuccess) message += '\n✅ Синхронизировано с базой';
+            if (sheetsSuccess) message += '\n📊 Сохранено в Google Sheets';
+            
+            showNotification(message, 'success', 6000);
             
             // Сбрасываем форму
             resetBookingForm();
+            
+            // Обновляем UI
+            updateUpcomingBookings();
             
             // Возвращаем на главную
             showScreen('main');
@@ -2170,6 +2422,7 @@ async function submitBooking() {
     } catch (error) {
         hideLoader();
         showNotification('Ошибка при создании записи: ' + error.message, 'error');
+        console.error('Booking error:', error);
     }
 }
 
@@ -2535,38 +2788,54 @@ function showMasterLogin() {
 }
 
 function refreshMasterPanel() {
-    // Загрузка данных для мастер-панели
-    const content = document.getElementById('masterContent');
-    const today = new Date().toISOString().split('T')[0];
-    const todayBookings = allBookings.filter(b => b.date === today);
-    
-    content.innerHTML = `
-        <h4 style="margin-bottom:15px;">📋 Записи на сегодня (${todayBookings.length})</h4>
-        ${todayBookings.length === 0 ? 
-            '<p style="text-align:center;padding:20px;color:var(--text-muted);">Записей на сегодня нет</p>' :
-            todayBookings.map(booking => `
-                <div class="card" style="margin-bottom:10px;">
-                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
-                        <div>
-                            <div style="font-weight:600;">${booking.service}</div>
-                            <div style="font-size:12px;color:var(--text-muted);">${booking.userName}</div>
-                        </div>
-                        <div style="text-align:right;">
-                            <div style="font-weight:600;">${booking.time}</div>
-                            <span class="status-badge status-${booking.status}" onclick="changeBookingStatus(${booking.id})" style="cursor:pointer;">
-                                ${booking.status === 'confirmed' ? '✅' : '⏳'}
-                            </span>
-                        </div>
-                    </div>
-                    <div style="font-size:12px;color:var(--text-muted);">
-                        📞 ${booking.phone} • 💵 ${booking.price}₽
-                    </div>
-                </div>
-            `).join('')
+    try {
+        let todayBookings = [];
+        
+        // Загружаем из базы
+        if (dbService) {
+            const { data, error } = await dbService.getTodayBookings();
+            if (!error && data) {
+                todayBookings = data;
+            }
+        } else {
+            // Или из локальных данных
+            const today = new Date().toISOString().split('T')[0];
+            todayBookings = allBookings.filter(b => b.date === today);
         }
-    `;
+        
+        const content = document.getElementById('masterContent');
+        content.innerHTML = `
+            <h4 style="margin-bottom:15px;">📋 Записи на сегодня (${todayBookings.length})</h4>
+            ${todayBookings.length === 0 ? 
+                '<p style="text-align:center;padding:20px;color:var(--text-muted);">Записей на сегодня нет</p>' :
+                todayBookings.map(booking => `
+                    <div class="card" style="margin-bottom:10px;">
+                        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+                            <div>
+                                <div style="font-weight:600;">${booking.service_name || booking.service}</div>
+                                <div style="font-size:12px;color:var(--text-muted);">${booking.user_name || booking.userName}</div>
+                            </div>
+                            <div style="text-align:right;">
+                                <div style="font-weight:600;">${booking.time ? booking.time.substring(0, 5) : booking.time}</div>
+                                <span class="status-badge status-${booking.status}" onclick="changeBookingStatus('${booking.id}', '${booking.status}')" style="cursor:pointer;">
+                                    ${booking.status === 'confirmed' ? '✅' : 
+                                     booking.status === 'completed' ? '✅' : 
+                                     booking.status === 'cancelled' ? '❌' : '⏳'}
+                                </span>
+                            </div>
+                        </div>
+                        <div style="font-size:12px;color:var(--text-muted);">
+                            📞 ${booking.phone} • 💵 ${booking.price}₽
+                        </div>
+                    </div>
+                `).join('')
+            }
+        `;
+        
+    } catch (error) {
+        console.error('Refresh master panel error:', error);
+    }
 }
-
 function changeBookingStatus(bookingId) {
     const booking = allBookings.find(b => b.id === bookingId);
     if (booking) {
@@ -2864,6 +3133,160 @@ function exportToJSON() {
 function initApp() {
     console.log('🌸 Nail Sakura Studio initialized');
 }
+// ================= ДОПОЛНИТЕЛЬНЫЕ ФУНКЦИИ ДЛЯ БАЗЫ ДАННЫХ =================
+
+async function changeBookingStatus(bookingId, currentStatus) {
+    try {
+        const statuses = ['pending', 'confirmed', 'completed', 'cancelled'];
+        const currentIndex = statuses.indexOf(currentStatus);
+        const nextIndex = (currentIndex + 1) % statuses.length;
+        const newStatus = statuses[nextIndex];
+        
+        // Обновляем в базе
+        if (dbService) {
+            await dbService.updateBookingStatus(bookingId, newStatus);
+        }
+        
+        // Обновляем локально
+        const booking = allBookings.find(b => b.id === bookingId);
+        if (booking) {
+            booking.status = newStatus;
+            saveLocalData();
+        }
+        
+        refreshMasterPanel();
+        showNotification(`Статус изменен на: ${newStatus}`, 'success');
+        
+    } catch (error) {
+        console.error('Change status error:', error);
+        showNotification('Ошибка при изменении статуса', 'error');
+    }
+}
+
+// Экспорт данных в JSON
+async function exportAllData() {
+    try {
+        let allData = {
+            app: CONFIG.APP_NAME,
+            version: CONFIG.VERSION,
+            exportDate: new Date().toISOString(),
+            user: currentUser,
+            localBookings: allBookings,
+            localNotifications: notifications,
+            localServices: servicesData
+        };
+        
+        // Если есть база, получаем все данные
+        if (dbService) {
+            const [dbBookings, dbServices] = await Promise.all([
+                dbService.getAllBookings(),
+                dbService.getServices()
+            ]);
+            
+            allData.dbBookings = dbBookings.data || [];
+            allData.dbServices = dbServices.data || [];
+        }
+        
+        const json = JSON.stringify(allData, null, 2);
+        const blob = new Blob([json], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `nail_sakura_backup_${new Date().toISOString().split('T')[0]}.json`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        
+        showNotification('Все данные экспортированы в JSON', 'success');
+        
+    } catch (error) {
+        console.error('Export error:', error);
+        showNotification('Ошибка при экспорте данных', 'error');
+    }
+}
+
+// Синхронизация локальных данных с базой
+async function syncWithDatabase() {
+    showLoader();
+    
+    try {
+        if (!dbService) {
+            showNotification('База данных не инициализирована', 'error');
+            hideLoader();
+            return;
+        }
+        
+        // 1. Синхронизируем услуги
+        const { data: dbServices } = await dbService.getServices();
+        if (dbServices && dbServices.length > 0) {
+            servicesData = dbServices.map(s => ({
+                id: s.id,
+                name: s.name,
+                description: s.description || '',
+                price: s.price,
+                duration: s.duration || 60,
+                category: s.category || 'other',
+                icon: s.icon || '💅',
+                popular: s.popular || false
+            }));
+            renderServices();
+        }
+        
+        // 2. Синхронизируем записи пользователя
+        if (currentUser) {
+            const { data: dbBookings } = await dbService.getUserBookings(currentUser.id);
+            if (dbBookings) {
+                allBookings = dbBookings.map(b => ({
+                    id: b.id,
+                    userId: b.user_id,
+                    userName: b.user_name,
+                    userInfo: b.user_info,
+                    service: b.service_name,
+                    serviceId: b.service_id,
+                    price: b.price,
+                    date: b.date,
+                    time: b.time ? b.time.substring(0, 5) : '10:00',
+                    master: b.master,
+                    notes: b.notes,
+                    phone: b.phone,
+                    status: b.status,
+                    createdAt: b.created_at
+                }));
+                
+                saveLocalData();
+                updateUpcomingBookings();
+            }
+        }
+        
+        // 3. Синхронизируем уведомления
+        if (currentUser) {
+            const { data: dbNotifications } = await dbService.getUserNotifications(currentUser.id);
+            if (dbNotifications) {
+                notifications = dbNotifications.map(n => ({
+                    id: n.id,
+                    title: n.title,
+                    message: n.message,
+                    type: n.type,
+                    read: n.read,
+                    timestamp: n.created_at
+                }));
+                
+                updateNotificationBadge();
+            }
+        }
+        
+        hideLoader();
+        showNotification('✅ Данные синхронизированы с базой', 'success');
+        
+    } catch (error) {
+        hideLoader();
+        console.error('Sync error:', error);
+        showNotification('Ошибка синхронизации', 'error');
+    }
+}
+
+// Добавьте кнопку синхронизации в настройках или профиле
 
 // Запуск приложения
 window.onload = initApp;
