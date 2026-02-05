@@ -1993,7 +1993,7 @@ async function initDatabase() {
 }
 
 // Инициализация Telegram
-async function initTelegram() {
+function initTelegram() {
     const tg = Telegram.WebApp;
     tg.expand();
     tg.setHeaderColor('#FFB6C1');
@@ -2019,9 +2019,6 @@ async function initTelegram() {
             document.getElementById('userAvatar').innerHTML = `<img src="${currentUser.photoUrl}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">`;
             document.getElementById('profileAvatar').innerHTML = `<img src="${currentUser.photoUrl}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">`;
         }
-        
-        // ИНИЦИАЛИЗИРУЕМ БАЗУ ДАННЫХ ПОСЛЕ ПОЛЬЗОВАТЕЛЯ
-        setTimeout(() => initDatabase(), 500);
     }
 }
 
@@ -2102,7 +2099,7 @@ function loadServicesData() {
     
     renderServices();
 }
-
+    
 // Рендеринг услуг
 function renderServices() {
     const servicesGrid = document.getElementById('servicesGrid');
@@ -3293,4 +3290,5 @@ window.onload = initApp;
 </script>
 </body>
 </html>
+
 
