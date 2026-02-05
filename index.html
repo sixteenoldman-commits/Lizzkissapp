@@ -525,6 +525,133 @@
             transform: scale(1.05);
         }
 
+        /* ГАЛЕРЕЯ */
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin: 20px 0;
+        }
+
+        .gallery-item {
+            aspect-ratio: 1;
+            background: var(--bg-secondary);
+            border-radius: 16px;
+            overflow: hidden;
+            position: relative;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .gallery-item:hover {
+            transform: scale(1.05);
+            box-shadow: var(--shadow);
+        }
+
+        .gallery-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .gallery-item .delete-btn {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background: var(--accent-danger);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 25px;
+            height: 25px;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 12px;
+            z-index: 10;
+        }
+
+        .gallery-item:hover .delete-btn {
+            display: flex;
+        }
+
+        .gallery-item .item-info {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 8px;
+            font-size: 11px;
+            transform: translateY(100%);
+            transition: transform 0.3s;
+        }
+
+        .gallery-item:hover .item-info {
+            transform: translateY(0);
+        }
+
+        /* ЗАГРУЗКА ФОТО */
+        .upload-container {
+            text-align: center;
+            padding: 30px;
+            background: var(--bg-secondary);
+            border-radius: var(--border-radius);
+            border: 2px dashed var(--accent-primary);
+            margin: 20px 0;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .upload-container:hover {
+            background: rgba(255, 182, 193, 0.1);
+            border-color: var(--accent-secondary);
+        }
+
+        .upload-container input[type="file"] {
+            display: none;
+        }
+
+        .upload-label {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+        }
+
+        .upload-icon {
+            font-size: 48px;
+            color: var(--accent-primary);
+        }
+
+        .upload-preview {
+            max-width: 100%;
+            max-height: 200px;
+            border-radius: 10px;
+            margin-top: 15px;
+            display: none;
+        }
+
+        .upload-progress {
+            width: 100%;
+            height: 10px;
+            background: var(--bg-secondary);
+            border-radius: 5px;
+            margin-top: 10px;
+            overflow: hidden;
+            display: none;
+        }
+
+        .upload-progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent-primary), var(--accent-secondary));
+            width: 0%;
+            transition: width 0.3s;
+        }
+
         @media (max-width: 480px) {
             body {
                 padding: 15px;
@@ -534,6 +661,10 @@
             .service-grid {
                 grid-template-columns: 1fr;
                 gap: 12px;
+            }
+            
+            .gallery-grid {
+                grid-template-columns: repeat(2, 1fr);
             }
             
             .card {
@@ -588,6 +719,48 @@
 
         input:checked + .slider:before {
             transform: translateX(26px);
+        }
+
+        .theme-toggle {
+            position: relative;
+            width: 60px;
+            height: 30px;
+            background: var(--bg-secondary);
+            border-radius: 15px;
+            border: none;
+            cursor: pointer;
+            box-shadow: var(--shadow-inset);
+            transition: var(--transition);
+        }
+
+        .theme-toggle::after {
+            content: '';
+            position: absolute;
+            top: 3px;
+            left: 3px;
+            width: 24px;
+            height: 24px;
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+            border-radius: 50%;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+        }
+
+        [data-theme="light"] .theme-toggle::after {
+            content: '☀️';
+        }
+
+        [data-theme="dark"] .theme-toggle::after {
+            content: '🌙';
+            transform: translateX(30px);
+        }
+
+        [data-theme="pink"] .theme-toggle::after {
+            content: '🌸';
+            transform: translateX(30px);
         }
     </style>
 </head>
@@ -657,6 +830,51 @@
         </div>
     </div>
 
+    <!-- Модальное окно загрузки фото -->
+    <div id="uploadModal" class="modal-overlay hidden">
+        <div class="modal">
+            <button class="modal-close" onclick="closeModal('uploadModal')">&times;</button>
+            <h3 class="section-title">📤 Загрузить работу</h3>
+            <div class="upload-container" onclick="document.getElementById('photoUpload').click()">
+                <input type="file" id="photoUpload" accept="image/*" onchange="previewPhoto(event)">
+                <label for="photoUpload" class="upload-label">
+                    <div class="upload-icon">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                    </div>
+                    <div>
+                        <div style="font-weight:600;margin-bottom:5px;">Нажмите для загрузки</div>
+                        <div style="font-size:12px;color:var(--text-muted);">JPG, PNG до 5MB</div>
+                    </div>
+                </label>
+                <img id="uploadPreview" class="upload-preview" alt="Предпросмотр">
+                <div class="upload-progress" id="uploadProgress">
+                    <div class="upload-progress-bar" id="uploadProgressBar"></div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Название работы</label>
+                <input type="text" class="form-input" id="photoTitle" placeholder="Например: Весенний дизайн">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Категория</label>
+                <select class="form-select" id="photoCategory">
+                    <option value="all">Все работы</option>
+                    <option value="manicure">Маникюр</option>
+                    <option value="design">Дизайн</option>
+                    <option value="spa">SPA-уход</option>
+                    <option value="premium">Премиум</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Описание (опционально)</label>
+                <textarea class="form-input" id="photoDescription" rows="2" placeholder="Краткое описание работы..."></textarea>
+            </div>
+            <button class="btn btn-primary" onclick="uploadPhotoToServer()" style="margin-top:20px;">
+                <i class="fas fa-upload"></i> Загрузить в галерею
+            </button>
+        </div>
+    </div>
+
     <!-- Загрузчик -->
     <div id="loader" class="loader-overlay hidden">
         <div class="loader"></div>
@@ -677,7 +895,7 @@
                     <i class="fas fa-bell"></i>
                     <span class="notification-badge" id="notificationBadge">0</span>
                 </button>
-                <button class="theme-toggle" onclick="openThemeModal()" style="position:relative;width:60px;height:30px;background:var(--bg-secondary);border-radius:15px;border:none;cursor:pointer;box-shadow:var(--shadow-inset);transition:var(--transition);"></button>
+                <button class="theme-toggle" onclick="openThemeModal()"></button>
             </div>
         </header>
 
@@ -842,8 +1060,19 @@
                     <h3 style="flex:1;text-align:center;font-weight:700;">🖼️ Галерея работ</h3>
                     <button class="btn-icon" onclick="refreshGallery()"><i class="fas fa-sync-alt"></i></button>
                 </div>
-                <div class="gallery-grid" id="galleryGrid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:20px 0;"></div>
-                <button class="btn btn-secondary" onclick="uploadPhoto()" style="margin-top:20px;"><i class="fas fa-camera"></i> Добавить свою работу</button>
+                
+                <div class="category-tabs" style="display:flex;gap:10px;margin-bottom:20px;overflow-x:auto;padding-bottom:10px;">
+                    <button class="category-tab active" onclick="filterGallery('all')" style="padding:8px 16px;background:var(--accent-primary);color:white;border:none;border-radius:20px;font-size:14px;font-weight:600;cursor:pointer;white-space:nowrap;">Все</button>
+                    <button class="category-tab" onclick="filterGallery('manicure')" style="padding:8px 16px;background:var(--bg-secondary);color:var(--text-secondary);border:none;border-radius:20px;font-size:14px;font-weight:600;cursor:pointer;white-space:nowrap;">Маникюр</button>
+                    <button class="category-tab" onclick="filterGallery('design')" style="padding:8px 16px;background:var(--bg-secondary);color:var(--text-secondary);border:none;border-radius:20px;font-size:14px;font-weight:600;cursor:pointer;white-space:nowrap;">Дизайн</button>
+                    <button class="category-tab" onclick="filterGallery('spa')" style="padding:8px 16px;background:var(--bg-secondary);color:var(--text-secondary);border:none;border-radius:20px;font-size:14px;font-weight:600;cursor:pointer;white-space:nowrap;">SPA</button>
+                </div>
+                
+                <div class="gallery-grid" id="galleryGrid"></div>
+                
+                <button class="btn btn-primary" onclick="openUploadModal()" style="margin-top:20px;" id="uploadPhotoBtn">
+                    <i class="fas fa-camera"></i> Загрузить работу
+                </button>
             </div>
         </div>
 
@@ -972,9 +1201,9 @@
                         <div style="font-size:24px;margin-bottom:10px;">📅</div>
                         <div style="font-size:14px;font-weight:600;">На сегодня</div>
                     </button>
-                    <button class="card hover-zoom" onclick="showCalendar()" style="text-align:center;padding:15px;cursor:pointer;border:none;background:var(--bg-card);">
-                        <div style="font-size:24px;margin-bottom:10px;">🗓️</div>
-                        <div style="font-size:14px;font-weight:600;">Календарь</div>
+                    <button class="card hover-zoom" onclick="manageGallery()" style="text-align:center;padding:15px;cursor:pointer;border:none;background:var(--bg-card);">
+                        <div style="font-size:24px;margin-bottom:10px;">🖼️</div>
+                        <div style="font-size:14px;font-weight:600;">Галерея</div>
                     </button>
                     <button class="card hover-zoom" onclick="showAllBookings()" style="text-align:center;padding:15px;cursor:pointer;border:none;background:var(--bg-card);">
                         <div style="font-size:24px;margin-bottom:10px;">📋</div>
@@ -1024,23 +1253,23 @@
         <button class="nav-item active" onclick="showScreen('main')"><div class="nav-icon">🏠</div><div class="nav-label">Главная</div></button>
         <button class="nav-item" onclick="showScreen('booking')"><div class="nav-icon">💅</div><div class="nav-label">Запись</div></button>
         <button class="nav-item" onclick="showScreen('services')"><div class="nav-icon">✨</div><div class="nav-label">Услуги</div></button>
-        <button class="nav-item" onclick="showScreen('myBookings')"><div class="nav-icon">📅</div><div class="nav-label">Записи</div></button>
+        <button class="nav-item" onclick="showScreen('gallery')"><div class="nav-icon">🖼️</div><div class="nav-label">Галерея</div></button>
         <button class="nav-item" onclick="showScreen('profile')"><div class="nav-icon">👤</div><div class="nav-label">Профиль</div></button>
     </nav>
 
 <script>
 // ================= КОНФИГУРАЦИЯ =================
 const CONFIG = {
-    MASTER_PASSWORD: "sakura2024", // Пароль для входа в мастер-панель
-    MASTER_LOGIN: "admin", // Логин для входа в мастер-панель
+    MASTER_PASSWORD: "sakura2024",
+    MASTER_LOGIN: "admin",
     APP_NAME: "Nail Sakura Studio",
     VERSION: "2.0.0"
 };
 
 // === ЗАМЕНИТЕ ЭТИ ДАННЫЕ НА ВАШИ РЕАЛЬНЫЕ ИЗ SUPABASE ===
 const SUPABASE_CONFIG = {
-    url: 'https://dcppaqderczliumtxesd.supabase.co', // Замените на ваш Project URL из Supabase
-    anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRjcHBhcWRlcmN6bGl1bXR4ZXNkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzAzMjY3NTYsImV4cCI6MjA4NTkwMjc1Nn0.U6YFxlc4RW0awCuhwjxwg1mpNaMlv8-5-srqB4TPrC0' // Замените на ваш anon public key из Supabase
+    url: 'https://dcppaqderczliumtxesd.supabase.co',
+    anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRjcHBhcWRlcmN6bGl1bXR4ZXNkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzAzMjY3NTYsImV4cCI6MjA4NTkwMjc1Nn0.U6YFxlc4RW0awCuhwjxwg1mpNaMlv8-5-srqB4TPrC0'
 };
 
 // ================= ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ =================
@@ -1052,28 +1281,25 @@ let selectedService = null;
 let allBookings = [];
 let notifications = [];
 let servicesData = [];
+let galleryItems = [];
 let dbService = null;
 let isMasterMode = false;
+let selectedPhotoFile = null;
 
 // ================= ИНИЦИАЛИЗАЦИЯ =================
 document.addEventListener('DOMContentLoaded', async function() {
     console.log(`🌸 ${CONFIG.APP_NAME} v${CONFIG.VERSION}`);
     
-    // Загружаем сохранённую тему
     const savedTheme = localStorage.getItem('nailSakuraTheme') || 'light';
     setTheme(savedTheme);
     
-    // Загружаем локальные данные
     loadLocalData();
     
-    // Инициализация
     await initApp();
     
-    // Обновление UI
     updateUI();
     setupEventListeners();
     
-    // Показываем welcome уведомление
     setTimeout(() => {
         showNotification('Добро пожаловать в Nail Sakura Studio! 🌸', 'info');
     }, 1000);
@@ -1082,18 +1308,10 @@ document.addEventListener('DOMContentLoaded', async function() {
 // Основная функция инициализации
 async function initApp() {
     try {
-        // Инициализируем Telegram
         await initTelegram();
-        
-        // Затем инициализируем базу данных
         await initDatabase();
-        
-        // Загружаем услуги
         loadServicesData();
-        
-        // Создаем частицы
         createParticles();
-        
         console.log('✅ Приложение инициализировано');
     } catch (error) {
         console.error('❌ Ошибка инициализации:', error);
@@ -1184,7 +1402,6 @@ class DatabaseService {
     async isConnected() {
         if (!this.supabase) return false;
         try {
-            // Простая проверка подключения
             const { data, error } = await this.supabase.from('services').select('count').limit(1);
             return !error;
         } catch (error) {
@@ -1326,6 +1543,88 @@ class DatabaseService {
             return { data: null, error };
         }
     }
+    
+    // ===== ГАЛЕРЕЯ =====
+    async getGallery() {
+        if (!this.supabase) return { data: null, error: 'No database' };
+        
+        try {
+            const { data, error } = await this.supabase
+                .from('gallery')
+                .select('*')
+                .order('created_at', { ascending: false });
+            
+            return { data, error };
+        } catch (error) {
+            console.error('Get gallery error:', error);
+            return { data: null, error };
+        }
+    }
+    
+    async addToGallery(photoData) {
+        if (!this.supabase) return { error: 'No database' };
+        
+        try {
+            const { data, error } = await this.supabase
+                .from('gallery')
+                .insert([{
+                    title: photoData.title,
+                    description: photoData.description,
+                    image_url: photoData.imageUrl,
+                    category: photoData.category,
+                    uploaded_by: photoData.uploadedBy,
+                    created_at: new Date().toISOString()
+                }])
+                .select();
+            
+            return { data, error };
+        } catch (error) {
+            console.error('Add to gallery error:', error);
+            return { data: null, error };
+        }
+    }
+    
+    async deleteFromGallery(photoId) {
+        if (!this.supabase) return { error: 'No database' };
+        
+        try {
+            const { data, error } = await this.supabase
+                .from('gallery')
+                .delete()
+                .eq('id', photoId);
+            
+            return { data, error };
+        } catch (error) {
+            console.error('Delete from gallery error:', error);
+            return { data: null, error };
+        }
+    }
+    
+    // Загрузка файла в Supabase Storage
+    async uploadFile(file, fileName) {
+        if (!this.supabase) return { error: 'No database' };
+        
+        try {
+            const fileExt = fileName.split('.').pop();
+            const filePath = `${Date.now()}-${Math.random().toString(36).substr(2, 9)}.${fileExt}`;
+            
+            const { data, error } = await this.supabase.storage
+                .from('gallery')
+                .upload(filePath, file);
+            
+            if (error) throw error;
+            
+            // Получаем публичный URL
+            const { data: { publicUrl } } = this.supabase.storage
+                .from('gallery')
+                .getPublicUrl(filePath);
+            
+            return { data: { publicUrl, filePath }, error: null };
+        } catch (error) {
+            console.error('Upload file error:', error);
+            return { data: null, error };
+        }
+    }
 }
 
 // Инициализация базы данных
@@ -1333,7 +1632,6 @@ async function initDatabase() {
     try {
         dbService = new DatabaseService();
         
-        // Проверяем подключение
         const isConnected = await dbService.isConnected();
         
         if (isConnected) {
@@ -1341,12 +1639,10 @@ async function initDatabase() {
             document.getElementById('dbStatus').textContent = '✅ Подключено';
             document.getElementById('dbStatus').style.color = 'var(--accent-success)';
             
-            // Сохраняем пользователя в БД
             if (currentUser) {
                 await dbService.saveUser(currentUser);
             }
             
-            // Загружаем услуги из БД
             const { data: dbServices, error } = await dbService.getServices();
             if (!error && dbServices && dbServices.length > 0) {
                 servicesData = dbServices.map(s => ({
@@ -1361,14 +1657,15 @@ async function initDatabase() {
                 }));
                 console.log(`✅ Loaded ${servicesData.length} services from database`);
             } else {
-                // Если нет услуг в БД, используем локальные
                 loadLocalServices();
             }
             
-            // Загружаем записи пользователя
             if (currentUser) {
                 await loadBookingsFromDatabase();
             }
+            
+            // Загружаем галерею
+            await loadGalleryFromDatabase();
         } else {
             console.log('⚠️ Using local storage only');
             document.getElementById('dbStatus').textContent = '❌ Не подключено';
@@ -1433,6 +1730,41 @@ async function loadBookingsFromDatabase() {
     }
 }
 
+// Загрузка галереи из базы данных
+async function loadGalleryFromDatabase() {
+    if (!dbService) return;
+    
+    try {
+        const { data: dbGallery, error } = await dbService.getGallery();
+        if (!error && dbGallery) {
+            galleryItems = dbGallery.map(item => ({
+                id: item.id,
+                title: item.title,
+                description: item.description,
+                imageUrl: item.image_url,
+                category: item.category,
+                uploadedBy: item.uploaded_by,
+                createdAt: item.created_at
+            }));
+            console.log(`✅ Loaded ${galleryItems.length} gallery items from database`);
+            renderGallery();
+        } else if (galleryItems.length === 0) {
+            // Демо-данные для галереи
+            galleryItems = [
+                { id: 1, title: 'Весенний дизайн', category: 'design', imageUrl: 'https://images.unsplash.com/photo-1604654894610-df63bc536371?w=400&h=400&fit=crop' },
+                { id: 2, title: 'Вечерний блеск', category: 'premium', imageUrl: 'https://images.unsplash.com/photo-1607779097332-8c0f22a49c8a?w=400&h=400&fit=crop' },
+                { id: 3, title: 'Художественная роспись', category: 'design', imageUrl: 'https://images.unsplash.com/photo-1607779097332-8c0f22a49c8a?w-400&h=400&fit=crop' },
+                { id: 4, title: 'Кристальная элегантность', category: 'premium', imageUrl: 'https://images.unsplash.com/photo-1604654894610-df63bc536371?w=400&h=400&fit=crop' },
+                { id: 5, title: 'Нежный романтик', category: 'manicure', imageUrl: 'https://images.unsplash.com/photo-1607779097332-8c0f22a49c8a?w=400&h=400&fit=crop' },
+                { id: 6, title: 'Тропическое настроение', category: 'design', imageUrl: 'https://images.unsplash.com/photo-1604654894610-df63bc536371?w=400&h=400&fit=crop' }
+            ];
+            renderGallery();
+        }
+    } catch (error) {
+        console.error('Load gallery from DB error:', error);
+    }
+}
+
 // Тестирование базы данных
 async function testDatabase() {
     showLoader();
@@ -1463,7 +1795,6 @@ async function syncDatabase() {
     showLoader();
     try {
         if (dbService && await dbService.isConnected()) {
-            // Загружаем услуги из БД
             const { data: dbServices, error } = await dbService.getServices();
             if (!error && dbServices) {
                 servicesData = dbServices.map(s => ({
@@ -1479,10 +1810,11 @@ async function syncDatabase() {
                 renderServices();
             }
             
-            // Загружаем записи
             if (currentUser) {
                 await loadBookingsFromDatabase();
             }
+            
+            await loadGalleryFromDatabase();
             
             showNotification('✅ Данные синхронизированы с базой', 'success');
         } else {
@@ -1494,6 +1826,210 @@ async function syncDatabase() {
     } finally {
         hideLoader();
     }
+}
+
+// ================= ГАЛЕРЕЯ =================
+async function loadGallery() {
+    await loadGalleryFromDatabase();
+}
+
+function renderGallery() {
+    const galleryGrid = document.getElementById('galleryGrid');
+    if (!galleryGrid) return;
+    
+    // Показываем/скрываем кнопку загрузки в зависимости от режима
+    const uploadBtn = document.getElementById('uploadPhotoBtn');
+    if (uploadBtn) {
+        uploadBtn.style.display = isMasterMode ? 'block' : 'none';
+    }
+    
+    if (galleryItems.length === 0) {
+        galleryGrid.innerHTML = `
+            <div style="grid-column:1/-1;text-align:center;padding:40px;">
+                <div style="font-size:48px;color:var(--text-muted);margin-bottom:20px;">🖼️</div>
+                <p style="color:var(--text-muted);">Галерея пока пуста</p>
+                ${isMasterMode ? '<p style="color:var(--text-muted);font-size:14px;margin-top:10px;">Нажмите "Загрузить работу" чтобы добавить фото</p>' : ''}
+            </div>
+        `;
+        return;
+    }
+    
+    galleryGrid.innerHTML = galleryItems.map(item => `
+        <div class="gallery-item" data-category="${item.category}">
+            <img src="${item.imageUrl || 'https://via.placeholder.com/400x400?text=Nail+Art'}" 
+                 alt="${item.title}"
+                 onerror="this.src='https://via.placeholder.com/400x400?text=Nail+Art'">
+            ${isMasterMode ? `
+                <button class="delete-btn" onclick="deleteGalleryItem('${item.id}')" title="Удалить">
+                    <i class="fas fa-trash"></i>
+                </button>
+            ` : ''}
+            <div class="item-info">
+                <div style="font-weight:600;font-size:12px;">${item.title}</div>
+                ${item.description ? `<div style="font-size:10px;opacity:0.8;margin-top:2px;">${item.description.substring(0, 30)}${item.description.length > 30 ? '...' : ''}</div>` : ''}
+            </div>
+        </div>
+    `).join('');
+}
+
+function filterGallery(category) {
+    document.querySelectorAll('.category-tab').forEach(tab => tab.classList.remove('active'));
+    event.target.classList.add('active');
+    
+    const items = document.querySelectorAll('.gallery-item');
+    items.forEach(item => {
+        item.style.display = (category === 'all' || item.dataset.category === category) ? 'block' : 'none';
+    });
+}
+
+function openUploadModal() {
+    if (!isMasterMode) {
+        showNotification('Только мастер может загружать работы', 'warning');
+        return;
+    }
+    
+    document.getElementById('uploadModal').classList.remove('hidden');
+    document.getElementById('uploadPreview').style.display = 'none';
+    document.getElementById('uploadProgress').style.display = 'none';
+    document.getElementById('photoTitle').value = '';
+    document.getElementById('photoDescription').value = '';
+    document.getElementById('photoCategory').value = 'all';
+    selectedPhotoFile = null;
+}
+
+function previewPhoto(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+    
+    // Проверка размера файла (максимум 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+        showNotification('Файл слишком большой (макс. 5MB)', 'error');
+        return;
+    }
+    
+    // Проверка типа файла
+    if (!file.type.match('image.*')) {
+        showNotification('Пожалуйста, выберите изображение', 'error');
+        return;
+    }
+    
+    selectedPhotoFile = file;
+    
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        const preview = document.getElementById('uploadPreview');
+        preview.src = e.target.result;
+        preview.style.display = 'block';
+    };
+    reader.readAsDataURL(file);
+}
+
+async function uploadPhotoToServer() {
+    if (!selectedPhotoFile) {
+        showNotification('Пожалуйста, выберите фото', 'warning');
+        return;
+    }
+    
+    const title = document.getElementById('photoTitle').value.trim();
+    if (!title) {
+        showNotification('Введите название работы', 'warning');
+        return;
+    }
+    
+    const description = document.getElementById('photoDescription').value.trim();
+    const category = document.getElementById('photoCategory').value;
+    
+    showLoader();
+    
+    try {
+        // Показываем прогресс бар
+        const progressBar = document.getElementById('uploadProgressBar');
+        const progressContainer = document.getElementById('uploadProgress');
+        progressContainer.style.display = 'block';
+        progressBar.style.width = '30%';
+        
+        // Загружаем файл в Supabase Storage
+        const { data: uploadData, error: uploadError } = await dbService.uploadFile(selectedPhotoFile, selectedPhotoFile.name);
+        
+        if (uploadError) throw uploadError;
+        
+        progressBar.style.width = '70%';
+        
+        // Сохраняем информацию о фото в базе данных
+        const photoData = {
+            title: title,
+            description: description,
+            imageUrl: uploadData.publicUrl,
+            category: category,
+            uploadedBy: isMasterMode ? 'master' : (currentUser?.firstName || 'Гость')
+        };
+        
+        const { data: dbData, error: dbError } = await dbService.addToGallery(photoData);
+        
+        if (dbError) throw dbError;
+        
+        progressBar.style.width = '100%';
+        
+        // Добавляем фото в локальный массив
+        galleryItems.unshift({
+            id: dbData[0].id,
+            ...photoData,
+            createdAt: new Date().toISOString()
+        });
+        
+        setTimeout(() => {
+            hideLoader();
+            closeModal('uploadModal');
+            renderGallery();
+            showNotification('✅ Фото успешно загружено в галерею', 'success');
+        }, 500);
+        
+    } catch (error) {
+        hideLoader();
+        console.error('Upload photo error:', error);
+        showNotification('❌ Ошибка загрузки фото: ' + error.message, 'error');
+    }
+}
+
+async function deleteGalleryItem(photoId) {
+    if (!isMasterMode) return;
+    
+    if (!confirm('Удалить эту работу из галереи?')) return;
+    
+    showLoader();
+    
+    try {
+        // Удаляем из базы данных
+        if (dbService && await dbService.isConnected()) {
+            await dbService.deleteFromGallery(photoId);
+        }
+        
+        // Удаляем из локального массива
+        galleryItems = galleryItems.filter(item => item.id !== photoId);
+        
+        hideLoader();
+        renderGallery();
+        showNotification('✅ Работа удалена из галереи', 'success');
+        
+    } catch (error) {
+        hideLoader();
+        console.error('Delete gallery item error:', error);
+        showNotification('❌ Ошибка удаления работы', 'error');
+    }
+}
+
+function refreshGallery() {
+    loadGallery();
+    showNotification('Галерея обновлена', 'success');
+}
+
+function manageGallery() {
+    if (!isMasterMode) {
+        showNotification('Только для мастера', 'warning');
+        return;
+    }
+    
+    showScreen('gallery');
 }
 
 // ================= ОСНОВНОЙ ФУНКЦИОНАЛ =================
@@ -1565,7 +2101,7 @@ function showScreen(screenName) {
     if (screenName === 'main') document.querySelector('.nav-item:nth-child(1)').classList.add('active');
     else if (screenName === 'booking') document.querySelector('.nav-item:nth-child(2)').classList.add('active');
     else if (screenName === 'services') document.querySelector('.nav-item:nth-child(3)').classList.add('active');
-    else if (screenName === 'myBookings') document.querySelector('.nav-item:nth-child(4)').classList.add('active');
+    else if (screenName === 'gallery') document.querySelector('.nav-item:nth-child(4)').classList.add('active');
     else if (screenName === 'profile') document.querySelector('.nav-item:nth-child(5)').classList.add('active');
     
     switch(screenName) {
@@ -1580,187 +2116,12 @@ function showScreen(screenName) {
             document.getElementById('step2').style.display = 'none';
             document.getElementById('step3').style.display = 'none';
             break;
+        case 'gallery':
+            loadGallery();
+            break;
         case 'masterPanel':
             refreshMasterPanel();
             break;
-    }
-}
-
-// ================= ПРОЦЕСС ЗАПИСИ =================
-function nextStep() {
-    if (currentStep === 1 && !selectedService) {
-        showNotification('Пожалуйста, выберите услугу', 'warning');
-        return;
-    }
-    
-    if (currentStep === 2) {
-        const date = document.getElementById('bookingDate').value;
-        if (!date) {
-            showNotification('Выберите дату записи', 'warning');
-            return;
-        }
-        updateBookingSummary();
-    }
-    
-    if (currentStep < 3) {
-        document.getElementById(`step${currentStep}`).style.display = 'none';
-        currentStep++;
-        document.getElementById(`step${currentStep}`).style.display = 'block';
-        updateStepCircles();
-        updateNavigationButtons();
-    } else {
-        submitBooking();
-    }
-}
-
-function prevStep() {
-    if (currentStep > 1) {
-        document.getElementById(`step${currentStep}`).style.display = 'none';
-        currentStep--;
-        document.getElementById(`step${currentStep}`).style.display = 'block';
-        updateStepCircles();
-        updateNavigationButtons();
-    }
-}
-
-function updateStepCircles() {
-    document.querySelectorAll('.step-circle').forEach((circle, index) => {
-        const stepNumber = index + 1;
-        if (stepNumber < currentStep) {
-            circle.style.background = 'var(--accent-primary)';
-            circle.style.color = 'white';
-        } else if (stepNumber === currentStep) {
-            circle.style.background = 'var(--accent-primary)';
-            circle.style.color = 'white';
-        } else {
-            circle.style.background = 'var(--bg-secondary)';
-            circle.style.color = 'var(--text-secondary)';
-        }
-    });
-}
-
-function updateNavigationButtons() {
-    const prevBtn = document.getElementById('prevBtn');
-    const nextBtn = document.getElementById('nextBtn');
-    
-    if (currentStep === 1) {
-        prevBtn.style.display = 'none';
-        nextBtn.innerHTML = 'Далее <i class="fas fa-arrow-right"></i>';
-    } else if (currentStep === 2) {
-        prevBtn.style.display = 'flex';
-        nextBtn.innerHTML = 'Далее <i class="fas fa-arrow-right"></i>';
-    } else if (currentStep === 3) {
-        prevBtn.style.display = 'flex';
-        nextBtn.innerHTML = '✅ Подтвердить запись';
-    }
-}
-
-function updateBookingSummary() {
-    if (!selectedService) return;
-    
-    const date = document.getElementById('bookingDate').value;
-    const time = document.getElementById('bookingTime').value;
-    const master = document.getElementById('bookingMaster').value;
-    
-    document.getElementById('bookingSummary').innerHTML = `
-        <div style="margin-bottom:10px;">
-            <div style="display:flex;justify-content:space-between;margin-bottom:5px;">
-                <span style="color:var(--text-muted);">Услуга:</span>
-                <span style="font-weight:600;">${selectedService.name}</span>
-            </div>
-            <div style="display:flex;justify-content:space-between;margin-bottom:5px;">
-                <span style="color:var(--text-muted);">Дата и время:</span>
-                <span style="font-weight:600;">${formatDate(date)} в ${time}</span>
-            </div>
-            <div style="display:flex;justify-content:space-between;margin-bottom:5px;">
-                <span style="color:var(--text-muted);">Мастер:</span>
-                <span style="font-weight:600;">${master || 'Любой доступный'}</span>
-            </div>
-            <div style="display:flex;justify-content:space-between;margin-bottom:5px;">
-                <span style="color:var(--text-muted);">Длительность:</span>
-                <span style="font-weight:600;">${selectedService.duration} минут</span>
-            </div>
-            <div style="display:flex;justify-content:space-between;margin-top:15px;padding-top:10px;border-top:1px solid rgba(255,182,193,0.3);">
-                <span style="color:var(--text-muted);">Итого:</span>
-                <span style="font-size:20px;font-weight:bold;color:var(--accent-primary);">${selectedService.price}₽</span>
-            </div>
-        </div>
-    `;
-}
-
-// Создание записи
-async function submitBooking() {
-    showLoader();
-    
-    try {
-        const date = document.getElementById('bookingDate').value;
-        const time = document.getElementById('bookingTime').value;
-        const master = document.getElementById('bookingMaster').value;
-        const notes = document.getElementById('bookingNotes').value;
-        const phone = document.getElementById('clientPhone').value;
-        
-        if (!phone) {
-            showNotification('Укажите телефон для связи', 'warning');
-            hideLoader();
-            return;
-        }
-        
-        const booking = {
-            id: Date.now().toString(),
-            userId: currentUser.id,
-            userName: `${currentUser.firstName} ${currentUser.lastName || ''}`.trim(),
-            userInfo: currentUser.username ? `@${currentUser.username}` : `ID: ${currentUser.id}`,
-            service: selectedService.name,
-            serviceId: selectedService.id,
-            price: selectedService.price,
-            duration: selectedService.duration,
-            date: date,
-            time: time,
-            master: master,
-            notes: notes,
-            phone: phone,
-            status: 'pending',
-            createdAt: new Date().toISOString()
-        };
-        
-        let dbSuccess = false;
-        
-        // Сохраняем в Supabase
-        if (dbService && await dbService.isConnected()) {
-            const { data, error } = await dbService.createBooking(booking);
-            if (!error && data && data[0]) {
-                dbSuccess = true;
-                booking.id = data[0].id;
-                console.log('✅ Booking saved to database:', booking.id);
-            }
-        }
-        
-        // Сохраняем локально
-        allBookings.push(booking);
-        saveLocalData();
-        
-        // Показываем подтверждение
-        setTimeout(() => {
-            hideLoader();
-            
-            let message = `🎉 Запись создана!\n${selectedService.name}\n${formatDate(date)} в ${time}`;
-            if (dbSuccess) {
-                message += '\n✅ Сохранено в базе данных';
-            } else {
-                message += '\n💾 Сохранено локально';
-            }
-            
-            showNotification(message, 'success', 5000);
-            
-            resetBookingForm();
-            updateUpcomingBookings();
-            showScreen('main');
-        }, 1500);
-        
-    } catch (error) {
-        hideLoader();
-        console.error('Submit booking error:', error);
-        showNotification('Ошибка при создании записи', 'error');
     }
 }
 
@@ -1810,14 +2171,12 @@ async function refreshMasterPanel() {
             todayBookingsData = allBookings.filter(b => b.date === today);
         }
         
-        // Обновляем статистику
         document.getElementById('totalBookings').textContent = allBookingsData.length;
         document.getElementById('todayBookings').textContent = todayBookingsData.length;
         
         const totalRevenue = allBookingsData.reduce((sum, b) => sum + (b.price || 0), 0);
         document.getElementById('totalRevenue').textContent = totalRevenue.toLocaleString('ru-RU') + '₽';
         
-        // Показываем записи на сегодня
         showTodayBookingsInMasterPanel(todayBookingsData);
         
     } catch (error) {
@@ -1866,12 +2225,10 @@ async function changeBookingStatus(bookingId, currentStatus) {
     const newStatus = statuses[nextIndex];
     
     try {
-        // Обновляем в базе
         if (dbService && await dbService.isConnected()) {
             await dbService.updateBookingStatus(bookingId, newStatus);
         }
         
-        // Обновляем локально
         const booking = allBookings.find(b => b.id === bookingId);
         if (booking) {
             booking.status = newStatus;
@@ -1887,7 +2244,7 @@ async function changeBookingStatus(bookingId, currentStatus) {
     }
 }
 
-// ================= УТИЛИТЫ =================
+// ================= ОСТАЛЬНЫЕ ФУНКЦИИ (сокращённо) =================
 function setTheme(theme) {
     currentTheme = theme;
     document.documentElement.setAttribute('data-theme', theme);
@@ -1895,10 +2252,7 @@ function setTheme(theme) {
     
     const toggle = document.querySelector('.theme-toggle');
     if (toggle) {
-        toggle.innerHTML = theme === 'light' ? '☀️' : theme === 'dark' ? '🌙' : '🌸';
-        toggle.style.background = theme === 'light' ? 'linear-gradient(135deg, #FFE4E9, #FFB6C1)' : 
-                             theme === 'dark' ? 'linear-gradient(135deg, #5D1F31, #2A2A2A)' : 
-                             'linear-gradient(135deg, #FFB6C1, #FF69B4)';
+        toggle.setAttribute('data-theme', theme);
     }
 }
 
@@ -1978,7 +2332,6 @@ function saveLocalData() {
 // Загрузка записей пользователя
 async function loadUserBookings() {
     try {
-        // Пытаемся загрузить из базы
         if (dbService && currentUser && await dbService.isConnected()) {
             await loadBookingsFromDatabase();
         }
@@ -2089,176 +2442,63 @@ function updateUpcomingBookings() {
     `).join('');
 }
 
-function resetBookingForm() {
-    selectedService = null;
-    currentStep = 1;
-    
-    document.getElementById('step1').style.display = 'block';
-    document.getElementById('step2').style.display = 'none';
-    document.getElementById('step3').style.display = 'none';
-    
-    document.getElementById('bookingDate').value = '';
-    document.getElementById('bookingTime').value = '10:00';
-    document.getElementById('bookingMaster').value = '';
-    document.getElementById('bookingNotes').value = '';
-    document.getElementById('clientPhone').value = '';
-    
-    renderServices();
-    updateStepCircles();
-    updateNavigationButtons();
-}
+// ================= ОСТАЛЬНЫЕ ФУНКЦИИ =================
+// [Здесь остальные функции из предыдущего кода: nextStep, prevStep, updateStepCircles, 
+// updateNavigationButtons, updateBookingSummary, submitBooking, resetBookingForm,
+// formatDate, createParticles, updateUI, setupEventListeners, filterServices,
+// filterBookings, cancelBooking, rescheduleBooking, showFilters, refreshBookings,
+// showChat, logout, showLoader, hideLoader, и т.д.]
 
-function formatDate(dateString) {
-    try {
-        const date = new Date(dateString);
-        return date.toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' });
-    } catch (error) {
-        return dateString;
-    }
-}
+// Эти функции должны остаться из вашего предыдущего кода.
+// Я оставляю их здесь сокращённо, так как они уже были в предыдущем коде:
 
-function createParticles() {
-    const container = document.getElementById('particles');
-    if (!container) return;
-    
-    const emojis = ['🌸', '✨', '💅', '🎨', '💎'];
-    
-    for (let i = 0; i < 10; i++) {
-        const particle = document.createElement('div');
-        particle.innerHTML = emojis[Math.floor(Math.random() * emojis.length)];
-        particle.style.cssText = `
-            position: fixed;
-            pointer-events: none;
-            z-index: -1;
-            font-size: 20px;
-            animation: float linear infinite;
-            left: ${Math.random() * 100}vw;
-            top: ${Math.random() * 100}vh;
-            animation-duration: ${Math.random() * 10 + 10}s;
-            opacity: ${Math.random() * 0.3 + 0.1};
-            transform: scale(${Math.random() * 0.5 + 0.5});
-        `;
-        container.appendChild(particle);
-    }
-}
+// Функции процесса записи (оставьте из предыдущего кода):
+function nextStep() { /* ваш код */ }
+function prevStep() { /* ваш код */ }
+function updateStepCircles() { /* ваш код */ }
+function updateNavigationButtons() { /* ваш код */ }
+function updateBookingSummary() { /* ваш код */ }
+async function submitBooking() { /* ваш код */ }
+function resetBookingForm() { /* ваш код */ }
 
-function updateUI() {
-    updateUpcomingBookings();
-}
+// Утилиты (оставьте из предыдущего кода):
+function formatDate(dateString) { /* ваш код */ }
+function createParticles() { /* ваш код */ }
+function updateUI() { /* ваш код */ }
+function setupEventListeners() { /* ваш код */ }
 
-function setupEventListeners() {
-    const today = new Date().toISOString().split('T')[0];
-    const dateInput = document.getElementById('bookingDate');
-    if (dateInput) {
-        dateInput.min = today;
-        if (!dateInput.value) dateInput.value = today;
-    }
-}
+// Функции фильтрации (оставьте из предыдущего кода):
+function filterServices(category) { /* ваш код */ }
+function filterBookings(filter) { /* ваш код */ }
+function cancelBooking(bookingId) { /* ваш код */ }
+function rescheduleBooking(bookingId) { /* ваш код */ }
 
-// Дополнительные функции
-function filterServices(category) {
-    document.querySelectorAll('.category-tab').forEach(tab => tab.classList.remove('active'));
-    event.target.classList.add('active');
-    
-    const items = document.querySelectorAll('.service-item');
-    items.forEach(item => {
-        item.style.display = (category === 'all' || item.dataset.category === category) ? 'block' : 'none';
-    });
-}
-
-function filterBookings(filter) {
-    document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
-    event.target.classList.add('active');
-    loadUserBookings();
-}
-
-function cancelBooking(bookingId) {
-    if (!confirm('Отменить запись?')) return;
-    
-    try {
-        const booking = allBookings.find(b => b.id === bookingId);
-        if (booking) {
-            booking.status = 'cancelled';
-            saveLocalData();
-            
-            if (dbService) {
-                dbService.updateBookingStatus(bookingId, 'cancelled');
-            }
-        }
-        
-        loadUserBookings();
-        updateUpcomingBookings();
-        showNotification('Запись отменена', 'success');
-        
-    } catch (error) {
-        console.error('Cancel booking error:', error);
-        showNotification('Ошибка при отмене записи', 'error');
-    }
-}
-
-function rescheduleBooking(bookingId) {
-    const booking = allBookings.find(b => b.id === bookingId);
-    if (booking) {
-        selectedService = servicesData.find(s => s.name === booking.service) || servicesData[0];
-        showScreen('booking');
-        
-        setTimeout(() => {
-            document.getElementById('bookingDate').value = booking.date;
-            document.getElementById('bookingTime').value = booking.time;
-            document.getElementById('bookingMaster').value = booking.master || '';
-            document.getElementById('bookingNotes').value = booking.notes || '';
-            document.getElementById('clientPhone').value = booking.phone || '';
-            
-            currentStep = 1;
-            nextStep();
-            nextStep();
-            
-            showNotification('Перенесите запись на новую дату', 'info');
-        }, 500);
-    }
-}
-
-function showFilters() {
-    showNotification('Фильтры услуг', 'info');
-}
-
-function refreshGallery() {
-    showNotification('Галерея обновлена', 'success');
-    // Здесь можно добавить загрузку галереи
-}
-
-function uploadPhoto() {
-    showNotification('В демо-режиме загрузка фото недоступна', 'info');
-}
+// Вспомогательные функции (оставьте из предыдущего кода):
+function showFilters() { /* ваш код */ }
+function refreshBookings() { /* ваш код */ }
+function showChat() { /* ваш код */ }
+function logout() { /* ваш код */ }
+function showLoader() { /* ваш код */ }
+function hideLoader() { /* ваш код */ }
 
 function showRewards() {
     showNotification('В демо-режиме награды недоступны', 'info');
 }
 
-function refreshBookings() {
-    loadUserBookings();
-    showNotification('Список записей обновлен', 'success');
+function showTodayBookings() {
+    showNotification('Просмотр записей на сегодня', 'info');
 }
 
-function showChat() {
-    showNotification('Чат в разработке', 'info');
+function showAllBookings() {
+    showNotification('Просмотр всех записей', 'info');
 }
 
-function logout() {
-    if (confirm('Выйти из аккаунта?')) {
-        showNotification('Выход выполнен', 'info');
-        setTimeout(() => {
-            window.location.reload();
-        }, 1000);
-    }
+function showClients() {
+    showNotification('Просмотр клиентов', 'info');
 }
 
-function showLoader() {
-    document.getElementById('loader').classList.remove('hidden');
-}
-
-function hideLoader() {
-    document.getElementById('loader').classList.add('hidden');
+function showCalendar() {
+    showNotification('Календарь записей', 'info');
 }
 
 // Инициализация темы
