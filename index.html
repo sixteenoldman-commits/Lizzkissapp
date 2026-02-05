@@ -818,10 +818,6 @@
                     <p style="color: var(--text-secondary); font-size: 14px; margin-bottom: 10px;">
                         <strong>Доступ для мастера:</strong>
                     </p>
-                    <p style="color: var(--text-muted); font-size: 12px;">
-                        Логин: <code style="background: rgba(255,255,255,0.2); padding: 2px 6px; border-radius: 4px;">admin</code><br>
-                        Пароль: <code style="background: rgba(255,255,255,0.2); padding: 2px 6px; border-radius: 4px;">sakura2024</code>
-                    </p>
                 </div>
             </div>
             <button class="btn btn-primary" onclick="loginMaster()">
@@ -1899,7 +1895,12 @@ function openUploadModal() {
 
 function previewPhoto(event) {
     const file = event.target.files[0];
-    if (!file) return;
+    console.log('Selected file:', file);
+    
+    if (!file) {
+        console.log('No file selected');
+        return;
+    }
     
     // Проверка размера файла (максимум 5MB)
     if (file.size > 5 * 1024 * 1024) {
@@ -1909,35 +1910,69 @@ function previewPhoto(event) {
     
     // Проверка типа файла
     if (!file.type.match('image.*')) {
-        showNotification('Пожалуйста, выберите изображение', 'error');
+        showNotification('Пожалуйста, выберите изображение (JPG, PNG)', 'error');
         return;
     }
     
     selectedPhotoFile = file;
+    console.log('File saved to selectedPhotoFile:', selectedPhotoFile.name, selectedPhotoFile.size);
     
     const reader = new FileReader();
     reader.onload = function(e) {
+        console.log('FileReader loaded, creating preview');
         const preview = document.getElementById('uploadPreview');
         preview.src = e.target.result;
         preview.style.display = 'block';
+        
+        // Автоматически заполняем название из имени файла
+        const titleInput = document.getElementById('photoTitle');
+        if (titleInput && !titleInput.value.trim()) {
+            const fileName = file.name.replace(/\.[^/.]+$/, ""); // Убираем расширение
+            titleInput.value = fileName.charAt(0).toUpperCase() + fileName.slice(1);
+        }
+        
+        showNotification('Фото выбрано: ' + file.name, 'success');
     };
+    
+    reader.onerror = function(error) {
+        console.error('FileReader error:', error);
+        showNotification('Ошибка чтения файла', 'error');
+    };
+    
     reader.readAsDataURL(file);
 }
 
 async function uploadPhotoToServer() {
+    console.log('Starting upload process...');
+    console.log('selectedPhotoFile:', selectedPhotoFile);
+    
     if (!selectedPhotoFile) {
-        showNotification('Пожалуйста, выберите фото', 'warning');
+        console.log('No photo file selected');
+        showNotification('❌ Пожалуйста, сначала выберите фото', 'warning');
         return;
     }
     
     const title = document.getElementById('photoTitle').value.trim();
+    console.log('Title:', title);
+    
     if (!title) {
-        showNotification('Введите название работы', 'warning');
+        showNotification('❌ Введите название работы', 'warning');
         return;
     }
     
     const description = document.getElementById('photoDescription').value.trim();
     const category = document.getElementById('photoCategory').value;
+    
+    console.log('Description:', description);
+    console.log('Category:', category);
+    console.log('isMasterMode:', isMasterMode);
+    console.log('dbService connected:', dbService ? await dbService.isConnected() : 'No dbService');
+    
+    // Проверяем подключение к базе
+    if (!dbService || !(await dbService.isConnected())) {
+        showNotification('❌ Нет подключения к базе данных', 'error');
+        return;
+    }
     
     showLoader();
     
@@ -1946,14 +1981,20 @@ async function uploadPhotoToServer() {
         const progressBar = document.getElementById('uploadProgressBar');
         const progressContainer = document.getElementById('uploadProgress');
         progressContainer.style.display = 'block';
-        progressBar.style.width = '30%';
+        progressBar.style.width = '10%';
+        
+        console.log('Starting file upload to Supabase Storage...');
         
         // Загружаем файл в Supabase Storage
         const { data: uploadData, error: uploadError } = await dbService.uploadFile(selectedPhotoFile, selectedPhotoFile.name);
         
-        if (uploadError) throw uploadError;
+        if (uploadError) {
+            console.error('Upload file error:', uploadError);
+            throw new Error('Ошибка загрузки файла: ' + uploadError.message);
+        }
         
-        progressBar.style.width = '70%';
+        console.log('File uploaded successfully:', uploadData);
+        progressBar.style.width = '50%';
         
         // Сохраняем информацию о фото в базе данных
         const photoData = {
@@ -1964,30 +2005,59 @@ async function uploadPhotoToServer() {
             uploadedBy: isMasterMode ? 'master' : (currentUser?.firstName || 'Гость')
         };
         
+        console.log('Saving to database:', photoData);
+        
         const { data: dbData, error: dbError } = await dbService.addToGallery(photoData);
         
-        if (dbError) throw dbError;
+        if (dbError) {
+            console.error('Database error:', dbError);
+            throw new Error('Ошибка сохранения в базе: ' + dbError.message);
+        }
         
-        progressBar.style.width = '100%';
+        console.log('Saved to database:', dbData);
+        progressBar.style.width = '90%';
         
         // Добавляем фото в локальный массив
-        galleryItems.unshift({
-            id: dbData[0].id,
-            ...photoData,
-            createdAt: new Date().toISOString()
-        });
+        if (dbData && dbData[0]) {
+            galleryItems.unshift({
+                id: dbData[0].id,
+                ...photoData,
+                createdAt: new Date().toISOString()
+            });
+            console.log('Added to local gallery items');
+        }
+        
+        progressBar.style.width = '100%';
         
         setTimeout(() => {
             hideLoader();
             closeModal('uploadModal');
             renderGallery();
-            showNotification('✅ Фото успешно загружено в галерею', 'success');
-        }, 500);
+            showNotification('✅ Фото успешно загружено в галерею!', 'success', 5000);
+            
+            // Сбрасываем форму
+            document.getElementById('photoUpload').value = '';
+            document.getElementById('uploadPreview').style.display = 'none';
+            document.getElementById('uploadPreview').src = '';
+            document.getElementById('photoTitle').value = '';
+            document.getElementById('photoDescription').value = '';
+            document.getElementById('photoCategory').value = 'all';
+            selectedPhotoFile = null;
+            progressContainer.style.display = 'none';
+            progressBar.style.width = '0%';
+            
+        }, 1000);
         
     } catch (error) {
         hideLoader();
         console.error('Upload photo error:', error);
-        showNotification('❌ Ошибка загрузки фото: ' + error.message, 'error');
+        showNotification('❌ Ошибка загрузки фото: ' + error.message, 'error', 5000);
+        
+        // Сбрасываем прогресс бар
+        const progressContainer = document.getElementById('uploadProgress');
+        const progressBar = document.getElementById('uploadProgressBar');
+        progressContainer.style.display = 'none';
+        progressBar.style.width = '0%';
     }
 }
 
@@ -2509,3 +2579,4 @@ window.onload = function() {
 </script>
 </body>
 </html>
+
