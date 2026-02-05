@@ -5,11 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>🌸 Nail Sakura Studio</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <!-- ДОБАВЛЯЕМ SUPABASE -->
     <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* Ваш оригинальный CSS полностью остается без изменений */
         :root {
             --bg-primary: linear-gradient(135deg, #FFE4E9 0%, #FFB6C1 100%);
             --bg-secondary: rgba(255, 255, 255, 0.9);
@@ -113,6 +111,20 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-10px) rotate(5deg); }
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
         .screen {
             display: none;
             animation: fadeIn 0.5s ease;
@@ -192,6 +204,16 @@
             transform: translateY(-2px);
         }
 
+        .btn-danger {
+            background: var(--accent-danger);
+            color: white;
+        }
+
+        .btn-success {
+            background: var(--accent-success);
+            color: white;
+        }
+
         .btn-icon {
             width: 50px;
             height: 50px;
@@ -235,6 +257,10 @@
             font-weight: 700;
         }
 
+        .logo-icon {
+            animation: float 3s ease-in-out infinite;
+        }
+
         .bottom-nav {
             position: fixed;
             bottom: 20px;
@@ -274,6 +300,21 @@
             transform: translateY(-5px);
         }
 
+        .nav-icon {
+            font-size: 20px;
+            margin-bottom: 4px;
+            transition: var(--transition);
+        }
+
+        .nav-item.active .nav-icon {
+            transform: scale(1.2);
+        }
+
+        .nav-label {
+            font-size: 11px;
+            font-weight: 600;
+        }
+
         .notification-badge {
             position: absolute;
             top: -5px;
@@ -287,6 +328,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            animation: pulse 2s infinite;
         }
 
         .modal-overlay {
@@ -327,6 +369,12 @@
             font-size: 24px;
             color: var(--text-muted);
             cursor: pointer;
+            transition: var(--transition-fast);
+        }
+
+        .modal-close:hover {
+            color: var(--accent-primary);
+            transform: rotate(90deg);
         }
 
         .loader-overlay {
@@ -353,10 +401,6 @@
             animation: spin 1s ease-in-out infinite;
         }
 
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-
         .service-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -381,6 +425,106 @@
             background: rgba(255, 182, 193, 0.1);
         }
 
+        .service-icon {
+            font-size: 32px;
+            margin-bottom: 10px;
+            transition: var(--transition);
+            display: block;
+        }
+
+        .service-card:hover .service-icon {
+            transform: scale(1.1) rotate(5deg);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+
+        .form-input,
+        .form-select,
+        .form-textarea {
+            width: 100%;
+            padding: 16px 20px;
+            border: 2px solid rgba(255, 182, 193, 0.3);
+            border-radius: var(--border-radius-sm);
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--text-primary);
+            font-size: 16px;
+            transition: var(--transition);
+            font-family: inherit;
+        }
+
+        .form-input:focus,
+        .form-select:focus,
+        .form-textarea:focus {
+            outline: none;
+            border-color: var(--accent-primary);
+            box-shadow: 0 0 0 3px rgba(255, 182, 193, 0.2);
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            gap: 6px;
+        }
+
+        .status-pending {
+            background: rgba(255, 193, 7, 0.1);
+            color: var(--accent-warning);
+        }
+
+        .status-confirmed {
+            background: rgba(76, 175, 80, 0.1);
+            color: var(--accent-success);
+        }
+
+        .status-completed {
+            background: rgba(33, 150, 243, 0.1);
+            color: var(--accent-info);
+        }
+
+        .status-cancelled {
+            background: rgba(244, 67, 54, 0.1);
+            color: var(--accent-danger);
+        }
+
+        .section-title {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .section-title::after {
+            content: '';
+            flex: 1;
+            height: 2px;
+            background: linear-gradient(90deg, var(--accent-primary), transparent);
+        }
+
+        .hover-zoom {
+            transition: transform 0.3s ease;
+        }
+
+        .hover-zoom:hover {
+            transform: scale(1.05);
+        }
+
         @media (max-width: 480px) {
             body {
                 padding: 15px;
@@ -395,6 +539,55 @@
             .card {
                 padding: 20px;
             }
+            
+            .section-title {
+                font-size: 20px;
+            }
+        }
+
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 24px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: var(--bg-secondary);
+            transition: .4s;
+            border-radius: 24px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 16px;
+            width: 16px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: var(--accent-primary);
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(26px);
         }
     </style>
 </head>
@@ -428,11 +621,38 @@
         <div class="modal">
             <button class="modal-close" onclick="closeModal('notificationModal')">&times;</button>
             <h3 class="section-title">🔔 Уведомления</h3>
-            <div id="notificationsList" style="max-height: 300px; overflow-y: auto; margin: 20px 0;">
-                <!-- Уведомления будут здесь -->
-            </div>
+            <div id="notificationsList" style="max-height: 300px; overflow-y: auto; margin: 20px 0;"></div>
             <button class="btn btn-secondary" onclick="clearAllNotifications()">
                 <i class="fas fa-trash"></i> Очистить все
+            </button>
+        </div>
+    </div>
+
+    <div id="masterLoginModal" class="modal-overlay hidden">
+        <div class="modal">
+            <button class="modal-close" onclick="closeModal('masterLoginModal')">&times;</button>
+            <h3 class="section-title">🔐 Вход для мастера</h3>
+            <div style="margin: 20px 0;">
+                <div class="form-group">
+                    <label class="form-label">Логин</label>
+                    <input type="text" class="form-input" id="masterLogin" placeholder="master">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Пароль</label>
+                    <input type="password" class="form-input" id="masterPassword" placeholder="••••••••">
+                </div>
+                <div class="form-group" style="background: rgba(255, 182, 193, 0.1); padding: 15px; border-radius: var(--border-radius-sm); margin-top: 20px;">
+                    <p style="color: var(--text-secondary); font-size: 14px; margin-bottom: 10px;">
+                        <strong>Доступ для мастера:</strong>
+                    </p>
+                    <p style="color: var(--text-muted); font-size: 12px;">
+                        Логин: <code style="background: rgba(255,255,255,0.2); padding: 2px 6px; border-radius: 4px;">admin</code><br>
+                        Пароль: <code style="background: rgba(255,255,255,0.2); padding: 2px 6px; border-radius: 4px;">sakura2024</code>
+                    </p>
+                </div>
+            </div>
+            <button class="btn btn-primary" onclick="loginMaster()">
+                <i class="fas fa-sign-in-alt"></i> Войти
             </button>
         </div>
     </div>
@@ -455,9 +675,9 @@
             <div class="header-actions">
                 <button class="btn-icon" onclick="toggleNotifications()" style="position: relative;">
                     <i class="fas fa-bell"></i>
-                    <span class="notification-badge" id="notificationBadge">3</span>
+                    <span class="notification-badge" id="notificationBadge">0</span>
                 </button>
-                <button class="theme-toggle" onclick="openThemeModal()"></button>
+                <button class="theme-toggle" onclick="openThemeModal()" style="position:relative;width:60px;height:30px;background:var(--bg-secondary);border-radius:15px;border:none;cursor:pointer;box-shadow:var(--shadow-inset);transition:var(--transition);"></button>
             </div>
         </header>
 
@@ -506,10 +726,7 @@
             </div>
 
             <div class="card">
-                <h3 class="section-title">
-                    <i class="fas fa-clock"></i>
-                    Ближайшие записи
-                </h3>
+                <h3 class="section-title"><i class="fas fa-clock"></i> Ближайшие записи</h3>
                 <div id="upcomingBookings">
                     <div style="text-align:center;padding:40px 20px;">
                         <div style="font-size:48px;color:var(--text-muted);margin-bottom:20px;">📅</div>
@@ -526,14 +743,11 @@
         <div id="bookingScreen" class="screen">
             <div class="card">
                 <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
-                    <button class="btn-icon" onclick="showScreen('main')">
-                        <i class="fas fa-arrow-left"></i>
-                    </button>
+                    <button class="btn-icon" onclick="showScreen('main')"><i class="fas fa-arrow-left"></i></button>
                     <h3 style="flex:1;text-align:center;font-weight:700;">📝 Новая запись</h3>
                     <div style="width:50px;"></div>
                 </div>
 
-                <!-- Шаги -->
                 <div class="booking-steps" style="display:flex;justify-content:space-between;margin-bottom:30px;position:relative;">
                     <div class="step" data-step="1" style="text-align:center;flex:1;position:relative;z-index:2;">
                         <div class="step-circle" style="width:40px;height:40px;background:var(--accent-primary);color:white;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 10px;font-weight:bold;transition:var(--transition);">1</div>
@@ -550,15 +764,11 @@
                     <div style="position:absolute;top:20px;left:50px;right:50px;height:2px;background:var(--bg-secondary);z-index:1;"></div>
                 </div>
 
-                <!-- Шаг 1: Выбор услуги -->
                 <div id="step1" class="booking-step">
                     <h4 style="margin-bottom:20px;font-weight:600;">Выберите услугу:</h4>
-                    <div class="service-grid" id="servicesGrid">
-                        <!-- Заполнится динамически -->
-                    </div>
+                    <div class="service-grid" id="servicesGrid"></div>
                 </div>
 
-                <!-- Шаг 2: Дата и время -->
                 <div id="step2" class="booking-step" style="display:none;">
                     <div class="form-group">
                         <label class="form-label">Дата записи</label>
@@ -583,13 +793,10 @@
                     </div>
                 </div>
 
-                <!-- Шаг 3: Подтверждение -->
                 <div id="step3" class="booking-step" style="display:none;">
                     <div class="card" style="background:rgba(255,182,193,0.1);border-left:4px solid var(--accent-primary);">
                         <h4 style="margin-bottom:15px;font-weight:600;">Детали записи:</h4>
-                        <div id="bookingSummary">
-                            <!-- Заполнится динамически -->
-                        </div>
+                        <div id="bookingSummary"></div>
                     </div>
                     <div class="form-group">
                         <label class="form-label">Особые пожелания</label>
@@ -602,12 +809,8 @@
                 </div>
 
                 <div style="display:flex;gap:10px;margin-top:30px;">
-                    <button class="btn btn-secondary" onclick="prevStep()" id="prevBtn" style="flex:1;display:none;">
-                        <i class="fas fa-arrow-left"></i> Назад
-                    </button>
-                    <button class="btn btn-primary" onclick="nextStep()" id="nextBtn" style="flex:2;">
-                        Далее <i class="fas fa-arrow-right"></i>
-                    </button>
+                    <button class="btn btn-secondary" onclick="prevStep()" id="prevBtn" style="flex:1;display:none;"><i class="fas fa-arrow-left"></i> Назад</button>
+                    <button class="btn btn-primary" onclick="nextStep()" id="nextBtn" style="flex:2;">Далее <i class="fas fa-arrow-right"></i></button>
                 </div>
             </div>
         </div>
@@ -616,13 +819,9 @@
         <div id="servicesScreen" class="screen">
             <div class="card">
                 <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
-                    <button class="btn-icon" onclick="showScreen('main')">
-                        <i class="fas fa-arrow-left"></i>
-                    </button>
+                    <button class="btn-icon" onclick="showScreen('main')"><i class="fas fa-arrow-left"></i></button>
                     <h3 style="flex:1;text-align:center;font-weight:700;">💅 Наши услуги</h3>
-                    <button class="btn-icon" onclick="showFilters()">
-                        <i class="fas fa-sliders-h"></i>
-                    </button>
+                    <button class="btn-icon" onclick="showFilters()"><i class="fas fa-sliders-h"></i></button>
                 </div>
 
                 <div class="category-tabs" style="display:flex;gap:10px;margin-bottom:20px;overflow-x:auto;padding-bottom:10px;">
@@ -631,9 +830,40 @@
                     <button class="category-tab" onclick="filterServices('design')" style="padding:8px 16px;background:var(--bg-secondary);color:var(--text-secondary);border:none;border-radius:20px;font-size:14px;font-weight:600;cursor:pointer;white-space:nowrap;">Дизайн</button>
                 </div>
 
-                <div id="servicesList">
-                    <!-- Заполнится динамически -->
+                <div id="servicesList"></div>
+            </div>
+        </div>
+
+        <!-- ЭКРАН 4: ГАЛЕРЕЯ -->
+        <div id="galleryScreen" class="screen">
+            <div class="card">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+                    <button class="btn-icon" onclick="showScreen('main')"><i class="fas fa-arrow-left"></i></button>
+                    <h3 style="flex:1;text-align:center;font-weight:700;">🖼️ Галерея работ</h3>
+                    <button class="btn-icon" onclick="refreshGallery()"><i class="fas fa-sync-alt"></i></button>
                 </div>
+                <div class="gallery-grid" id="galleryGrid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:20px 0;"></div>
+                <button class="btn btn-secondary" onclick="uploadPhoto()" style="margin-top:20px;"><i class="fas fa-camera"></i> Добавить свою работу</button>
+            </div>
+        </div>
+
+        <!-- ЭКРАН 5: ЛОЯЛЬНОСТЬ -->
+        <div id="loyaltyScreen" class="screen">
+            <div class="card" style="text-align:center;">
+                <div style="font-size:60px;margin-bottom:20px;animation:float 3s ease-in-out infinite;">🏆</div>
+                <h3 style="margin-bottom:10px;font-weight:700;">Программа лояльности</h3>
+                <p style="color:var(--text-secondary);margin-bottom:20px;">Копите бонусы, получайте скидки!</p>
+                <div class="loyalty-progress" style="background:var(--bg-card);border-radius:20px;padding:20px;margin:20px 0;border:2px solid rgba(255,182,193,0.3);">
+                    <div style="display:flex;justify-content:space-between;margin-bottom:10px;font-size:14px;">
+                        <span>Ваш прогресс:</span>
+                        <span><strong>850/1000</strong> баллов</span>
+                    </div>
+                    <div class="progress-bar" style="height:10px;background:rgba(255,182,193,0.3);border-radius:5px;overflow:hidden;margin:10px 0;position:relative;">
+                        <div class="progress-fill" style="height:100%;background:linear-gradient(90deg, var(--accent-primary), var(--accent-secondary));border-radius:5px;width:85%;"></div>
+                    </div>
+                    <div style="margin-top:20px;font-size:14px;color:var(--text-secondary);padding:10px;background:rgba(255,182,193,0.1);border-radius:10px;">🎉 Осталось 150 баллов до Gold статуса!</div>
+                </div>
+                <button class="btn btn-primary" onclick="showRewards()" style="margin-top:10px;"><i class="fas fa-gift"></i> Показать доступные награды</button>
             </div>
         </div>
 
@@ -641,24 +871,16 @@
         <div id="myBookingsScreen" class="screen">
             <div class="card">
                 <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
-                    <button class="btn-icon" onclick="showScreen('main')">
-                        <i class="fas fa-arrow-left"></i>
-                    </button>
+                    <button class="btn-icon" onclick="showScreen('main')"><i class="fas fa-arrow-left"></i></button>
                     <h3 style="flex:1;text-align:center;font-weight:700;">📅 Мои записи</h3>
-                    <button class="btn-icon" onclick="refreshBookings()">
-                        <i class="fas fa-sync-alt"></i>
-                    </button>
+                    <button class="btn-icon" onclick="refreshBookings()"><i class="fas fa-sync-alt"></i></button>
                 </div>
-
                 <div class="booking-filters" style="display:flex;gap:10px;margin-bottom:20px;">
                     <button class="filter-btn active" onclick="filterBookings('all')" style="padding:8px 16px;background:var(--accent-primary);color:white;border:none;border-radius:20px;font-size:14px;font-weight:600;cursor:pointer;">Все</button>
                     <button class="filter-btn" onclick="filterBookings('upcoming')" style="padding:8px 16px;background:var(--bg-secondary);color:var(--text-secondary);border:none;border-radius:20px;font-size:14px;font-weight:600;cursor:pointer;">Предстоящие</button>
                     <button class="filter-btn" onclick="filterBookings('past')" style="padding:8px 16px;background:var(--bg-secondary);color:var(--text-secondary);border:none;border-radius:20px;font-size:14px;font-weight:600;cursor:pointer;">Прошлые</button>
                 </div>
-
-                <div id="bookingsList">
-                    <!-- Заполнится динамически -->
-                </div>
+                <div id="bookingsList"></div>
             </div>
         </div>
 
@@ -688,50 +910,137 @@
                     </div>
                 </div>
 
-                <button class="btn btn-danger" onclick="logout()" style="margin-top:30px;">
-                    <i class="fas fa-sign-out-alt"></i> Выйти из аккаунта
-                </button>
+                <div class="profile-menu" style="margin-top:30px;">
+                    <div class="menu-item hover-zoom" onclick="showScreen('settings')" style="display:flex;align-items:center;padding:15px;border-radius:12px;margin-bottom:10px;cursor:pointer;transition:var(--transition);background:var(--bg-secondary);">
+                        <div style="width:40px;height:40px;background:rgba(255,182,193,0.1);border-radius:10px;display:flex;align-items:center;justify-content:center;margin-right:15px;color:var(--accent-primary);"><i class="fas fa-cog"></i></div>
+                        <div style="flex:1;"><div style="font-weight:600;">Настройки</div><div style="font-size:12px;color:var(--text-muted);">Персонализация приложения</div></div>
+                        <i class="fas fa-chevron-right" style="color:var(--text-muted);"></i>
+                    </div>
+
+                    <div class="menu-item hover-zoom" onclick="openMasterLogin()" style="display:flex;align-items:center;padding:15px;border-radius:12px;margin-bottom:10px;cursor:pointer;transition:var(--transition);background:var(--bg-secondary);">
+                        <div style="width:40px;height:40px;background:rgba(255,182,193,0.1);border-radius:10px;display:flex;align-items:center;justify-content:center;margin-right:15px;color:var(--accent-primary);"><i class="fas fa-user-shield"></i></div>
+                        <div style="flex:1;"><div style="font-weight:600;">Вход для мастера</div><div style="font-size:12px;color:var(--text-muted);">Панель администратора</div></div>
+                        <i class="fas fa-chevron-right" style="color:var(--text-muted);"></i>
+                    </div>
+
+                    <div class="menu-item hover-zoom" onclick="showScreen('reviews')" style="display:flex;align-items:center;padding:15px;border-radius:12px;margin-bottom:10px;cursor:pointer;transition:var(--transition);background:var(--bg-secondary);">
+                        <div style="width:40px;height:40px;background:rgba(255,182,193,0.1);border-radius:10px;display:flex;align-items:center;justify-content:center;margin-right:15px;color:var(--accent-primary);"><i class="fas fa-star"></i></div>
+                        <div style="flex:1;"><div style="font-weight:600;">Мои отзывы</div><div style="font-size:12px;color:var(--text-muted);">Оставленные вами отзывы</div></div>
+                        <i class="fas fa-chevron-right" style="color:var(--text-muted);"></i>
+                    </div>
+
+                    <div class="menu-item hover-zoom" onclick="showChat()" style="display:flex;align-items:center;padding:15px;border-radius:12px;margin-bottom:10px;cursor:pointer;transition:var(--transition);background:var(--bg-secondary);">
+                        <div style="width:40px;height:40px;background:rgba(255,182,193,0.1);border-radius:10px;display:flex;align-items:center;justify-content:center;margin-right:15px;color:var(--accent-primary);"><i class="fas fa-comments"></i></div>
+                        <div style="flex:1;"><div style="font-weight:600;">Чат с мастером</div><div style="font-size:12px;color:var(--text-muted);">Быстрые ответы на вопросы</div></div>
+                        <i class="fas fa-chevron-right" style="color:var(--text-muted);"></i>
+                    </div>
+                </div>
+
+                <button class="btn btn-danger" onclick="logout()" style="margin-top:30px;"><i class="fas fa-sign-out-alt"></i> Выйти из аккаунта</button>
+            </div>
+        </div>
+
+        <!-- ЭКРАН 8: МАСТЕР-ПАНЕЛЬ -->
+        <div id="masterPanelScreen" class="screen">
+            <div class="card">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+                    <button class="btn-icon" onclick="logoutMaster()"><i class="fas fa-arrow-left"></i></button>
+                    <h3 style="flex:1;text-align:center;font-weight:700;">⚙️ Панель мастера</h3>
+                    <button class="btn-icon" onclick="refreshMasterPanel()"><i class="fas fa-sync-alt"></i></button>
+                </div>
+
+                <div style="background:linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));border-radius:var(--border-radius);padding:20px;color:white;margin-bottom:20px;">
+                    <h4 style="margin-bottom:15px;font-weight:600;">📊 Статистика</h4>
+                    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:15px;">
+                        <div style="text-align:center;">
+                            <div style="font-size:24px;font-weight:bold;" id="totalBookings">0</div>
+                            <div style="font-size:12px;opacity:0.9;">Всего записей</div>
+                        </div>
+                        <div style="text-align:center;">
+                            <div style="font-size:24px;font-weight:bold;" id="todayBookings">0</div>
+                            <div style="font-size:12px;opacity:0.9;">На сегодня</div>
+                        </div>
+                        <div style="text-align:center;">
+                            <div style="font-size:24px;font-weight:bold;" id="totalRevenue">0</div>
+                            <div style="font-size:12px;opacity:0.9;">Выручка</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="master-actions" style="display:grid;grid-template-columns:repeat(2,1fr);gap:15px;margin-bottom:20px;">
+                    <button class="card hover-zoom" onclick="showTodayBookings()" style="text-align:center;padding:15px;cursor:pointer;border:none;background:var(--bg-card);">
+                        <div style="font-size:24px;margin-bottom:10px;">📅</div>
+                        <div style="font-size:14px;font-weight:600;">На сегодня</div>
+                    </button>
+                    <button class="card hover-zoom" onclick="showCalendar()" style="text-align:center;padding:15px;cursor:pointer;border:none;background:var(--bg-card);">
+                        <div style="font-size:24px;margin-bottom:10px;">🗓️</div>
+                        <div style="font-size:14px;font-weight:600;">Календарь</div>
+                    </button>
+                    <button class="card hover-zoom" onclick="showAllBookings()" style="text-align:center;padding:15px;cursor:pointer;border:none;background:var(--bg-card);">
+                        <div style="font-size:24px;margin-bottom:10px;">📋</div>
+                        <div style="font-size:14px;font-weight:600;">Все записи</div>
+                    </button>
+                    <button class="card hover-zoom" onclick="showClients()" style="text-align:center;padding:15px;cursor:pointer;border:none;background:var(--bg-card);">
+                        <div style="font-size:24px;margin-bottom:10px;">👥</div>
+                        <div style="font-size:14px;font-weight:600;">Клиенты</div>
+                    </button>
+                </div>
+
+                <div id="masterContent"></div>
+
+                <button class="btn btn-primary" onclick="syncDatabase()" style="margin-top:20px;"><i class="fas fa-sync-alt"></i> Синхронизировать с базой</button>
+            </div>
+        </div>
+
+        <!-- ЭКРАН 9: НАСТРОЙКИ -->
+        <div id="settingsScreen" class="screen">
+            <div class="card">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+                    <button class="btn-icon" onclick="showScreen('profile')"><i class="fas fa-arrow-left"></i></button>
+                    <h3 style="flex:1;text-align:center;font-weight:700;">⚙️ Настройки</h3>
+                    <div style="width:50px;"></div>
+                </div>
+                <div class="settings-group">
+                    <h4 style="margin:20px 0 15px 0;color:var(--text-secondary);font-size:14px;text-transform:uppercase;">ВНЕШНИЙ ВИД</h4>
+                    <div class="setting-item" style="display:flex;justify-content:space-between;align-items:center;padding:15px;background:var(--bg-secondary);border-radius:12px;margin-bottom:10px;">
+                        <div><div style="font-weight:600;">Тема приложения</div><div style="font-size:12px;color:var(--text-muted);">Выберите цветовую схему</div></div>
+                        <button class="btn btn-secondary" onclick="openThemeModal()" style="padding:8px 16px;font-size:14px;">Сменить тему</button>
+                    </div>
+                </div>
+                <div class="settings-group">
+                    <h4 style="margin:20px 0 15px 0;color:var(--text-secondary);font-size:14px;text-transform:uppercase;">БАЗА ДАННЫХ</h4>
+                    <div class="setting-item" style="display:flex;justify-content:space-between;align-items:center;padding:15px;background:var(--bg-secondary);border-radius:12px;margin-bottom:10px;">
+                        <div><div style="font-weight:600;">Статус подключения</div><div style="font-size:12px;color:var(--text-muted);" id="dbStatus">Проверка...</div></div>
+                        <button class="btn btn-secondary" onclick="testDatabase()" style="padding:8px 16px;font-size:14px;">Проверить</button>
+                    </div>
+                    <button class="btn btn-primary" onclick="syncDatabase()" style="margin-top:10px;width:100%;"><i class="fas fa-sync-alt"></i> Синхронизировать все данные</button>
+                </div>
             </div>
         </div>
     </div>
 
     <!-- Нижняя навигация -->
     <nav class="bottom-nav">
-        <button class="nav-item active" onclick="showScreen('main')">
-            <div class="nav-icon">🏠</div>
-            <div class="nav-label">Главная</div>
-        </button>
-        <button class="nav-item" onclick="showScreen('booking')">
-            <div class="nav-icon">💅</div>
-            <div class="nav-label">Запись</div>
-        </button>
-        <button class="nav-item" onclick="showScreen('services')">
-            <div class="nav-icon">✨</div>
-            <div class="nav-label">Услуги</div>
-        </button>
-        <button class="nav-item" onclick="showScreen('myBookings')">
-            <div class="nav-icon">📅</div>
-            <div class="nav-label">Записи</div>
-        </button>
-        <button class="nav-item" onclick="showScreen('profile')">
-            <div class="nav-icon">👤</div>
-            <div class="nav-label">Профиль</div>
-        </button>
+        <button class="nav-item active" onclick="showScreen('main')"><div class="nav-icon">🏠</div><div class="nav-label">Главная</div></button>
+        <button class="nav-item" onclick="showScreen('booking')"><div class="nav-icon">💅</div><div class="nav-label">Запись</div></button>
+        <button class="nav-item" onclick="showScreen('services')"><div class="nav-icon">✨</div><div class="nav-label">Услуги</div></button>
+        <button class="nav-item" onclick="showScreen('myBookings')"><div class="nav-icon">📅</div><div class="nav-label">Записи</div></button>
+        <button class="nav-item" onclick="showScreen('profile')"><div class="nav-icon">👤</div><div class="nav-label">Профиль</div></button>
     </nav>
 
 <script>
 // ================= КОНФИГУРАЦИЯ =================
 const CONFIG = {
-    GOOGLE_SHEETS_URL: "https://script.google.com/macros/s/AKfycbwHLNUtu07o--MVTdjwzOoxi0dkXwyQ72vOPbukrSXMtqni7_uBlSnmryQQB5CD3gUW/exec",
-    MASTER_PASSWORD: "sakura2024",
+    MASTER_PASSWORD: "sakura2024", // Пароль для входа в мастер-панель
+    MASTER_LOGIN: "admin", // Логин для входа в мастер-панель
     APP_NAME: "Nail Sakura Studio",
     VERSION: "2.0.0"
 };
 
-// КОНФИГУРАЦИЯ SUPABASE (ЗАМЕНИТЕ ЭТИ ДАННЫЕ!)
+// === ЗАМЕНИТЕ ЭТИ ДАННЫЕ НА ВАШИ РЕАЛЬНЫЕ ИЗ SUPABASE ===
 const SUPABASE_CONFIG = {
-    url: 'https://dcppaqderczliumtxesd.supabase.co',
-    anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRjcHBhcWRlcmN6bGl1bXR4ZXNkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzAzMjY3NTYsImV4cCI6MjA4NTkwMjc1Nn0.U6YFxlc4RW0awCuhwjxwg1mpNaMlv8-5-srqB4TPrC0'
+    url: 'https://dcppaqderczliumtxesd.supabase.co', // Замените на ваш Project URL из Supabase
+    anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRjcHBhcWRlcmN6bGl1bXR4ZXNkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzAzMjY3NTYsImV4cCI6MjA4NTkwMjc1Nn0.U6YFxlc4RW0awCuhwjxwg1mpNaMlv8-5-srqB4TPrC0' // Замените на ваш anon public key из Supabase
 };
 
 // ================= ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ =================
@@ -742,12 +1051,12 @@ let currentStep = 1;
 let selectedService = null;
 let allBookings = [];
 let notifications = [];
-let chatMessages = [];
 let servicesData = [];
-let dbService = null; // Для работы с Supabase
+let dbService = null;
+let isMasterMode = false;
 
 // ================= ИНИЦИАЛИЗАЦИЯ =================
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', async function() {
     console.log(`🌸 ${CONFIG.APP_NAME} v${CONFIG.VERSION}`);
     
     // Загружаем сохранённую тему
@@ -756,11 +1065,9 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Загружаем локальные данные
     loadLocalData();
-    loadServicesData();
-    createParticles();
     
     // Инициализация
-    initApp();
+    await initApp();
     
     // Обновление UI
     updateUI();
@@ -769,63 +1076,62 @@ document.addEventListener('DOMContentLoaded', function() {
     // Показываем welcome уведомление
     setTimeout(() => {
         showNotification('Добро пожаловать в Nail Sakura Studio! 🌸', 'info');
-        updateNotificationBadge();
     }, 1000);
 });
 
 // Основная функция инициализации
 async function initApp() {
-    // Сначала пытаемся инициализировать Telegram
-    await initTelegram();
-    
-    // Затем инициализируем базу данных
-    await initDatabase();
-    
-    console.log('✅ Приложение инициализировано');
+    try {
+        // Инициализируем Telegram
+        await initTelegram();
+        
+        // Затем инициализируем базу данных
+        await initDatabase();
+        
+        // Загружаем услуги
+        loadServicesData();
+        
+        // Создаем частицы
+        createParticles();
+        
+        console.log('✅ Приложение инициализировано');
+    } catch (error) {
+        console.error('❌ Ошибка инициализации:', error);
+        showNotification('Ошибка инициализации приложения', 'error');
+    }
 }
 
 // Инициализация Telegram
 async function initTelegram() {
     try {
-        // Проверяем, что Telegram Web App доступен
         if (window.Telegram && Telegram.WebApp) {
             const tg = Telegram.WebApp;
-            
-            // Инициализируем Telegram Web App
             tg.ready();
             tg.expand();
-            
-            // Настраиваем цвета
             tg.setHeaderColor('#FFB6C1');
             tg.setBackgroundColor('#FFE4E9');
             
-            // Получаем данные пользователя
             const user = tg.initDataUnsafe?.user;
             if (user) {
                 currentUser = {
                     id: user.id,
                     firstName: user.first_name,
                     lastName: user.last_name || '',
-                    username: user.username,
-                    photoUrl: user.photo_url,
-                    isPremium: user.is_premium || false,
-                    languageCode: user.language_code || 'ru'
+                    username: user.username || '',
+                    photoUrl: user.photo_url || '',
+                    isPremium: user.is_premium || false
                 };
                 
-                // Обновляем UI с данными пользователя
+                console.log('✅ Telegram user:', currentUser.firstName);
                 updateUserUI();
-                
-                console.log('✅ Telegram user initialized:', currentUser.firstName);
             } else {
-                // Если нет данных от Telegram, используем гостевой режим
                 initGuestMode();
             }
         } else {
-            // Если не в Telegram, используем гостевой режим
             initGuestMode();
         }
     } catch (error) {
-        console.error('❌ Telegram init error:', error);
+        console.error('Telegram init error:', error);
         initGuestMode();
     }
 }
@@ -842,7 +1148,7 @@ function initGuestMode() {
     };
     
     updateUserUI();
-    showNotification('Запущено в режиме браузера', 'warning');
+    showNotification('Режим браузера', 'warning');
 }
 
 // Обновление UI пользователя
@@ -859,10 +1165,9 @@ function updateUserUI() {
 }
 
 // ================= БАЗА ДАННЫХ (SUPABASE) =================
-// Простой класс для работы с Supabase
 class DatabaseService {
     constructor() {
-        if (window.supabase && SUPABASE_CONFIG.url && SUPABASE_CONFIG.anonKey) {
+        if (window.supabase && SUPABASE_CONFIG.url && !SUPABASE_CONFIG.url.includes('ваш-id')) {
             try {
                 this.supabase = supabase.createClient(SUPABASE_CONFIG.url, SUPABASE_CONFIG.anonKey);
                 console.log('✅ Supabase client created');
@@ -871,19 +1176,24 @@ class DatabaseService {
                 this.supabase = null;
             }
         } else {
-            console.warn('⚠️ Supabase config not found, using local storage only');
+            console.warn('⚠️ Supabase not configured');
             this.supabase = null;
         }
     }
     
-    // Проверка подключения
     async isConnected() {
-        return this.supabase !== null;
+        if (!this.supabase) return false;
+        try {
+            // Простая проверка подключения
+            const { data, error } = await this.supabase.from('services').select('count').limit(1);
+            return !error;
+        } catch (error) {
+            return false;
+        }
     }
     
-    // Сохранение пользователя
     async saveUser(userData) {
-        if (!this.supabase) return { data: null, error: 'No database connection' };
+        if (!this.supabase) return { error: 'No database' };
         
         try {
             const { data, error } = await this.supabase
@@ -905,9 +1215,8 @@ class DatabaseService {
         }
     }
     
-    // Создание записи
     async createBooking(booking) {
-        if (!this.supabase) return { data: null, error: 'No database connection' };
+        if (!this.supabase) return { error: 'No database' };
         
         try {
             const { data, error } = await this.supabase
@@ -935,9 +1244,8 @@ class DatabaseService {
         }
     }
     
-    // Получение записей пользователя
     async getUserBookings(userId) {
-        if (!this.supabase) return { data: null, error: 'No database connection' };
+        if (!this.supabase) return { data: null, error: 'No database' };
         
         try {
             const { data, error } = await this.supabase
@@ -953,9 +1261,58 @@ class DatabaseService {
         }
     }
     
-    // Получение услуг
+    async getAllBookings() {
+        if (!this.supabase) return { data: null, error: 'No database' };
+        
+        try {
+            const { data, error } = await this.supabase
+                .from('bookings')
+                .select('*')
+                .order('date', { ascending: false });
+            
+            return { data, error };
+        } catch (error) {
+            console.error('Get all bookings error:', error);
+            return { data: null, error };
+        }
+    }
+    
+    async getTodayBookings() {
+        if (!this.supabase) return { data: null, error: 'No database' };
+        
+        const today = new Date().toISOString().split('T')[0];
+        try {
+            const { data, error } = await this.supabase
+                .from('bookings')
+                .select('*')
+                .eq('date', today)
+                .order('time', { ascending: true });
+            
+            return { data, error };
+        } catch (error) {
+            console.error('Get today bookings error:', error);
+            return { data: null, error };
+        }
+    }
+    
+    async updateBookingStatus(bookingId, status) {
+        if (!this.supabase) return { error: 'No database' };
+        
+        try {
+            const { data, error } = await this.supabase
+                .from('bookings')
+                .update({ status: status, updated_at: new Date().toISOString() })
+                .eq('id', bookingId);
+            
+            return { data, error };
+        } catch (error) {
+            console.error('Update booking error:', error);
+            return { data: null, error };
+        }
+    }
+    
     async getServices() {
-        if (!this.supabase) return { data: null, error: 'No database connection' };
+        if (!this.supabase) return { data: null, error: 'No database' };
         
         try {
             const { data, error } = await this.supabase
@@ -974,16 +1331,20 @@ class DatabaseService {
 // Инициализация базы данных
 async function initDatabase() {
     try {
-        // Создаем экземпляр сервиса
         dbService = new DatabaseService();
         
         // Проверяем подключение
         const isConnected = await dbService.isConnected();
         
-        if (isConnected && currentUser) {
+        if (isConnected) {
+            console.log('✅ Connected to Supabase');
+            document.getElementById('dbStatus').textContent = '✅ Подключено';
+            document.getElementById('dbStatus').style.color = 'var(--accent-success)';
+            
             // Сохраняем пользователя в БД
-            await dbService.saveUser(currentUser);
-            console.log('✅ User saved to database');
+            if (currentUser) {
+                await dbService.saveUser(currentUser);
+            }
             
             // Загружаем услуги из БД
             const { data: dbServices, error } = await dbService.getServices();
@@ -999,87 +1360,150 @@ async function initDatabase() {
                     popular: s.popular || false
                 }));
                 console.log(`✅ Loaded ${servicesData.length} services from database`);
-                renderServices();
+            } else {
+                // Если нет услуг в БД, используем локальные
+                loadLocalServices();
             }
             
             // Загружаем записи пользователя
-            const { data: dbBookings } = await dbService.getUserBookings(currentUser.id);
-            if (dbBookings) {
-                allBookings = dbBookings.map(b => ({
-                    id: b.id,
-                    userId: b.user_id,
-                    userName: b.user_name,
-                    userInfo: b.user_info,
-                    service: b.service_name,
-                    serviceId: b.service_id,
-                    price: b.price,
-                    date: b.date,
-                    time: b.time ? b.time.substring(0, 5) : '10:00',
-                    master: b.master,
-                    notes: b.notes,
-                    phone: b.phone,
-                    status: b.status,
-                    createdAt: b.created_at
-                }));
-                console.log(`✅ Loaded ${allBookings.length} bookings from database`);
-                updateUpcomingBookings();
-                saveLocalData(); // Сохраняем локально для офлайн-работы
+            if (currentUser) {
+                await loadBookingsFromDatabase();
             }
         } else {
             console.log('⚠️ Using local storage only');
-            // Загружаем услуги из локальных данных
-            loadServicesData();
+            document.getElementById('dbStatus').textContent = '❌ Не подключено';
+            document.getElementById('dbStatus').style.color = 'var(--accent-danger)';
+            loadLocalServices();
         }
         
+        renderServices();
         return true;
     } catch (error) {
         console.error('❌ Database init error:', error);
-        // В случае ошибки используем локальные данные
-        loadServicesData();
+        document.getElementById('dbStatus').textContent = '❌ Ошибка подключения';
+        document.getElementById('dbStatus').style.color = 'var(--accent-danger)';
+        loadLocalServices();
+        renderServices();
         return false;
     }
 }
 
-// ================= ОСНОВНОЙ ФУНКЦИОНАЛ =================
-
-// Загрузка данных услуг (локальные данные по умолчанию)
-function loadServicesData() {
+// Загрузка локальных услуг
+function loadLocalServices() {
     servicesData = [
-        {
-            id: 1,
-            name: 'Классический маникюр',
-            description: 'Обработка + покрытие лаком',
-            price: 1500,
-            duration: 90,
-            category: 'manicure',
-            icon: '💅',
-            popular: true
-        },
-        {
-            id: 2,
-            name: 'Покрытие гель-лаком',
-            description: 'Долговременное покрытие',
-            price: 2000,
-            duration: 120,
-            category: 'manicure',
-            icon: '✨',
-            popular: true
-        },
-        {
-            id: 3,
-            name: 'Дизайн ногтей',
-            description: 'Рисунки, стразы, градиент',
-            price: 1000,
-            duration: 60,
-            category: 'design',
-            icon: '🎨'
-        }
+        { id: 1, name: 'Классический маникюр', description: 'Обработка + покрытие лаком', price: 1500, duration: 90, category: 'manicure', icon: '💅', popular: true },
+        { id: 2, name: 'Покрытие гель-лаком', description: 'Долговременное покрытие', price: 2000, duration: 120, category: 'manicure', icon: '✨', popular: true },
+        { id: 3, name: 'Дизайн ногтей', description: 'Рисунки, стразы, градиент', price: 1000, duration: 60, category: 'design', icon: '🎨', popular: false },
+        { id: 4, name: 'SPA-уход', description: 'Увлажнение и питание', price: 1800, duration: 75, category: 'spa', icon: '💎', popular: false },
+        { id: 5, name: 'Укрепление ногтей', description: 'Гелевое/акриловое укрепление', price: 2200, duration: 120, category: 'premium', icon: '🛡️', popular: false },
+        { id: 6, name: 'Френч', description: 'Классический французский маникюр', price: 2500, duration: 90, category: 'design', icon: '🇫🇷', popular: true }
     ];
+}
+
+// Загрузка записей из базы данных
+async function loadBookingsFromDatabase() {
+    if (!dbService || !currentUser) return;
     
+    try {
+        const { data: dbBookings, error } = await dbService.getUserBookings(currentUser.id);
+        if (!error && dbBookings) {
+            allBookings = dbBookings.map(b => ({
+                id: b.id,
+                userId: b.user_id,
+                userName: b.user_name,
+                userInfo: b.user_info,
+                service: b.service_name,
+                serviceId: b.service_id,
+                price: b.price,
+                date: b.date,
+                time: b.time ? b.time.substring(0, 5) : '10:00',
+                master: b.master,
+                notes: b.notes,
+                phone: b.phone,
+                status: b.status,
+                createdAt: b.created_at
+            }));
+            
+            saveLocalData();
+            updateUpcomingBookings();
+            console.log(`✅ Loaded ${allBookings.length} bookings from database`);
+        }
+    } catch (error) {
+        console.error('Load bookings from DB error:', error);
+    }
+}
+
+// Тестирование базы данных
+async function testDatabase() {
+    showLoader();
+    try {
+        if (dbService) {
+            const connected = await dbService.isConnected();
+            if (connected) {
+                showNotification('✅ База данных подключена', 'success');
+                document.getElementById('dbStatus').textContent = '✅ Подключено';
+                document.getElementById('dbStatus').style.color = 'var(--accent-success)';
+            } else {
+                showNotification('❌ Не удалось подключиться к базе', 'error');
+                document.getElementById('dbStatus').textContent = '❌ Ошибка подключения';
+                document.getElementById('dbStatus').style.color = 'var(--accent-danger)';
+            }
+        } else {
+            showNotification('❌ База данных не настроена', 'error');
+        }
+    } catch (error) {
+        showNotification('❌ Ошибка тестирования: ' + error.message, 'error');
+    } finally {
+        hideLoader();
+    }
+}
+
+// Синхронизация данных
+async function syncDatabase() {
+    showLoader();
+    try {
+        if (dbService && await dbService.isConnected()) {
+            // Загружаем услуги из БД
+            const { data: dbServices, error } = await dbService.getServices();
+            if (!error && dbServices) {
+                servicesData = dbServices.map(s => ({
+                    id: s.id,
+                    name: s.name,
+                    description: s.description || '',
+                    price: s.price,
+                    duration: s.duration || 60,
+                    category: s.category || 'other',
+                    icon: s.icon || '💅',
+                    popular: s.popular || false
+                }));
+                renderServices();
+            }
+            
+            // Загружаем записи
+            if (currentUser) {
+                await loadBookingsFromDatabase();
+            }
+            
+            showNotification('✅ Данные синхронизированы с базой', 'success');
+        } else {
+            showNotification('❌ Нет подключения к базе данных', 'error');
+        }
+    } catch (error) {
+        console.error('Sync error:', error);
+        showNotification('❌ Ошибка синхронизации', 'error');
+    } finally {
+        hideLoader();
+    }
+}
+
+// ================= ОСНОВНОЙ ФУНКЦИОНАЛ =================
+function loadServicesData() {
+    if (servicesData.length === 0) {
+        loadLocalServices();
+    }
     renderServices();
 }
 
-// Рендеринг услуг
 function renderServices() {
     const servicesGrid = document.getElementById('servicesGrid');
     const servicesList = document.getElementById('servicesList');
@@ -1111,9 +1535,7 @@ function renderServices() {
                         <div style="font-size:14px;color:var(--text-muted);margin-bottom:8px;">${service.description}</div>
                         <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--text-secondary);">
                             <span>🕐 ${service.duration} мин</span>
-                            <button class="btn btn-primary" onclick="selectServiceForBooking(${service.id})" style="padding:6px 12px;font-size:12px;">
-                                Выбрать
-                            </button>
+                            <button class="btn btn-primary" onclick="selectServiceForBooking(${service.id})" style="padding:6px 12px;font-size:12px;">Выбрать</button>
                         </div>
                     </div>
                 </div>
@@ -1122,58 +1544,44 @@ function renderServices() {
     }
 }
 
-// Выбор услуги
 function selectService(serviceId) {
     selectedService = servicesData.find(s => s.id === serviceId);
     renderServices();
     updateStepCircles();
-    
-    if (selectedService) {
-        showNotification(`Выбрана услуга: ${selectedService.name}`, 'info');
-    }
 }
 
 function selectServiceForBooking(serviceId) {
     selectService(serviceId);
     showScreen('booking');
-    document.getElementById('step1').scrollIntoView({ behavior: 'smooth' });
 }
 
-// ================= НАВИГАЦИЯ И ЭКРАНЫ =================
+// ================= НАВИГАЦИЯ =================
 function showScreen(screenName) {
-    // Скрываем все экраны
     document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById(screenName + 'Screen').classList.add('active');
+    currentScreen = screenName;
     
-    // Показываем выбранный экран
-    const screenElement = document.getElementById(screenName + 'Screen');
-    if (screenElement) {
-        screenElement.classList.add('active');
-        currentScreen = screenName;
-    }
-    
-    // Обновляем нижнюю навигацию
     document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
-    
-    // Активный элемент навигации
     if (screenName === 'main') document.querySelector('.nav-item:nth-child(1)').classList.add('active');
     else if (screenName === 'booking') document.querySelector('.nav-item:nth-child(2)').classList.add('active');
     else if (screenName === 'services') document.querySelector('.nav-item:nth-child(3)').classList.add('active');
     else if (screenName === 'myBookings') document.querySelector('.nav-item:nth-child(4)').classList.add('active');
     else if (screenName === 'profile') document.querySelector('.nav-item:nth-child(5)').classList.add('active');
     
-    // Загружаем данные для экрана
     switch(screenName) {
         case 'myBookings':
             loadUserBookings();
             break;
         case 'booking':
-            // Сбрасываем шаги при входе в запись
             currentStep = 1;
             updateStepCircles();
             updateNavigationButtons();
             document.getElementById('step1').style.display = 'block';
             document.getElementById('step2').style.display = 'none';
             document.getElementById('step3').style.display = 'none';
+            break;
+        case 'masterPanel':
+            refreshMasterPanel();
             break;
     }
 }
@@ -1187,14 +1595,10 @@ function nextStep() {
     
     if (currentStep === 2) {
         const date = document.getElementById('bookingDate').value;
-        const time = document.getElementById('bookingTime').value;
-        
         if (!date) {
             showNotification('Выберите дату записи', 'warning');
             return;
         }
-        
-        // Обновляем сводку
         updateBookingSummary();
     }
     
@@ -1202,15 +1606,9 @@ function nextStep() {
         document.getElementById(`step${currentStep}`).style.display = 'none';
         currentStep++;
         document.getElementById(`step${currentStep}`).style.display = 'block';
-        
-        // Обновляем UI шагов
         updateStepCircles();
         updateNavigationButtons();
-        
-        // Прокручиваем к началу шага
-        document.getElementById(`step${currentStep}`).scrollIntoView({ behavior: 'smooth' });
     } else {
-        // Шаг 3: подтверждение записи
         submitBooking();
     }
 }
@@ -1220,10 +1618,8 @@ function prevStep() {
         document.getElementById(`step${currentStep}`).style.display = 'none';
         currentStep--;
         document.getElementById(`step${currentStep}`).style.display = 'block';
-        
         updateStepCircles();
         updateNavigationButtons();
-        document.getElementById(`step${currentStep}`).scrollIntoView({ behavior: 'smooth' });
     }
 }
 
@@ -1266,8 +1662,7 @@ function updateBookingSummary() {
     const time = document.getElementById('bookingTime').value;
     const master = document.getElementById('bookingMaster').value;
     
-    const summary = document.getElementById('bookingSummary');
-    summary.innerHTML = `
+    document.getElementById('bookingSummary').innerHTML = `
         <div style="margin-bottom:10px;">
             <div style="display:flex;justify-content:space-between;margin-bottom:5px;">
                 <span style="color:var(--text-muted);">Услуга:</span>
@@ -1305,14 +1700,7 @@ async function submitBooking() {
         const phone = document.getElementById('clientPhone').value;
         
         if (!phone) {
-            showNotification('Пожалуйста, укажите телефон для связи', 'warning');
-            hideLoader();
-            return;
-        }
-        
-        // Валидация телефона
-        if (!validatePhone(phone)) {
-            showNotification('Пожалуйста, введите корректный номер телефона', 'warning');
+            showNotification('Укажите телефон для связи', 'warning');
             hideLoader();
             return;
         }
@@ -1336,28 +1724,20 @@ async function submitBooking() {
         };
         
         let dbSuccess = false;
-        let dbBookingId = booking.id;
         
-        // Сохраняем в Supabase если подключены
+        // Сохраняем в Supabase
         if (dbService && await dbService.isConnected()) {
             const { data, error } = await dbService.createBooking(booking);
             if (!error && data && data[0]) {
                 dbSuccess = true;
-                dbBookingId = data[0].id;
-                booking.id = dbBookingId;
-                console.log('✅ Booking saved to database:', dbBookingId);
-            } else {
-                console.error('❌ Database save error:', error);
+                booking.id = data[0].id;
+                console.log('✅ Booking saved to database:', booking.id);
             }
         }
         
-        // Сохраняем локально в любом случае
+        // Сохраняем локально
         allBookings.push(booking);
         saveLocalData();
-        
-        // Добавляем уведомление
-        addNotification('Запись создана', `Вы записаны на ${formatDate(date)} в ${time}`, 'success');
-        updateNotificationBadge();
         
         // Показываем подтверждение
         setTimeout(() => {
@@ -1365,69 +1745,160 @@ async function submitBooking() {
             
             let message = `🎉 Запись создана!\n${selectedService.name}\n${formatDate(date)} в ${time}`;
             if (dbSuccess) {
-                message += '\n✅ Синхронизировано с базой данных';
+                message += '\n✅ Сохранено в базе данных';
             } else {
                 message += '\n💾 Сохранено локально';
             }
             
             showNotification(message, 'success', 5000);
             
-            // Сбрасываем форму
             resetBookingForm();
-            
-            // Обновляем UI
             updateUpcomingBookings();
-            
-            // Возвращаем на главную
             showScreen('main');
         }, 1500);
         
     } catch (error) {
         hideLoader();
         console.error('Submit booking error:', error);
-        showNotification('Ошибка при создании записи: ' + error.message, 'error');
+        showNotification('Ошибка при создании записи', 'error');
     }
 }
 
-// Валидация телефона
-function validatePhone(phone) {
-    // Простая валидация российских номеров
-    const phoneRegex = /^[\+]?[78][-\s]?\(?\d{3}\)?[-\s]?\d{3}[-\s]?\d{2}[-\s]?\d{2}$/;
-    return phoneRegex.test(phone.replace(/\s/g, ''));
+// ================= МАСТЕР-ПАНЕЛЬ =================
+function openMasterLogin() {
+    document.getElementById('masterLoginModal').classList.remove('hidden');
 }
 
-// Сброс формы записи
-function resetBookingForm() {
-    selectedService = null;
-    currentStep = 1;
+function loginMaster() {
+    const login = document.getElementById('masterLogin').value;
+    const password = document.getElementById('masterPassword').value;
     
-    // Сбрасываем поля формы
-    document.getElementById('step1').style.display = 'block';
-    document.getElementById('step2').style.display = 'none';
-    document.getElementById('step3').style.display = 'none';
-    
-    document.getElementById('bookingDate').value = '';
-    document.getElementById('bookingTime').value = '10:00';
-    document.getElementById('bookingMaster').value = '';
-    document.getElementById('bookingNotes').value = '';
-    document.getElementById('clientPhone').value = '';
-    
-    // Обновляем UI
-    renderServices();
-    updateStepCircles();
-    updateNavigationButtons();
+    if (login === CONFIG.MASTER_LOGIN && password === CONFIG.MASTER_PASSWORD) {
+        isMasterMode = true;
+        closeModal('masterLoginModal');
+        showScreen('masterPanel');
+        showNotification('✅ Вход в мастер-панель выполнен', 'success');
+    } else {
+        showNotification('❌ Неверный логин или пароль', 'error');
+    }
 }
 
-// ================= ТЕМЫ И НАСТРОЙКИ =================
+function logoutMaster() {
+    isMasterMode = false;
+    showScreen('main');
+    showNotification('Выход из мастер-панели', 'info');
+}
+
+async function refreshMasterPanel() {
+    if (!isMasterMode) return;
+    
+    try {
+        let allBookingsData = [];
+        let todayBookingsData = [];
+        
+        if (dbService && await dbService.isConnected()) {
+            const [allResult, todayResult] = await Promise.all([
+                dbService.getAllBookings(),
+                dbService.getTodayBookings()
+            ]);
+            
+            if (allResult.data) allBookingsData = allResult.data;
+            if (todayResult.data) todayBookingsData = todayResult.data;
+        } else {
+            const today = new Date().toISOString().split('T')[0];
+            allBookingsData = allBookings;
+            todayBookingsData = allBookings.filter(b => b.date === today);
+        }
+        
+        // Обновляем статистику
+        document.getElementById('totalBookings').textContent = allBookingsData.length;
+        document.getElementById('todayBookings').textContent = todayBookingsData.length;
+        
+        const totalRevenue = allBookingsData.reduce((sum, b) => sum + (b.price || 0), 0);
+        document.getElementById('totalRevenue').textContent = totalRevenue.toLocaleString('ru-RU') + '₽';
+        
+        // Показываем записи на сегодня
+        showTodayBookingsInMasterPanel(todayBookingsData);
+        
+    } catch (error) {
+        console.error('Refresh master panel error:', error);
+    }
+}
+
+function showTodayBookingsInMasterPanel(bookings) {
+    const content = document.getElementById('masterContent');
+    content.innerHTML = `
+        <h4 style="margin-bottom:15px;">📋 Записи на сегодня (${bookings.length})</h4>
+        ${bookings.length === 0 ? 
+            '<p style="text-align:center;padding:20px;color:var(--text-muted);">Записей на сегодня нет</p>' :
+            bookings.map(booking => `
+                <div class="card" style="margin-bottom:10px;">
+                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+                        <div>
+                            <div style="font-weight:600;">${booking.service_name || booking.service}</div>
+                            <div style="font-size:12px;color:var(--text-muted);">${booking.user_name || booking.userName}</div>
+                        </div>
+                        <div style="text-align:right;">
+                            <div style="font-weight:600;">${booking.time ? booking.time.substring(0, 5) : booking.time}</div>
+                            <span class="status-badge status-${booking.status}" onclick="changeBookingStatus('${booking.id}', '${booking.status}')" style="cursor:pointer;">
+                                ${booking.status === 'confirmed' ? '✅' : 
+                                 booking.status === 'completed' ? '✅' : 
+                                 booking.status === 'cancelled' ? '❌' : '⏳'}
+                            </span>
+                        </div>
+                    </div>
+                    <div style="font-size:12px;color:var(--text-muted);">
+                        📞 ${booking.phone} • 💵 ${booking.price}₽
+                        ${booking.notes ? `<br>📝 ${booking.notes.substring(0, 50)}${booking.notes.length > 50 ? '...' : ''}` : ''}
+                    </div>
+                </div>
+            `).join('')
+        }
+    `;
+}
+
+async function changeBookingStatus(bookingId, currentStatus) {
+    if (!isMasterMode) return;
+    
+    const statuses = ['pending', 'confirmed', 'completed', 'cancelled'];
+    const currentIndex = statuses.indexOf(currentStatus);
+    const nextIndex = (currentIndex + 1) % statuses.length;
+    const newStatus = statuses[nextIndex];
+    
+    try {
+        // Обновляем в базе
+        if (dbService && await dbService.isConnected()) {
+            await dbService.updateBookingStatus(bookingId, newStatus);
+        }
+        
+        // Обновляем локально
+        const booking = allBookings.find(b => b.id === bookingId);
+        if (booking) {
+            booking.status = newStatus;
+            saveLocalData();
+        }
+        
+        refreshMasterPanel();
+        showNotification(`Статус изменен на: ${newStatus}`, 'success');
+        
+    } catch (error) {
+        console.error('Change status error:', error);
+        showNotification('Ошибка при изменении статуса', 'error');
+    }
+}
+
+// ================= УТИЛИТЫ =================
 function setTheme(theme) {
     currentTheme = theme;
     document.documentElement.setAttribute('data-theme', theme);
     localStorage.setItem('nailSakuraTheme', theme);
     
-    // Обновляем переключатель
     const toggle = document.querySelector('.theme-toggle');
     if (toggle) {
-        toggle.setAttribute('data-theme', theme);
+        toggle.innerHTML = theme === 'light' ? '☀️' : theme === 'dark' ? '🌙' : '🌸';
+        toggle.style.background = theme === 'light' ? 'linear-gradient(135deg, #FFE4E9, #FFB6C1)' : 
+                             theme === 'dark' ? 'linear-gradient(135deg, #5D1F31, #2A2A2A)' : 
+                             'linear-gradient(135deg, #FFB6C1, #FF69B4)';
     }
 }
 
@@ -1439,31 +1910,12 @@ function closeModal(modalId) {
     document.getElementById(modalId).classList.add('hidden');
 }
 
-// ================= УВЕДОМЛЕНИЯ =================
-function addNotification(title, message, type = 'info') {
-    const notification = {
-        id: Date.now(),
-        title,
-        message,
-        type,
-        read: false,
-        timestamp: new Date().toISOString()
-    };
-    
-    notifications.unshift(notification);
-    saveLocalData();
-    updateNotificationBadge();
-}
-
 function showNotification(message, type = 'info', duration = 5000) {
     const container = document.getElementById('notificationContainer');
-    if (!container) return;
-    
     const id = 'notification-' + Date.now();
     
     const notification = document.createElement('div');
     notification.id = id;
-    notification.className = `notification ${type}`;
     notification.style.cssText = `
         position: fixed;
         top: 20px;
@@ -1476,7 +1928,7 @@ function showNotification(message, type = 'info', duration = 5000) {
         align-items: center;
         gap: 12px;
         z-index: 10000;
-        animation: slideInRight 0.3s ease;
+        animation: fadeIn 0.3s ease;
         max-width: 400px;
         border-left: 4px solid ${type === 'success' ? 'var(--accent-success)' : type === 'error' ? 'var(--accent-danger)' : type === 'warning' ? 'var(--accent-warning)' : 'var(--accent-info)'};
     `;
@@ -1494,88 +1946,23 @@ function showNotification(message, type = 'info', duration = 5000) {
     
     container.appendChild(notification);
     
-    // Автоматическое закрытие
     setTimeout(() => {
         const element = document.getElementById(id);
-        if (element) {
-            element.remove();
-        }
+        if (element) element.remove();
     }, duration);
-}
-
-function toggleNotifications() {
-    const modal = document.getElementById('notificationModal');
-    if (modal.classList.contains('hidden')) {
-        loadNotifications();
-        modal.classList.remove('hidden');
-    } else {
-        modal.classList.add('hidden');
-    }
-}
-
-function loadNotifications() {
-    const container = document.getElementById('notificationsList');
-    if (!container) return;
-    
-    if (notifications.length === 0) {
-        container.innerHTML = `
-            <div style="text-align:center;padding:40px;">
-                <div style="font-size:48px;color:var(--text-muted);margin-bottom:20px;">🔔</div>
-                <p style="color:var(--text-muted);">Уведомлений пока нет</p>
-            </div>
-        `;
-        return;
-    }
-    
-    container.innerHTML = notifications.map(notif => `
-        <div class="notification-item" style="padding:15px;background:var(--bg-secondary);border-radius:12px;margin-bottom:10px;border-left:4px solid ${notif.type === 'success' ? 'var(--accent-success)' : notif.type === 'error' ? 'var(--accent-danger)' : notif.type === 'warning' ? 'var(--accent-warning)' : 'var(--accent-info)'};">
-            <div style="display:flex;justify-content:space-between;margin-bottom:5px;">
-                <div style="font-weight:600;">${notif.title}</div>
-                <div style="font-size:12px;color:var(--text-muted);">${formatDate(notif.timestamp, true)}</div>
-            </div>
-            <div style="font-size:14px;color:var(--text-muted);">${notif.message}</div>
-        </div>
-    `).join('');
-}
-
-function clearAllNotifications() {
-    notifications = [];
-    saveLocalData();
-    updateNotificationBadge();
-    loadNotifications();
-}
-
-function updateNotificationBadge() {
-    const badge = document.getElementById('notificationBadge');
-    if (!badge) return;
-    
-    const unreadCount = notifications.filter(n => !n.read).length;
-    
-    if (unreadCount > 0) {
-        badge.textContent = unreadCount > 9 ? '9+' : unreadCount;
-        badge.style.display = 'flex';
-    } else {
-        badge.style.display = 'none';
-    }
 }
 
 // ================= ЛОКАЛЬНОЕ ХРАНИЛИЩЕ =================
 function loadLocalData() {
     try {
-        // Загрузка записей
         const savedBookings = localStorage.getItem('nailSakuraBookings');
-        if (savedBookings) {
-            allBookings = JSON.parse(savedBookings);
-        }
+        if (savedBookings) allBookings = JSON.parse(savedBookings);
         
-        // Загрузка уведомлений
         const savedNotifications = localStorage.getItem('nailSakuraNotifications');
-        if (savedNotifications) {
-            notifications = JSON.parse(savedNotifications);
-        }
+        if (savedNotifications) notifications = JSON.parse(savedNotifications);
         
     } catch (error) {
-        console.error('Ошибка загрузки данных:', error);
+        console.error('Load local data error:', error);
     }
 }
 
@@ -1584,7 +1971,7 @@ function saveLocalData() {
         localStorage.setItem('nailSakuraBookings', JSON.stringify(allBookings));
         localStorage.setItem('nailSakuraNotifications', JSON.stringify(notifications));
     } catch (error) {
-        console.error('Ошибка сохранения данных:', error);
+        console.error('Save local data error:', error);
     }
 }
 
@@ -1593,28 +1980,7 @@ async function loadUserBookings() {
     try {
         // Пытаемся загрузить из базы
         if (dbService && currentUser && await dbService.isConnected()) {
-            const { data: dbBookings, error } = await dbService.getUserBookings(currentUser.id);
-            if (!error && dbBookings) {
-                // Обновляем локальные данные
-                allBookings = dbBookings.map(b => ({
-                    id: b.id,
-                    userId: b.user_id,
-                    userName: b.user_name,
-                    userInfo: b.user_info,
-                    service: b.service_name,
-                    serviceId: b.service_id,
-                    price: b.price,
-                    date: b.date,
-                    time: b.time ? b.time.substring(0, 5) : '10:00',
-                    master: b.master,
-                    notes: b.notes,
-                    phone: b.phone,
-                    status: b.status,
-                    createdAt: b.created_at
-                }));
-                
-                saveLocalData();
-            }
+            await loadBookingsFromDatabase();
         }
         
         const container = document.getElementById('bookingsList');
@@ -1635,7 +2001,6 @@ async function loadUserBookings() {
             return;
         }
         
-        // Сортируем по дате
         const sorted = userBookings.sort((a, b) => new Date(a.date) - new Date(b.date));
         
         container.innerHTML = sorted.map(booking => `
@@ -1647,7 +2012,7 @@ async function loadUserBookings() {
                             📅 ${formatDate(booking.date)} 🕐 ${booking.time}
                         </div>
                     </div>
-                    <span class="status-badge" style="display:inline-flex;align-items:center;padding:6px 12px;border-radius:20px;font-size:12px;font-weight:600;background:${booking.status === 'confirmed' ? 'rgba(76, 175, 80, 0.1)' : booking.status === 'completed' ? 'rgba(33, 150, 243, 0.1)' : booking.status === 'cancelled' ? 'rgba(244, 67, 54, 0.1)' : 'rgba(255, 193, 7, 0.1)'};color:${booking.status === 'confirmed' ? 'var(--accent-success)' : booking.status === 'completed' ? 'var(--accent-info)' : booking.status === 'cancelled' ? 'var(--accent-danger)' : 'var(--accent-warning)'};">
+                    <span class="status-badge status-${booking.status}">
                         ${booking.status === 'confirmed' ? '✅ Подтверждено' : 
                           booking.status === 'completed' ? '✅ Выполнено' : 
                           booking.status === 'cancelled' ? '❌ Отменено' : '⏳ Ожидание'}
@@ -1679,78 +2044,6 @@ async function loadUserBookings() {
     } catch (error) {
         console.error('Load user bookings error:', error);
     }
-}
-
-// Фильтрация записей
-function filterBookings(filter) {
-    // Сначала обновляем кнопки
-    document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
-    event.target.classList.add('active');
-    
-    // Перезагружаем записи
-    loadUserBookings();
-}
-
-// ================= УТИЛИТЫ =================
-function showLoader() {
-    const loader = document.getElementById('loader');
-    if (loader) loader.classList.remove('hidden');
-}
-
-function hideLoader() {
-    const loader = document.getElementById('loader');
-    if (loader) loader.classList.add('hidden');
-}
-
-function formatDate(dateString, includeTime = false) {
-    try {
-        const date = new Date(dateString);
-        const options = { day: 'numeric', month: 'long', year: 'numeric' };
-        const formatted = date.toLocaleDateString('ru-RU', options);
-        
-        if (includeTime) {
-            const time = date.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
-            return `${formatted} ${time}`;
-        }
-        
-        return formatted;
-    } catch (error) {
-        return dateString;
-    }
-}
-
-function createParticles() {
-    const container = document.getElementById('particles');
-    if (!container) return;
-    
-    const emojis = ['🌸', '✨', '💅', '🎨', '💎'];
-    
-    for (let i = 0; i < 10; i++) {
-        const particle = document.createElement('div');
-        particle.className = 'particle';
-        particle.innerHTML = emojis[Math.floor(Math.random() * emojis.length)];
-        particle.style.cssText = `
-            position: fixed;
-            pointer-events: none;
-            z-index: -1;
-            font-size: 20px;
-            animation: float linear infinite;
-            left: ${Math.random() * 100}vw;
-            top: ${Math.random() * 100}vh;
-            animation-duration: ${Math.random() * 10 + 10}s;
-            opacity: ${Math.random() * 0.3 + 0.1};
-            transform: scale(${Math.random() * 0.5 + 0.5});
-        `;
-        container.appendChild(particle);
-    }
-}
-
-function updateUI() {
-    // Обновление предстоящих записей
-    updateUpcomingBookings();
-    
-    // Обновление бейджа уведомлений
-    updateNotificationBadge();
 }
 
 function updateUpcomingBookings() {
@@ -1785,7 +2078,7 @@ function updateUpcomingBookings() {
                         📅 ${formatDate(booking.date)} 🕐 ${booking.time}
                     </div>
                 </div>
-                <span class="status-badge" style="display:inline-flex;align-items:center;padding:4px 8px;border-radius:12px;font-size:10px;font-weight:600;background:${booking.status === 'confirmed' ? 'rgba(76, 175, 80, 0.1)' : 'rgba(255, 193, 7, 0.1)'};color:${booking.status === 'confirmed' ? 'var(--accent-success)' : 'var(--accent-warning)'};">
+                <span class="status-badge status-${booking.status}">
                     ${booking.status === 'confirmed' ? '✅' : '⏳'}
                 </span>
             </div>
@@ -1796,54 +2089,105 @@ function updateUpcomingBookings() {
     `).join('');
 }
 
+function resetBookingForm() {
+    selectedService = null;
+    currentStep = 1;
+    
+    document.getElementById('step1').style.display = 'block';
+    document.getElementById('step2').style.display = 'none';
+    document.getElementById('step3').style.display = 'none';
+    
+    document.getElementById('bookingDate').value = '';
+    document.getElementById('bookingTime').value = '10:00';
+    document.getElementById('bookingMaster').value = '';
+    document.getElementById('bookingNotes').value = '';
+    document.getElementById('clientPhone').value = '';
+    
+    renderServices();
+    updateStepCircles();
+    updateNavigationButtons();
+}
+
+function formatDate(dateString) {
+    try {
+        const date = new Date(dateString);
+        return date.toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' });
+    } catch (error) {
+        return dateString;
+    }
+}
+
+function createParticles() {
+    const container = document.getElementById('particles');
+    if (!container) return;
+    
+    const emojis = ['🌸', '✨', '💅', '🎨', '💎'];
+    
+    for (let i = 0; i < 10; i++) {
+        const particle = document.createElement('div');
+        particle.innerHTML = emojis[Math.floor(Math.random() * emojis.length)];
+        particle.style.cssText = `
+            position: fixed;
+            pointer-events: none;
+            z-index: -1;
+            font-size: 20px;
+            animation: float linear infinite;
+            left: ${Math.random() * 100}vw;
+            top: ${Math.random() * 100}vh;
+            animation-duration: ${Math.random() * 10 + 10}s;
+            opacity: ${Math.random() * 0.3 + 0.1};
+            transform: scale(${Math.random() * 0.5 + 0.5});
+        `;
+        container.appendChild(particle);
+    }
+}
+
+function updateUI() {
+    updateUpcomingBookings();
+}
+
 function setupEventListeners() {
-    // Установка минимальной даты для записи
     const today = new Date().toISOString().split('T')[0];
     const dateInput = document.getElementById('bookingDate');
     if (dateInput) {
         dateInput.min = today;
-        if (!dateInput.value) {
-            dateInput.value = today;
-        }
+        if (!dateInput.value) dateInput.value = today;
     }
 }
 
 // Дополнительные функции
 function filterServices(category) {
-    // Обновляем активную кнопку
     document.querySelectorAll('.category-tab').forEach(tab => tab.classList.remove('active'));
     event.target.classList.add('active');
     
-    // Фильтруем услуги
     const items = document.querySelectorAll('.service-item');
     items.forEach(item => {
-        if (category === 'all' || item.dataset.category === category) {
-            item.style.display = 'block';
-        } else {
-            item.style.display = 'none';
-        }
+        item.style.display = (category === 'all' || item.dataset.category === category) ? 'block' : 'none';
     });
 }
 
-function showFilters() {
-    showNotification('Фильтры услуг', 'info');
+function filterBookings(filter) {
+    document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+    event.target.classList.add('active');
+    loadUserBookings();
 }
 
 function cancelBooking(bookingId) {
-    if (!confirm('Вы уверены, что хотите отменить запись?')) return;
+    if (!confirm('Отменить запись?')) return;
     
     try {
-        // Обновляем локально
         const booking = allBookings.find(b => b.id === bookingId);
         if (booking) {
             booking.status = 'cancelled';
             saveLocalData();
+            
+            if (dbService) {
+                dbService.updateBookingStatus(bookingId, 'cancelled');
+            }
         }
         
-        // Обновляем UI
         loadUserBookings();
         updateUpcomingBookings();
-        
         showNotification('Запись отменена', 'success');
         
     } catch (error) {
@@ -1855,13 +2199,9 @@ function cancelBooking(bookingId) {
 function rescheduleBooking(bookingId) {
     const booking = allBookings.find(b => b.id === bookingId);
     if (booking) {
-        // Находим услугу
         selectedService = servicesData.find(s => s.name === booking.service) || servicesData[0];
-        
-        // Переходим к записи
         showScreen('booking');
         
-        // Заполняем данные
         setTimeout(() => {
             document.getElementById('bookingDate').value = booking.date;
             document.getElementById('bookingTime').value = booking.time;
@@ -1869,7 +2209,6 @@ function rescheduleBooking(bookingId) {
             document.getElementById('bookingNotes').value = booking.notes || '';
             document.getElementById('clientPhone').value = booking.phone || '';
             
-            // Переходим ко второму шагу
             currentStep = 1;
             nextStep();
             nextStep();
@@ -1879,13 +2218,34 @@ function rescheduleBooking(bookingId) {
     }
 }
 
+function showFilters() {
+    showNotification('Фильтры услуг', 'info');
+}
+
+function refreshGallery() {
+    showNotification('Галерея обновлена', 'success');
+    // Здесь можно добавить загрузку галереи
+}
+
+function uploadPhoto() {
+    showNotification('В демо-режиме загрузка фото недоступна', 'info');
+}
+
+function showRewards() {
+    showNotification('В демо-режиме награды недоступны', 'info');
+}
+
 function refreshBookings() {
     loadUserBookings();
     showNotification('Список записей обновлен', 'success');
 }
 
+function showChat() {
+    showNotification('Чат в разработке', 'info');
+}
+
 function logout() {
-    if (confirm('Вы уверены, что хотите выйти?')) {
+    if (confirm('Выйти из аккаунта?')) {
         showNotification('Выход выполнен', 'info');
         setTimeout(() => {
             window.location.reload();
@@ -1893,92 +2253,18 @@ function logout() {
     }
 }
 
-// Google Sheets интеграция (базовый шаблон)
-async function saveToGoogleSheets(booking) {
-    try {
-        const response = await fetch(CONFIG.GOOGLE_SHEETS_URL, {
-            method: 'POST',
-            mode: 'no-cors',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                action: 'addBooking',
-                ...booking
-            })
-        });
-        
-        return true;
-    } catch (error) {
-        console.error('Google Sheets error:', error);
-        return false;
-    }
+function showLoader() {
+    document.getElementById('loader').classList.remove('hidden');
 }
 
-// Синхронизация с базой данных
-async function syncWithDatabase() {
-    showLoader();
-    
-    try {
-        if (dbService && await dbService.isConnected()) {
-            // Перезагружаем услуги из базы
-            const { data: dbServices } = await dbService.getServices();
-            if (dbServices && dbServices.length > 0) {
-                servicesData = dbServices.map(s => ({
-                    id: s.id,
-                    name: s.name,
-                    description: s.description || '',
-                    price: s.price,
-                    duration: s.duration || 60,
-                    category: s.category || 'other',
-                    icon: s.icon || '💅',
-                    popular: s.popular || false
-                }));
-                renderServices();
-            }
-            
-            // Перезагружаем записи
-            if (currentUser) {
-                const { data: dbBookings } = await dbService.getUserBookings(currentUser.id);
-                if (dbBookings) {
-                    allBookings = dbBookings.map(b => ({
-                        id: b.id,
-                        userId: b.user_id,
-                        userName: b.user_name,
-                        userInfo: b.user_info,
-                        service: b.service_name,
-                        serviceId: b.service_id,
-                        price: b.price,
-                        date: b.date,
-                        time: b.time ? b.time.substring(0, 5) : '10:00',
-                        master: b.master,
-                        notes: b.notes,
-                        phone: b.phone,
-                        status: b.status,
-                        createdAt: b.created_at
-                    }));
-                    
-                    saveLocalData();
-                    updateUpcomingBookings();
-                }
-            }
-            
-            hideLoader();
-            showNotification('✅ Данные синхронизированы с базой', 'success');
-        } else {
-            hideLoader();
-            showNotification('❌ Нет подключения к базе данных', 'error');
-        }
-    } catch (error) {
-        hideLoader();
-        console.error('Sync error:', error);
-        showNotification('Ошибка синхронизации', 'error');
-    }
+function hideLoader() {
+    document.getElementById('loader').classList.add('hidden');
 }
 
-// Инициализация приложения
+// Инициализация темы
 window.onload = function() {
-    console.log('🌸 Nail Sakura Studio initialized');
+    const savedTheme = localStorage.getItem('nailSakuraTheme') || 'light';
+    setTheme(savedTheme);
 };
 </script>
 </body>
