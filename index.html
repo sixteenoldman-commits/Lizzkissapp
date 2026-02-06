@@ -2666,7 +2666,519 @@ function showClients() {
 function showCalendar() {
     showNotification('Календарь записей', 'info');
 }
+    
+// ================= СИСТЕМА ЧАТА =================
+let currentChatUserId = null; // Для мастера: с каким клиентом открыт чат
+let chatMessages = [];
+let masterChats = []; // Список чатов для мастера
 
+// ========== КЛИЕНТСКИЙ ЧАТ ==========
+function initClientChat() {
+    if (!currentUser) return;
+    
+    // Загружаем историю чата
+    loadClientChatHistory();
+    
+    // Начинаем слушать новые сообщения
+    startChatListener();
+}
+
+// Загрузка истории чата клиента
+async function loadClientChatHistory() {
+    try {
+        if (!dbService) return;
+        
+        const { data: messages, error } = await dbService.supabase
+            .from('chat_messages')
+            .select('*')
+            .eq('user_id', currentUser.id.toString())
+            .order('created_at', { ascending: true });
+        
+        if (!error && messages) {
+            chatMessages = messages;
+            renderClientChat();
+        }
+    } catch (error) {
+        console.error('Load client chat error:', error);
+    }
+}
+
+// Отправка сообщения от клиента
+async function sendChatMessage() {
+    const input = document.getElementById('messageInput');
+    const text = input.value.trim();
+    
+    if (!text || !currentUser) return;
+    
+    // Создаём объект сообщения
+    const message = {
+        id: Date.now(),
+        user_id: currentUser.id.toString(),
+        user_name: currentUser.firstName + (currentUser.lastName ? ' ' + currentUser.lastName : ''),
+        text: text,
+        sender: 'user',
+        created_at: new Date().toISOString(),
+        read: false
+    };
+    
+    // Очищаем поле ввода
+    input.value = '';
+    
+    try {
+        // 1. Сохраняем в базу данных
+        const { error } = await dbService.supabase
+            .from('chat_messages')
+            .insert([message]);
+        
+        if (error) throw error;
+        
+        // 2. Добавляем в локальный массив
+        chatMessages.push(message);
+        renderClientChat();
+        scrollChatToBottom('chatMessages');
+        
+        // 3. Показываем уведомление об успехе
+        showNotification('Сообщение отправлено мастеру', 'success');
+        
+        // 4. Отправляем уведомление в Telegram бота (если настроен вебхук)
+        // Вебхук автоматически отправит уведомление через INSERT триггер
+        
+    } catch (error) {
+        console.error('Send chat message error:', error);
+        showNotification('Ошибка отправки сообщения', 'error');
+    }
+}
+
+// Рендеринг чата клиента
+function renderClientChat() {
+    const container = document.getElementById('messagesContainer');
+    if (!container) return;
+    
+    if (chatMessages.length === 0) {
+        container.innerHTML = `
+            <div style="text-align:center;padding:40px 20px;">
+                <div style="font-size:48px;color:var(--text-muted);margin-bottom:20px;">💬</div>
+                <p style="color:var(--text-muted);">Начните общение с мастером</p>
+                <p style="font-size:14px;color:var(--text-secondary);margin-top:10px;">
+                    Задайте вопросы о услугах, записи или дизайне
+                </p>
+            </div>
+        `;
+        return;
+    }
+    
+    container.innerHTML = chatMessages.map(msg => `
+        <div class="chat-message ${msg.sender === 'user' ? 'outgoing' : 'incoming'}" 
+             style="margin-bottom:15px;display:flex;${msg.sender === 'user' ? 'justify-content:flex-end;' : ''}">
+            
+            <div style="max-width:80%; background:${msg.sender === 'user' ? 'var(--accent-primary)' : 'var(--bg-card)'}; 
+                       color:${msg.sender === 'user' ? 'white' : 'var(--text-primary)'};
+                       padding:10px 15px; border-radius:15px;
+                       border:1px solid rgba(255,182,193,0.2);">
+                <div>${escapeHtml(msg.text)}</div>
+                <div style="font-size:11px;opacity:0.7;margin-top:5px;text-align:${msg.sender === 'user' ? 'right' : 'left'};">
+                    ${formatTime(msg.created_at)}
+                    ${msg.sender === 'user' ? (msg.read ? '👁️' : '') : ''}
+                </div>
+            </div>
+        </div>
+    `).join('');
+}
+
+// ========== ПАНЕЛЬ ЧАТОВ МАСТЕРА ==========
+// Загрузка списка чатов для мастера
+async function loadMasterChats() {
+    if (!isMasterMode || !dbService) return;
+    
+    showLoader();
+    
+    try {
+        // Получаем уникальных клиентов, с которыми есть переписка
+        const { data: messages, error } = await dbService.supabase
+            .from('chat_messages')
+            .select('user_id, user_name, created_at, text, sender, read')
+            .order('created_at', { ascending: false });
+        
+        if (error) throw error;
+        
+        // Группируем по клиентам
+        const chatsMap = new Map();
+        
+        messages.forEach(msg => {
+            if (!chatsMap.has(msg.user_id)) {
+                chatsMap.set(msg.user_id, {
+                    user_id: msg.user_id,
+                    user_name: msg.user_name || 'Клиент',
+                    last_message: msg.text,
+                    last_message_time: msg.created_at,
+                    unread_count: 0,
+                    sender: msg.sender
+                });
+            }
+            
+            const chat = chatsMap.get(msg.user_id);
+            
+            // Считаем непрочитанные сообщения от клиентов
+            if (msg.sender === 'user' && !msg.read) {
+                chat.unread_count++;
+            }
+        });
+        
+        masterChats = Array.from(chatsMap.values())
+            .sort((a, b) => new Date(b.last_message_time) - new Date(a.last_message_time));
+        
+        renderMasterChatsList();
+        
+    } catch (error) {
+        console.error('Load master chats error:', error);
+        showNotification('Ошибка загрузки чатов', 'error');
+    } finally {
+        hideLoader();
+    }
+}
+
+// Рендеринг списка чатов для мастера
+function renderMasterChatsList() {
+    const container = document.getElementById('chatsList');
+    if (!container) return;
+    
+    if (masterChats.length === 0) {
+        container.innerHTML = `
+            <div style="text-align:center;padding:40px 20px;">
+                <div style="font-size:48px;color:var(--text-muted);margin-bottom:20px;">💬</div>
+                <p style="color:var(--text-muted);">Нет активных чатов</p>
+                <p style="font-size:14px;color:var(--text-secondary);margin-top:10px;">
+                    Когда клиенты напишут, чаты появятся здесь
+                </p>
+            </div>
+        `;
+        return;
+    }
+    
+    container.innerHTML = masterChats.map(chat => `
+        <div class="chat-item" onclick="openMasterChat('${chat.user_id}')" 
+             style="display:flex;align-items:center;padding:15px;border-radius:12px;margin-bottom:10px;
+                    cursor:pointer;transition:var(--transition);background:var(--bg-secondary);">
+            
+            <div style="width:45px;height:45px;background:linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+                       border-radius:50%;display:flex;align-items:center;justify-content:center;
+                       color:white;font-size:18px;margin-right:15px;">
+                ${chat.user_name.charAt(0).toUpperCase()}
+            </div>
+            
+            <div style="flex:1;">
+                <div style="display:flex;justify-content:space-between;">
+                    <div style="font-weight:600;">${chat.user_name}</div>
+                    <div style="font-size:12px;color:var(--text-muted);">
+                        ${formatTimeShort(chat.last_message_time)}
+                    </div>
+                </div>
+                <div style="font-size:13px;color:var(--text-secondary);margin-top:3px;
+                            overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">
+                    ${chat.last_message.substring(0, 50)}${chat.last_message.length > 50 ? '...' : ''}
+                </div>
+            </div>
+            
+            ${chat.unread_count > 0 ? `
+                <div style="background:var(--accent-danger);color:white;border-radius:50%;
+                            width:22px;height:22px;display:flex;align-items:center;
+                            justify-content:center;font-size:11px;font-weight:bold;">
+                    ${chat.unread_count}
+                </div>
+            ` : ''}
+        </div>
+    `).join('');
+}
+
+// Открытие чата с конкретным клиентом (для мастера)
+async function openMasterChat(userId) {
+    currentChatUserId = userId;
+    
+    // Загружаем информацию о клиенте
+    await loadClientInfo(userId);
+    
+    // Загружаем историю переписки
+    await loadChatHistory(userId);
+    
+    // Показываем экран чата
+    showScreen('masterChatScreen');
+}
+
+// Загрузка информации о клиенте
+async function loadClientInfo(userId) {
+    const container = document.getElementById('clientInfo');
+    const nameContainer = document.getElementById('chatUserName');
+    
+    if (!container || !nameContainer) return;
+    
+    try {
+        // 1. Ищем в чатах
+        const chat = masterChats.find(c => c.user_id === userId);
+        if (chat) {
+            nameContainer.textContent = chat.user_name;
+        }
+        
+        // 2. Ищем в пользователях
+        const { data: user, error } = await dbService.supabase
+            .from('users')
+            .select('*')
+            .eq('telegram_id', userId)
+            .single();
+        
+        // 3. Ищем записи клиента
+        const { data: bookings } = await dbService.supabase
+            .from('bookings')
+            .select('*')
+            .eq('user_id', userId)
+            .order('date', { ascending: false })
+            .limit(3);
+        
+        let userInfo = '';
+        
+        if (user) {
+            userInfo += `
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;">
+                    <div>
+                        <div style="font-size:12px;color:var(--text-muted);">Имя:</div>
+                        <div style="font-weight:600;">${user.first_name} ${user.last_name || ''}</div>
+                    </div>
+                    ${user.phone ? `
+                        <div>
+                            <div style="font-size:12px;color:var(--text-muted);">Телефон:</div>
+                            <div style="font-weight:600;">${user.phone}</div>
+                        </div>
+                    ` : ''}
+                </div>
+            `;
+        }
+        
+        if (bookings && bookings.length > 0) {
+            const nextBooking = bookings.find(b => b.date >= new Date().toISOString().split('T')[0]);
+            
+            userInfo += `<div style="margin-top:10px;">`;
+            userInfo += `<div style="font-size:12px;color:var(--text-muted);margin-bottom:5px;">📅 Последние записи:</div>`;
+            
+            bookings.slice(0, 2).forEach(booking => {
+                userInfo += `
+                    <div style="font-size:13px;padding:5px 10px;background:rgba(255,182,193,0.05);border-radius:8px;margin-bottom:5px;">
+                        ${formatDate(booking.date)} ${booking.time} - ${booking.service_name}
+                    </div>
+                `;
+            });
+            
+            userInfo += `</div>`;
+        }
+        
+        container.innerHTML = userInfo || '<div style="color:var(--text-muted);">Информация о клиенте не найдена</div>';
+        
+    } catch (error) {
+        console.error('Load client info error:', error);
+        container.innerHTML = '<div style="color:var(--text-muted);">Ошибка загрузки информации</div>';
+    }
+}
+
+// Загрузка истории переписки с клиентом
+async function loadChatHistory(userId) {
+    try {
+        const { data: messages, error } = await dbService.supabase
+            .from('chat_messages')
+            .select('*')
+            .eq('user_id', userId)
+            .order('created_at', { ascending: true });
+        
+        if (!error && messages) {
+            chatMessages = messages;
+            renderMasterChat();
+            
+            // Помечаем сообщения как прочитанные
+            await markMessagesAsRead(userId);
+        }
+    } catch (error) {
+        console.error('Load chat history error:', error);
+    }
+}
+
+// Рендеринг чата для мастера
+function renderMasterChat() {
+    const container = document.getElementById('masterMessagesContainer');
+    if (!container) return;
+    
+    container.innerHTML = chatMessages.map(msg => `
+        <div class="chat-message ${msg.sender === 'user' ? 'incoming' : 'outgoing'}" 
+             style="margin-bottom:15px;display:flex;${msg.sender === 'master' ? 'justify-content:flex-end;' : ''}">
+            
+            <div style="max-width:80%; background:${msg.sender === 'user' ? 'var(--bg-card)' : 'var(--accent-primary)'}; 
+                       color:${msg.sender === 'user' ? 'var(--text-primary)' : 'white'};
+                       padding:10px 15px; border-radius:15px;
+                       border:1px solid rgba(255,182,193,0.2);">
+                <div>${escapeHtml(msg.text)}</div>
+                <div style="font-size:11px;opacity:0.7;margin-top:5px;text-align:${msg.sender === 'user' ? 'left' : 'right'};">
+                    ${formatTime(msg.created_at)}
+                </div>
+            </div>
+        </div>
+    `).join('');
+    
+    scrollChatToBottom('masterChatMessages');
+}
+
+// Отправка сообщения от мастера
+async function sendMasterMessage() {
+    const input = document.getElementById('masterMessageInput');
+    const text = input.value.trim();
+    
+    if (!text || !currentChatUserId || !isMasterMode) return;
+    
+    // Создаём объект сообщения
+    const message = {
+        id: Date.now(),
+        user_id: currentChatUserId,
+        user_name: 'Мастер',
+        text: text,
+        sender: 'master',
+        created_at: new Date().toISOString(),
+        read: true
+    };
+    
+    // Очищаем поле ввода
+    input.value = '';
+    
+    try {
+        // 1. Сохраняем в базу данных
+        const { error } = await dbService.supabase
+            .from('chat_messages')
+            .insert([message]);
+        
+        if (error) throw error;
+        
+        // 2. Добавляем в локальный массив
+        chatMessages.push(message);
+        renderMasterChat();
+        scrollChatToBottom('masterChatMessages');
+        
+        // 3. Обновляем список чатов
+        await loadMasterChats();
+        
+        showNotification('Сообщение отправлено клиенту', 'success');
+        
+    } catch (error) {
+        console.error('Send master message error:', error);
+        showNotification('Ошибка отправки сообщения', 'error');
+    }
+}
+
+// Пометить сообщения как прочитанные
+async function markMessagesAsRead(userId) {
+    try {
+        await dbService.supabase
+            .from('chat_messages')
+            .update({ read: true })
+            .eq('user_id', userId)
+            .eq('sender', 'user')
+            .eq('read', false);
+    } catch (error) {
+        console.error('Mark messages as read error:', error);
+    }
+}
+
+// Поиск клиентов
+async function searchClients(query) {
+    if (!query.trim()) {
+        renderMasterChatsList();
+        return;
+    }
+    
+    const filtered = masterChats.filter(chat => 
+        chat.user_name.toLowerCase().includes(query.toLowerCase())
+    );
+    
+    const container = document.getElementById('chatsList');
+    if (!container) return;
+    
+    if (filtered.length === 0) {
+        container.innerHTML = `
+            <div style="text-align:center;padding:20px;color:var(--text-muted);">
+                Клиенты не найдены
+            </div>
+        `;
+        return;
+    }
+    
+    // Рендерим отфильтрованный список (аналогично renderMasterChatsList)
+    // ...
+}
+
+// Слушатель новых сообщений (Real-time)
+function startChatListener() {
+    if (!dbService || !dbService.supabase) return;
+    
+    // Подписываемся на изменения в таблице chat_messages
+    const subscription = dbService.supabase
+        .channel('chat_channel')
+        .on('postgres_changes', 
+            { 
+                event: 'INSERT', 
+                schema: 'public', 
+                table: 'chat_messages',
+                filter: currentUser ? `user_id=eq.${currentUser.id}` : null
+            }, 
+            (payload) => {
+                const newMessage = payload.new;
+                
+                // Добавляем новое сообщение
+                if (!chatMessages.some(m => m.id === newMessage.id)) {
+                    chatMessages.push(newMessage);
+                    
+                    // Если открыт экран чата - обновляем
+                    if (currentScreen === 'chat') {
+                        renderClientChat();
+                        scrollChatToBottom('chatMessages');
+                        
+                        // Уведомление о новом сообщении
+                        if (newMessage.sender === 'master') {
+                            showNotification(`💬 Новое сообщение от мастера`, 'info');
+                        }
+                    }
+                }
+            }
+        )
+        .subscribe();
+}
+
+// Утилиты
+function scrollChatToBottom(containerId) {
+    const container = document.getElementById(containerId);
+    if (container) {
+        setTimeout(() => {
+            container.scrollTop = container.scrollHeight;
+        }, 100);
+    }
+}
+
+function formatTimeShort(dateString) {
+    const date = new Date(dateString);
+    const now = new Date();
+    const diff = now - date;
+    
+    if (diff < 24 * 60 * 60 * 1000) {
+        return date.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
+    } else {
+        return date.toLocaleDateString('ru-RU', { day: '2-digit', month: '2-digit' });
+    }
+}
+
+// Инициализация
+document.addEventListener('DOMContentLoaded', function() {
+    // ... существующий код ...
+    
+    // Инициализируем чат через 2 секунды
+    setTimeout(() => {
+        if (currentUser) {
+            initClientChat();
+        }
+    }, 2000);
+});
+    
 // Инициализация темы
 window.onload = function() {
     const savedTheme = localStorage.getItem('nailSakuraTheme') || 'light';
@@ -2675,6 +3187,7 @@ window.onload = function() {
 </script>
 </body>
 </html>
+
 
 
 
