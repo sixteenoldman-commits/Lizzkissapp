@@ -3179,6 +3179,257 @@ document.addEventListener('DOMContentLoaded', function() {
     }, 2000);
 });
     
+    // ================= ИСПРАВЛЕННЫЕ ФУНКЦИИ ЗАПИСИ =================
+function nextStep() {
+    console.log('nextStep called, current:', currentStep);
+    
+    if (currentStep === 1) {
+        if (!selectedService) {
+            showNotification('❌ Пожалуйста, выберите услугу', 'warning');
+            return;
+        }
+        currentStep = 2;
+        document.getElementById('step1').style.display = 'none';
+        document.getElementById('step2').style.display = 'block';
+        document.getElementById('step3').style.display = 'none';
+        
+        // Устанавливаем минимальную дату (сегодня)
+        const today = new Date().toISOString().split('T')[0];
+        const dateInput = document.getElementById('bookingDate');
+        if (dateInput) {
+            dateInput.min = today;
+            dateInput.value = today;
+        }
+        
+    } else if (currentStep === 2) {
+        const date = document.getElementById('bookingDate').value;
+        if (!date) {
+            showNotification('❌ Пожалуйста, выберите дату', 'warning');
+            return;
+        }
+        
+        // Проверяем что дата не в прошлом
+        const selectedDate = new Date(date);
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        
+        if (selectedDate < today) {
+            showNotification('❌ Нельзя выбрать прошедшую дату', 'warning');
+            return;
+        }
+        
+        currentStep = 3;
+        document.getElementById('step1').style.display = 'none';
+        document.getElementById('step2').style.display = 'none';
+        document.getElementById('step3').style.display = 'block';
+        updateBookingSummary();
+        
+    } else if (currentStep === 3) {
+        submitBooking();
+        return;
+    }
+    
+    updateStepCircles();
+    updateNavigationButtons();
+}
+
+function prevStep() {
+    if (currentStep === 2) {
+        currentStep = 1;
+        document.getElementById('step1').style.display = 'block';
+        document.getElementById('step2').style.display = 'none';
+        document.getElementById('step3').style.display = 'none';
+    } else if (currentStep === 3) {
+        currentStep = 2;
+        document.getElementById('step1').style.display = 'none';
+        document.getElementById('step2').style.display = 'block';
+        document.getElementById('step3').style.display = 'none';
+    }
+    
+    updateStepCircles();
+    updateNavigationButtons();
+}
+
+function updateStepCircles() {
+    document.querySelectorAll('.step-circle').forEach((circle, index) => {
+        const stepNumber = index + 1;
+        if (stepNumber < currentStep) {
+            circle.style.background = 'var(--accent-success)';
+            circle.innerHTML = '✓';
+        } else if (stepNumber === currentStep) {
+            circle.style.background = 'var(--accent-primary)';
+            circle.innerHTML = stepNumber;
+        } else {
+            circle.style.background = 'var(--bg-secondary)';
+            circle.innerHTML = stepNumber;
+        }
+    });
+}
+
+function updateNavigationButtons() {
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    
+    if (prevBtn) {
+        prevBtn.style.display = currentStep > 1 ? 'block' : 'none';
+    }
+    
+    if (nextBtn) {
+        if (currentStep === 3) {
+            nextBtn.innerHTML = '<i class="fas fa-check"></i> Подтвердить запись';
+        } else {
+            nextBtn.innerHTML = 'Далее <i class="fas fa-arrow-right"></i>';
+        }
+    }
+}
+
+function updateBookingSummary() {
+    const summary = document.getElementById('bookingSummary');
+    if (!summary) return;
+    
+    if (!selectedService) {
+        summary.innerHTML = '<p style="color:var(--accent-danger);">Ошибка: услуга не выбрана</p>';
+        return;
+    }
+    
+    const date = document.getElementById('bookingDate').value;
+    const time = document.getElementById('bookingTime').value;
+    const master = document.getElementById('bookingMaster').value;
+    
+    summary.innerHTML = `
+        <div style="display:grid;gap:8px;font-size:14px;">
+            <div style="display:flex;justify-content:space-between;">
+                <span style="color:var(--text-muted);">Услуга:</span>
+                <span style="font-weight:600;">${selectedService.name}</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;">
+                <span style="color:var(--text-muted);">Дата и время:</span>
+                <span style="font-weight:600;">${formatDate(date)} ${time}</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;">
+                <span style="color:var(--text-muted);">Мастер:</span>
+                <span style="font-weight:600;">${master || 'Любой доступный'}</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;border-top:1px solid rgba(255,182,193,0.3);padding-top:8px;margin-top:8px;">
+                <span style="color:var(--text-muted);">Стоимость:</span>
+                <span style="font-weight:bold;color:var(--accent-primary);font-size:18px;">${selectedService.price}₽</span>
+            </div>
+        </div>
+    `;
+}
+
+async function submitBooking() {
+    if (!selectedService || !currentUser) {
+        showNotification('❌ Ошибка при создании записи', 'error');
+        return;
+    }
+    
+    const date = document.getElementById('bookingDate').value;
+    const time = document.getElementById('bookingTime').value;
+    const master = document.getElementById('bookingMaster').value;
+    const notes = document.getElementById('bookingNotes').value;
+    const phone = document.getElementById('clientPhone').value;
+    
+    if (!phone || phone.trim().length < 5) {
+        showNotification('❌ Введите корректный номер телефона', 'warning');
+        return;
+    }
+    
+    showLoader();
+    
+    try {
+        const bookingData = {
+            userId: currentUser.id.toString(),
+            userName: currentUser.firstName + (currentUser.lastName ? ' ' + currentUser.lastName : ''),
+            userInfo: currentUser.username || 'Telegram пользователь',
+            serviceId: selectedService.id,
+            service: selectedService.name,
+            price: selectedService.price,
+            date: date,
+            time: time,
+            master: master || '',
+            notes: notes || '',
+            phone: phone,
+            status: 'pending'
+        };
+        
+        // Сохраняем в базу данных
+        let bookingId = null;
+        if (dbService && await dbService.isConnected()) {
+            const { data, error } = await dbService.createBooking(bookingData);
+            if (error) throw error;
+            if (data && data[0]) {
+                bookingId = data[0].id;
+                bookingData.id = bookingId;
+            }
+        }
+        
+        // Сохраняем локально
+        if (!bookingId) {
+            bookingData.id = 'local_' + Date.now();
+        }
+        
+        allBookings.push(bookingData);
+        saveLocalData();
+        
+        hideLoader();
+        
+        // Показываем успешное сообщение
+        const successMsg = `
+            <div style="text-align:center;">
+                <div style="font-size:48px;color:var(--accent-success);margin-bottom:20px;">✅</div>
+                <h3 style="margin-bottom:10px;">Запись создана!</h3>
+                <p style="color:var(--text-secondary);margin-bottom:20px;">
+                    ${formatDate(date)} в ${time}<br>
+                    ${selectedService.name}
+                </p>
+                <div style="background:rgba(81,195,80,0.1);padding:15px;border-radius:12px;margin:20px 0;">
+                    <p style="font-size:14px;margin-bottom:5px;">📱 Мастер свяжется с вами для подтверждения</p>
+                    <p style="font-size:12px;color:var(--text-muted);">Статус записи можно отслеживать в "Мои записи"</p>
+                </div>
+            </div>
+        `;
+        
+        document.getElementById('step3').innerHTML = successMsg;
+        document.getElementById('prevBtn').style.display = 'none';
+        document.getElementById('nextBtn').style.display = 'none';
+        
+        setTimeout(() => {
+            resetBookingForm();
+            showScreen('main');
+            updateUpcomingBookings();
+        }, 3000);
+        
+        showNotification('✅ Запись успешно создана!', 'success');
+        
+    } catch (error) {
+        hideLoader();
+        console.error('Submit booking error:', error);
+        showNotification('❌ Ошибка при создании записи: ' + error.message, 'error');
+    }
+}
+
+function resetBookingForm() {
+    currentStep = 1;
+    selectedService = null;
+    
+    // Сбрасываем форму
+    document.getElementById('step1').style.display = 'block';
+    document.getElementById('step2').style.display = 'none';
+    document.getElementById('step3').style.display = 'none';
+    
+    const today = new Date().toISOString().split('T')[0];
+    document.getElementById('bookingDate').value = today;
+    document.getElementById('bookingTime').value = '10:00';
+    document.getElementById('bookingMaster').value = '';
+    document.getElementById('bookingNotes').value = '';
+    document.getElementById('clientPhone').value = '';
+    
+    updateStepCircles();
+    updateNavigationButtons();
+    renderServices();
+}
+    
 // Инициализация темы
 window.onload = function() {
     const savedTheme = localStorage.getItem('nailSakuraTheme') || 'light';
@@ -3187,6 +3438,7 @@ window.onload = function() {
 </script>
 </body>
 </html>
+
 
 
 
